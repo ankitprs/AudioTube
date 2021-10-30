@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.moreactivity.MoreActivity"
+    android:background="@color/dark_background"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:background="@color/background">
+
+        <ImageView
+            android:id="@+id/imageViewSettingBack"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:padding="10dp"
+            android:src="@drawable/ic_baseline_arrow_back_ios_new_24" />
+        
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Settings"
+            android:textSize="22sp" />
+
+    </com.google.android.material.appbar.MaterialToolbar>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/deleteRecentSongs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@color/one_level_up"
+            app:cardCornerRadius="10dp"
+            android:layout_margin="5dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables"
+                android:padding="10dp">
+
+                <ImageView
+                    android:src="@drawable/ic_baseline_delete_forever_24"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_margin="15dp"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Clear All History"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/white"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/howToUse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            app:cardBackgroundColor="@color/one_level_up"
+            app:cardCornerRadius="10dp"
+            android:layout_margin="5dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables"
+                android:padding="10dp">
+
+                <ImageView
+                    android:src="@drawable/ic_baseline_help_center_24"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_margin="15dp"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="How it works"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/white"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/notification"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@color/one_level_up"
+            app:cardCornerRadius="10dp"
+            android:layout_margin="5dp"
+            android:visibility="gone">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables"
+                android:padding="10dp">
+                <ImageView
+                    android:src="@drawable/ic_baseline_notifications_24"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_margin="15dp"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="Notification"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:layout_weight="1"/>
+                <Switch
+                    android:id="@+id/notification_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/rateUs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            app:cardBackgroundColor="@color/one_level_up"
+            app:cardCornerRadius="10dp"
+            android:layout_margin="5dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables"
+                android:padding="10dp">
+                <ImageView
+                    android:src="@drawable/ic_baseline_star_rate_24"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_margin="15dp"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Rate Us"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/white"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/checkUpdate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            app:cardBackgroundColor="@color/one_level_up"
+            app:cardCornerRadius="10dp"
+            android:layout_margin="5dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables"
+                android:padding="10dp">
+
+                <ImageView
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_margin="15dp"
+                    android:src="@drawable/ic_baseline_download_for_offline_24" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Check Update"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/white"
+                    android:textSize="18sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/inviteFriends"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            app:cardBackgroundColor="@color/one_level_up"
+            app:cardCornerRadius="10dp"
+            android:layout_margin="5dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables"
+                android:padding="10dp">
+                <ImageView
+                    android:src="@drawable/ic_baseline_share_24"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_margin="15dp"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Invite Friends"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/white"
+                    android:textSize="18sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/PrivacyPolicy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            app:cardBackgroundColor="@color/one_level_up"
+            app:cardCornerRadius="10dp"
+            android:layout_margin="5dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables"
+                android:padding="10dp">
+                <ImageView
+                    android:src="@drawable/ic_baseline_policy_24"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_margin="15dp"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="Privacy Policy"
+                    android:textColor="@color/white"
+                    android:textSize="18sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/about"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            app:cardBackgroundColor="@color/one_level_up"
+            app:cardCornerRadius="10dp"
+            android:layout_margin="5dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables"
+                android:padding="10dp">
+                <ImageView
+                    android:src="@drawable/ic_baseline_info_24"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_margin="15dp"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="About"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/white"
+                    android:textSize="18sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/feedback"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            app:cardBackgroundColor="@color/one_level_up"
+            app:cardCornerRadius="10dp"
+            android:layout_margin="5dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables"
+                android:padding="10dp">
+                <ImageView
+                    android:src="@drawable/ic_baseline_feedback_24"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_margin="15dp"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Feedback"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/white"
+                    android:textSize="18sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

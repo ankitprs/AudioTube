@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bottom_sheet_background"
+    tools:context=".ui.bottomsheet.AboutFragment"
+    android:layout_margin="10dp">
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp">
+
+        <TextView
+            android:id="@+id/aboutFragmentTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="Privacy Policy"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            android:layout_gravity="center"/>
+
+        <ImageView
+            android:id="@+id/aboutFragmentDismiss"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_outline_cancel_24"
+            android:padding="10dp"
+            android:layout_gravity="end|center_vertical"/>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp">
+        <TextView
+            android:id="@+id/aboutFragmentDescription"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:text="@string/privacy_policy"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+    </ScrollView>
+
+</LinearLayout>

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="20dp"
+    android:layout_marginStart="10dp"
+    android:layout_marginEnd="10dp"
+    android:background="@color/background"
+    android:orientation="vertical"
+    tools:context=".ui.fragments.SongFragment">
+
+    <ImageButton
+        android:id="@+id/exitButtonSongFragment"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@android:color/transparent"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_keyboard_arrow_down_24" />
+
+    <ImageView
+        android:id="@+id/shareButtonSongFragment"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_margin="?android:attr/buttonCornerRadius"
+        android:padding="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_share_24"
+        tools:targetApi="p" />
+
+    <ImageView
+        android:id="@+id/songThumbnailSongFragment"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/songTitleSongFragment"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.18"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/exitButtonSongFragment"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/songTitleSongFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="70dp"
+        android:text="Video Title"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/seekBar"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/songAuthorSongFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:text="Channel Name"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/songTitleSongFragment" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tvCurTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="00:00"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seekBar" />
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="32dp"
+        android:progressBackgroundTint="@color/white"
+        android:progressTint="@color/red_live"
+        android:thumbTint="@color/red_live"
+        app:layout_constraintBottom_toTopOf="@+id/ivPlayPauseSongFragment"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/tvSongDuration"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tvSongDuration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:text="00:00"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seekBar" />
+
+
+    <ImageButton
+        android:id="@+id/ivSkipPreviousSongFragment"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:layout_marginEnd="24dp"
+        android:background="@android:color/transparent"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="@+id/ivPlayPauseSongFragment"
+        app:layout_constraintEnd_toStartOf="@+id/ivPlayPauseSongFragment"
+        app:layout_constraintTop_toTopOf="@+id/ivPlayPauseSongFragment"
+        app:srcCompat="@drawable/exo_controls_previous" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/ivPlayPauseSongFragment"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="32dp"
+        app:cardBackgroundColor="@color/one_level_up"
+        app:cardCornerRadius="1000dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageView
+            android:id="@+id/ivPlayPauseSongFragmentImageView"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_gravity="center"
+            android:src="@drawable/exo_icon_pause" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <ImageButton
+        android:id="@+id/ivSkipNextSongFragment"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="24dp"
+        android:background="@android:color/transparent"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="@+id/ivPlayPauseSongFragment"
+        app:layout_constraintStart_toEndOf="@+id/ivPlayPauseSongFragment"
+        app:layout_constraintTop_toTopOf="@+id/ivPlayPauseSongFragment"
+        app:srcCompat="@drawable/exo_controls_next" />
+
+    <ImageView
+        android:id="@+id/imageViewLikeButton"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="24dp"
+        android:src="@drawable/ic_baseline_favorite_border_24"
+        app:layout_constraintBottom_toTopOf="@+id/seekBar"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageViewRepeatSongFrag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/exo_icon_repeat_off"
+        app:layout_constraintBottom_toBottomOf="@+id/ivSkipNextSongFragment"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/ivSkipNextSongFragment"
+        app:layout_constraintTop_toTopOf="@+id/ivSkipNextSongFragment"
+        android:visibility="gone"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
