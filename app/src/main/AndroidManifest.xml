@@ -17,11 +17,20 @@
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup">
         <activity
-            android:name=".ui.moreactivity.MoreActivity"
-            android:exported="false" />
+            android:name=".ui.educate.EducateActivity"
+            android:exported="false"/>
 
-        <service android:name=".exoplayer.MusicService"
-            android:exported="true">
+        <activity
+            android:name=".ui.more.MoreActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.HomeActivity" />
+        </activity>
+
+        <service
+            android:name=".exoplayer.MusicService"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
@@ -39,6 +48,8 @@
 
                 <data android:mimeType="text/plain" />
             </intent-filter>
+
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

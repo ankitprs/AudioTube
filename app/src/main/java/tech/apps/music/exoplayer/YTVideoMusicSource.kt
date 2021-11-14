@@ -16,46 +16,45 @@ class YTVideoMusicSource @Inject constructor(
 ) {
     var songs = emptyList<MediaMetadataCompat>()
 
-    suspend fun fetchSong()= withContext(Dispatchers.IO){
+    suspend fun fetchSong() = withContext(Dispatchers.IO) {
 
-        state=State.STATE_INITIALIZING
+        state = State.STATE_INITIALIZING
 
-        musicDatabase.getRecentSong()
-
-        withContext(Dispatchers.Main){
-            state=State.STATE_INITIALIZING
+        withContext(Dispatchers.Main) {
+            state = State.STATE_INITIALIZING
             musicDatabase.songsData.observeForever {
-                if(it!=null){
-                    songs=listOf(it.toMetaData()) + songs
+                if (it != null) {
+                    songs = listOf(it.toMetaData())
+//                    + songs
 
-                    state=State.STATE_INITIALIZED
+                    state = State.STATE_INITIALIZED
                 }
             }
         }
     }
 
-    private val onReadyListeners= mutableListOf<(Boolean) -> Unit>()
+    private val onReadyListeners = mutableListOf<(Boolean) -> Unit>()
 
-    private var state:State= State.STATE_CREATED
+    private var state: State = State.STATE_CREATED
         set(value) {
-            if(value == State.STATE_INITIALIZED || value == State.STATE_ERROR){
-                synchronized(onReadyListeners){
+            if (value == State.STATE_INITIALIZED || value == State.STATE_ERROR) {
+                synchronized(onReadyListeners) {
                     field = value
-                    onReadyListeners.forEach{ listener ->
+                    onReadyListeners.forEach { listener ->
                         listener(state == State.STATE_INITIALIZED)
                     }
                 }
-            }else{
+            } else {
                 field = value
             }
         }
 
     fun asMediaSource(
         dataSourceFactory: DefaultDataSourceFactory
-    ): ConcatenatingMediaSource{
-        val concatenatingMediaSource=ConcatenatingMediaSource()
-        songs.forEach{
-            val mediaSource= ProgressiveMediaSource.Factory(dataSourceFactory)
+    ): ConcatenatingMediaSource {
+        val concatenatingMediaSource = ConcatenatingMediaSource()
+        songs.forEach {
+            val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
                 .createMediaSource(it.getString(METADATA_KEY_MEDIA_URI).toUri())
             concatenatingMediaSource.addMediaSource(mediaSource)
         }
@@ -73,17 +72,18 @@ class YTVideoMusicSource @Inject constructor(
 //        MediaBrowserCompat.MediaItem(desc,FLAG_PLAYABLE)
 //    }
 
-    fun whenReady(action: (Boolean) -> Unit) : Boolean{
-        return if (state== State.STATE_CREATED||state== State.STATE_INITIALIZING){
-            onReadyListeners+=action
+    fun whenReady(action: (Boolean) -> Unit): Boolean {
+        return if (state == State.STATE_CREATED || state == State.STATE_INITIALIZING) {
+            onReadyListeners += action
             false
-        }else{
-            action(state==State.STATE_INITIALIZED)
+        } else {
+            action(state == State.STATE_INITIALIZED)
             false
         }
     }
 }
-enum class State{
+
+enum class State {
     STATE_CREATED,
     STATE_INITIALIZING,
     STATE_INITIALIZED,

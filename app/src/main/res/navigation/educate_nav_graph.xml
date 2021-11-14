@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/educate_nav_graph"
+    app:startDestination="@id/educateFirstFragment">
+
+    <fragment
+        android:id="@+id/educateFirstFragment"
+        android:name="tech.apps.music.ui.educate.fragments.EducateFirstFragment"
+        android:label="educate_first_fragment"
+        tools:layout="@layout/educate_first_fragment" >
+        <action
+            android:id="@+id/action_educateFirstFragment_to_educateSecondFragment"
+            app:destination="@id/educateSecondFragment"
+            app:enterAnim="@anim/right_in"
+            app:exitAnim="@anim/left_out"
+            app:popEnterAnim="@anim/left_in"
+            app:popExitAnim="@anim/right_out" />
+    </fragment>
+    <fragment
+        android:id="@+id/educateSecondFragment"
+        android:name="tech.apps.music.ui.educate.fragments.EducateSecondFragment"
+        android:label="fragment_educate_second"
+        tools:layout="@layout/fragment_educate_second" >
+        <action
+            android:id="@+id/action_educateSecondFragment_to_educateThirdFragment"
+            app:destination="@id/educateThirdFragment"
+            app:enterAnim="@anim/right_in"
+            app:exitAnim="@anim/left_out"
+            app:popEnterAnim="@anim/left_in"
+            app:popExitAnim="@anim/right_out" />
+    </fragment>
+    <fragment
+        android:id="@+id/educateThirdFragment"
+        android:name="tech.apps.music.ui.educate.fragments.EducateThirdFragment"
+        android:label="fragment_educate_third"
+        tools:layout="@layout/fragment_educate_third" />
+</navigation>

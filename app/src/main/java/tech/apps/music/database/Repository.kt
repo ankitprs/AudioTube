@@ -12,20 +12,24 @@ import javax.inject.Inject
 
 class Repository
 @Inject constructor(
-    val  context: Context
-)
-{
+    val context: Context
+) {
     val database: YTVideoDatabase = YTVideoDatabase.getDatabase(context)
 
-    suspend fun insertLink(ytVideoLink: YTVideoLink){
-        database.getYTVideoDao().insertLink(ytVideoLink)
+    suspend fun insertLink(ytVideoLink: YTVideoLink) {
+//        if(getAllSongs().size > 5){
+//            database.getYTVideoDao().deleteLink(getAllSongs()[4])
+//            database.getYTVideoDao().insertLink(ytVideoLink)
+//        }else{
+            database.getYTVideoDao().insertLink(ytVideoLink)
+//        }
     }
 
-    suspend fun insertLinkToLiked(ytVideoLinkLiked: YTVideoLinkLiked){
+    suspend fun insertLinkToLiked(ytVideoLinkLiked: YTVideoLinkLiked) {
         database.getYTVideoDao().insertLinkToLiked(ytVideoLinkLiked)
     }
 
-    suspend fun deleteLiked(ytVideoLink:YTVideoLinkLiked){
+    suspend fun deleteLiked(ytVideoLink: YTVideoLinkLiked) {
         database.getYTVideoDao().deleteLiked(ytVideoLink)
     }
 
@@ -37,29 +41,21 @@ class Repository
 
     private fun getAllSongs(): List<YTVideoLink> = database.getYTVideoDao().getAllSongs()
 
-    fun getAllSongsLiveData(): LiveData<List<YTVideoLink>> = database.getYTVideoDao().getAllSongsLiveData()
+    fun getAllSongsLiveData(): LiveData<List<YTVideoLink>> =
+        database.getYTVideoDao().getAllSongsLiveData()
 
-    fun getAllLikedSongs(): LiveData<List<YTVideoLinkLiked>> = database.getYTVideoDao().getAllLikedSongs()
+    fun getAllLikedSongs(): LiveData<List<YTVideoLinkLiked>> =
+        database.getYTVideoDao().getAllLikedSongs()
 
-    fun getRecentSong() {
 
-        if(getAllSongs().isNotEmpty()){
-            YTVideoExtractor.getObject(context,getAllSongs()[0].link){ audioModel->
+    fun getSongModelWithLink(ytUrl: String, callback: (ytModel: YTAudioDataModel?) -> Unit) {
 
-                if(audioModel!=null)
-                    songsData.postValue(audioModel)
-            }
-        }
-    }
-
-    fun getSongModelWithLink(ytUrl:String,callback:(ytModel:YTAudioDataModel?)->Unit){
-
-        YTVideoExtractor.getObject(context,ytUrl){audioModel->
-            if(audioModel!=null){
+        YTVideoExtractor.getObject(context, ytUrl) { audioModel ->
+            if (audioModel != null) {
                 callback(audioModel)
                 println(audioModel.ytSongUrl)
 
-            }else{
+            } else {
                 callback(null)
             }
         }

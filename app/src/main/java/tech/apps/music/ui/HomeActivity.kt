@@ -21,6 +21,9 @@ import tech.apps.music.others.Status
 import tech.apps.music.ui.viewmodels.MainViewModel
 import javax.inject.Inject
 
+
+
+
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
 
@@ -31,25 +34,15 @@ class HomeActivity : AppCompatActivity() {
 
     private var curPlaying: YTAudioDataModel? = null
 
-    private var playbackState: PlaybackStateCompat?= null
+    private var playbackState: PlaybackStateCompat? = null
 
-    private val firebaseAnalytics=FirebaseAnalytics.getInstance(this)
+    private val firebaseAnalytics = FirebaseAnalytics.getInstance(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(R.style.Theme_PlayAudio)
         setContentView(R.layout.home_activity)
 
-        when (intent?.action) {
-            Intent.ACTION_SEND -> {
-                if ("text/plain" == intent.type) {
-                    handleSendText(intent) // Handle text being sent
-                }
-            }
-            else -> {
-                // Handle other intents, such as being started from the home screen
-            }
-        }
         materialCardViewHome.setOnClickListener {
             navHostFragment.findNavController().navigate(
                 R.id.globalActionToSongFragment
@@ -57,28 +50,26 @@ class HomeActivity : AppCompatActivity() {
         }
         subscribeToObserver()
 
-        viewModel.curPlayingSong.observe(this){
-            curPlaying=it?.toSong()
+        viewModel.curPlayingSong.observe(this) {
+            curPlaying = it?.toSong()
             glide.load(curPlaying?.thumbnailUrl).into(ivCurSongImage)
-            vpSong.text= curPlaying?.title ?:""
+            vpSong.text = curPlaying?.title ?: ""
         }
 
         ivPlayPause.setOnClickListener {
             curPlaying?.let {
-                viewModel.playOrToggleSong(it,true)
+                viewModel.playOrToggleSong(it, true)
             }
         }
 
-
         curPlaying?.let { viewModel.playOrToggleSong(it) }
-
 
 //        vpSong.setOnClickListener {
 //            navHostFragment.findNavController().navigate(
 //                R.id.globalActionToSongFragment
 //            )
 //        }
-        navHostFragment.findNavController().addOnDestinationChangedListener{_,destination,_->
+        navHostFragment.findNavController().addOnDestinationChangedListener { _, destination, _ ->
             run {
                 when (destination.id) {
                     R.id.songFragment -> showOrHideBottomBar(false)
@@ -89,14 +80,14 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-    private fun showOrHideBottomBar( boolean :Boolean){
+    private fun showOrHideBottomBar(boolean: Boolean) {
         ivCurSongImage.isVisible = boolean
         vpSong.isVisible = boolean
         ivPlayPause.isVisible = boolean
     }
 
 
-    private fun subscribeToObserver(){
+    private fun subscribeToObserver() {
 
         viewModel.playbackState.observe(this) {
             playbackState = it
@@ -107,24 +98,24 @@ class HomeActivity : AppCompatActivity() {
                     R.drawable.exo_icon_play
             )
         }
-        viewModel.isConnected.observe(this){
-            it?.getContentIfNotHandled()?.let {result->
-                when(result.status){
+        viewModel.isConnected.observe(this) {
+            it?.getContentIfNotHandled()?.let { result ->
+                when (result.status) {
                     Status.ERROR -> Snackbar.make(
                         window.decorView.rootView,
-                        result.message?:"An unKnown error occurred",
+                        result.message ?: "An unKnown error occurred",
                         Snackbar.LENGTH_LONG
                     ).show()
                     else -> Unit
                 }
             }
         }
-        viewModel.networkError.observe(this){
-            it?.getContentIfNotHandled()?.let {result->
-                when(result.status){
+        viewModel.networkError.observe(this) {
+            it?.getContentIfNotHandled()?.let { result ->
+                when (result.status) {
                     Status.ERROR -> Snackbar.make(
                         window.decorView.rootView,
-                        result.message?:"An unKnown error occurred",
+                        result.message ?: "An unKnown error occurred",
                         Snackbar.LENGTH_LONG
                     ).show()
                     else -> Unit
@@ -136,22 +127,48 @@ class HomeActivity : AppCompatActivity() {
     private fun handleSendText(intent: Intent) {
         intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
 
-            val bundle=Bundle()
-            bundle.putString("SearchFORM_DIRECT_LINK",it)
+            println(it)
+
+            val bundle = Bundle()
+            bundle.putString("SearchFORM_DIRECT_LINK", it)
             firebaseAnalytics.logEvent("MusicRequestFROM_SEARCH_PAGE", bundle)
 
-            progressBarHomeActivity.isVisible=true
-            viewModel.addSongInRecent(it,this){result->
-                if(result){
+            progressBarHomeActivity.isVisible = true
+            viewModel.addSongInRecent(it, this) { result ->
+                if (result) {
                     navHostFragment.findNavController().navigate(
                         R.id.globalActionToSongFragment
                     )
-                    progressBarHomeActivity.isVisible=false
-                }else{
-                    Toast.makeText(this,"Enter YT Video link & Play 🥳",Toast.LENGTH_SHORT).show()
-                    progressBarHomeActivity.isVisible=false
+                    progressBarHomeActivity.isVisible = false
+                } else {
+                    Toast.makeText(this, "Enter YT Video link & Play 🥳", Toast.LENGTH_SHORT).show()
+                    progressBarHomeActivity.isVisible = false
                 }
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        when (intent?.action) {
+            Intent.ACTION_SEND -> {
+                if ("text/plain" == intent.type) {
+                    handleSendText(intent) // Handle text being sent
+                }
+            }
+            else -> {
+                // Handle other intents, such as being started from the home screen
+            }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        this.intent = intent
+    }
+
+    override fun onStop() {
+        super.onStop()
+        intent.putExtra(Intent.EXTRA_TEXT,"")
     }
 }

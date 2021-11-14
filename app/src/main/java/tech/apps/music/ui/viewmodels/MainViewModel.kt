@@ -29,7 +29,7 @@ class MainViewModel @Inject constructor(
     private val ytVideoMusicSource: YTVideoMusicSource
 ) : ViewModel() {
 
-    private val _mediaItems=MutableLiveData<Resource<List<YTAudioDataModel>>>()
+    private val _mediaItems = MutableLiveData<Resource<List<YTAudioDataModel>>>()
 
     val mediaItems: LiveData<Resource<List<YTAudioDataModel>>> = _mediaItems
 
@@ -41,88 +41,95 @@ class MainViewModel @Inject constructor(
     val curPlayingSong = musicServiceConnection.curPlayingSong
     val playbackState = musicServiceConnection.playbackState
 
-    var repeatAll=false
+    var repeatAll = false
 
 
     init {
         _mediaItems.postValue(Resource.loading(null))
-        musicServiceConnection.subscribe(MEDIA_ROOT_ID,object: MediaBrowserCompat.SubscriptionCallback(){
-            override fun onChildrenLoaded(
-                parentId: String,
-                children: MutableList<MediaBrowserCompat.MediaItem>
-            ) {
-                super.onChildrenLoaded(parentId, children)
+        musicServiceConnection.subscribe(MEDIA_ROOT_ID,
+            object : MediaBrowserCompat.SubscriptionCallback() {
+                override fun onChildrenLoaded(
+                    parentId: String,
+                    children: MutableList<MediaBrowserCompat.MediaItem>
+                ) {
+                    super.onChildrenLoaded(parentId, children)
 
-                val item=children.map{
-                    YTAudioDataModel(
-                        it.mediaId!!,
-                        it.description.title.toString(),
-                        it.description.subtitle.toString(),
-                        it.description.mediaUri.toString(),
-                        it.description.iconUri.toString()
-                    )
+                    val item = children.map {
+                        YTAudioDataModel(
+                            it.mediaId!!,
+                            it.description.title.toString(),
+                            it.description.subtitle.toString(),
+                            it.description.mediaUri.toString(),
+                            it.description.iconUri.toString()
+                        )
+                    }
+                    _mediaItems.postValue(Resource.success(item))
                 }
-                _mediaItems.postValue(Resource.success(item))
-            }
-        })
+            })
     }
 
-    fun skipToNextSong(){
+    fun skipToNextSong() {
         musicServiceConnection.transportControls.skipToNext()
     }
-    fun skipToPreviousSong(){
+
+    fun skipToPreviousSong() {
         musicServiceConnection.transportControls.skipToPrevious()
     }
-    fun seekTo(pos: Long){
+
+    fun seekTo(pos: Long) {
         musicServiceConnection.transportControls.seekTo(pos)
     }
-    fun repeatAll(){
+
+    fun repeatAll() {
         musicServiceConnection.transportControls.setRepeatMode(REPEAT_MODE_ALL)
     }
-    fun repeatAllOff(){
+
+    fun repeatAllOff() {
         musicServiceConnection.transportControls.setRepeatMode(REPEAT_MODE_NONE)
     }
-    fun getRepeatStatus():Boolean{
+
+    fun getRepeatStatus(): Boolean {
         return musicServiceConnection.playbackState.value?.state?.equals(REPEAT_MODE_ALL) == true
     }
 
 
     @SuppressLint("LogNotTimber")
-    fun playOrToggleSong(mediaItem: YTAudioDataModel, toggle: Boolean=false){
+    fun playOrToggleSong(mediaItem: YTAudioDataModel, toggle: Boolean = false) {
 
-        if(ytVideoMusicSource.songs.find {
-                it.description.mediaId==mediaItem.mediaId
-            }==null){
+        if (ytVideoMusicSource.songs.find {
+                it.description.mediaId == mediaItem.mediaId
+            } == null) {
             repository.songsData.postValue(mediaItem)
             println(repository.songsData)
             println(ytVideoMusicSource.songs.contains(mediaItem.toMetaData()))
         }
 
-        val isPrepared= playbackState.value?.isPrepared ?: false
+        val isPrepared = playbackState.value?.isPrepared ?: false
 
-        if(isPrepared && mediaItem.mediaId==curPlayingSong.value?.getString(METADATA_KEY_MEDIA_ID)){
+        if (isPrepared && mediaItem.mediaId == curPlayingSong.value?.getString(METADATA_KEY_MEDIA_ID)) {
             playbackState.value?.let {
-                when{
-                    it.isPlaying-> if(toggle) musicServiceConnection.transportControls.pause()
-                    it.isPlayEnabled-> musicServiceConnection.transportControls.play()
-                    else-> Unit
+                when {
+                    it.isPlaying -> if (toggle) musicServiceConnection.transportControls.pause()
+                    it.isPlayEnabled -> musicServiceConnection.transportControls.play()
+                    else -> Unit
                 }
             }
-        }else{
-            musicServiceConnection.transportControls.playFromMediaId(mediaItem.mediaId,null)
+        } else {
+            musicServiceConnection.transportControls.playFromMediaId(mediaItem.mediaId, null)
         }
     }
 
     override fun onCleared() {
         super.onCleared()
-        musicServiceConnection.unsubscribe(MEDIA_ROOT_ID,object : MediaBrowserCompat.SubscriptionCallback(){})
+        musicServiceConnection.unsubscribe(MEDIA_ROOT_ID,
+            object : MediaBrowserCompat.SubscriptionCallback() {})
     }
 
-    fun addSongInRecent(ytLink: String,context:Context, callback: (status: Boolean)->Unit) {
+    fun addSongInRecent(ytLink: String, context: Context, callback: (status: Boolean) -> Unit) {
 
-        repository.getSongModelWithLink(ytLink) {audioModel->
-            if(audioModel!=null){
-                viewModelScope.launch{
+        repository.getSongModelWithLink(ytLink) { audioModel ->
+            if (audioModel != null) {
+                viewModelScope.launch {
 
                     repository.insertLink(
                         YTVideoLink(
@@ -131,17 +138,18 @@ class MainViewModel @Inject constructor(
                             ytLink
                         )
                     )
-                    playOrToggleSong(audioModel,true)
+                    playOrToggleSong(audioModel, true)
                     callback(true)
                 }
-            }else{
+            } else {
                 callback(false)
-                Toast.makeText(context,"Use only Youtube links", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Use only Youtube links", Toast.LENGTH_SHORT).show()
             }
         }
     }
-    fun songLiked(ytLink:String,mediaId:String){
-        viewModelScope.launch{
+
+    fun songLiked(ytLink: String, mediaId: String) {
+        viewModelScope.launch {
             repository.insertLinkToLiked(
                 YTVideoLinkLiked(
                     mediaId,
@@ -152,8 +160,8 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun songDisLiked(ytLink:String,mediaId:String){
-        viewModelScope.launch{
+    fun songDisLiked(ytLink: String, mediaId: String) {
+        viewModelScope.launch {
             repository.deleteLiked(
                 YTVideoLinkLiked(
                     mediaId,

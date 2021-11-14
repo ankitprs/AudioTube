@@ -5,22 +5,21 @@ import android.os.Bundle
 import android.os.ResultReceiver
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import com.google.android.exoplayer2.ControlDispatcher
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import tech.apps.music.exoplayer.YTVideoMusicSource
 
 class MusicPlaybackPreparer(
     private val ytVideoMusicSource: YTVideoMusicSource,
-    private val playerPrepared: (MediaMetadataCompat?)->Unit
-): MediaSessionConnector.PlaybackPreparer {
+    private val playerPrepared: (MediaMetadataCompat?) -> Unit
+) : MediaSessionConnector.PlaybackPreparer {
+
     override fun onCommand(
         player: Player,
-        controlDispatcher: ControlDispatcher,
         command: String,
         extras: Bundle?,
         cb: ResultReceiver?
-    ): Boolean =false
+    ): Boolean = false
 
     override fun getSupportedPrepareActions(): Long {
         return PlaybackStateCompat.ACTION_PREPARE_FROM_MEDIA_ID or
@@ -31,8 +30,8 @@ class MusicPlaybackPreparer(
 
     override fun onPrepareFromMediaId(mediaId: String, playWhenReady: Boolean, extras: Bundle?) {
         ytVideoMusicSource.whenReady {
-            val itemToPlay = ytVideoMusicSource.songs.find{
-                mediaId==it.description.mediaId
+            val itemToPlay = ytVideoMusicSource.songs.find {
+                mediaId == it.description.mediaId
             }
             playerPrepared(itemToPlay)
         }

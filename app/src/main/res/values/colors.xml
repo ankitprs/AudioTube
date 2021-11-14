@@ -10,6 +10,7 @@
     <color name="dark_background">#181818</color>
     <color name="background">#212121</color>
     <color name="one_level_up">#3d3d3d</color>
-<!--    <color name="light_background">#aaaaaa</color>-->
+    <color name="light_background">#aaaaaa</color>
     <color name="red_live">#FF0000</color>
+    <color name="button_color">#0049cc</color>
 </resources>

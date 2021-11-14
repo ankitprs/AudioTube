@@ -1,4 +1,4 @@
-package tech.apps.music.ui.moreactivity
+package tech.apps.music.ui.more
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -22,31 +22,29 @@ import tech.apps.music.ui.bottomsheet.AboutFragment
 
 class MoreActivity : AppCompatActivity() {
 
-    @SuppressLint("UseCompatLoadingForDrawables")
+    @SuppressLint("UseCompatLoadingForDrawables", "ResourceAsColor")
     @DelicateCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(R.style.Theme_PlayAudio)
+        setTheme(R.style.themeWithActionBar)
         setContentView(R.layout.activity_more)
 
-        val fragment= AboutFragment()
+        supportActionBar?.title = "More"
+
+        val fragment = AboutFragment()
         val bundle = Bundle()
 
         deleteRecentSongs.setOnClickListener {
 
-            val repository=Repository(this)
+            val repository = Repository(this)
             GlobalScope.launch(Dispatchers.IO) {
                 repository.deleteAllHistory()
             }
-            Snackbar.make(it,"Deleted All the History",Snackbar.LENGTH_LONG).show()
-        }
-        imageViewSettingBack.setOnClickListener {
-            it.background=getDrawable(R.color.dark_background)
-            finish()
+            Snackbar.make(it, "Deleted All the History", Snackbar.LENGTH_LONG).show()
         }
 
         howToUse.setOnClickListener {
-            bundle.putString(ABOUT_SENDING_DATA,HOW_IT_WORKS)
+            bundle.putString(ABOUT_SENDING_DATA, HOW_IT_WORKS)
             fragment.arguments = bundle
             fragment.show(supportFragmentManager, fragment.tag)
         }
@@ -80,14 +78,14 @@ class MoreActivity : AppCompatActivity() {
         }
 
         PrivacyPolicy.setOnClickListener {
-            bundle.putString(ABOUT_SENDING_DATA,PRIVACY_POLICY)
+            bundle.putString(ABOUT_SENDING_DATA, PRIVACY_POLICY)
             fragment.arguments = bundle
 
             fragment.show(supportFragmentManager, fragment.tag)
         }
 
         about.setOnClickListener {
-            bundle.putString(ABOUT_SENDING_DATA,ABOUT)
+            bundle.putString(ABOUT_SENDING_DATA, ABOUT)
             fragment.arguments = bundle
             fragment.show(supportFragmentManager, fragment.tag)
         }

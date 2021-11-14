@@ -19,28 +19,28 @@ class AboutFragment : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view=inflater.inflate(R.layout.fragment_about, container, false)
-        val aboutValue=arguments?.getString(ABOUT_SENDING_DATA)
+        val view = inflater.inflate(R.layout.fragment_about, container, false)
+        val aboutValue = arguments?.getString(ABOUT_SENDING_DATA)
         println(aboutValue)
-        val aboutFragmentTitle=view.findViewById<TextView>(R.id.aboutFragmentTitle)
-        val aboutFragmentDescription=view.findViewById<TextView>(R.id.aboutFragmentDescription)
+        val aboutFragmentTitle = view.findViewById<TextView>(R.id.aboutFragmentTitle)
+        val aboutFragmentDescription = view.findViewById<TextView>(R.id.aboutFragmentDescription)
 
-        if(aboutValue != null){
+        if (aboutValue != null) {
 
-            when(aboutValue){
-                ABOUT->{
+            when (aboutValue) {
+                ABOUT -> {
                     aboutFragmentTitle.text = "About"
                     aboutFragmentDescription.setText(R.string.about_des)
                 }
-                PRIVACY_POLICY->{
+                PRIVACY_POLICY -> {
                     aboutFragmentTitle.text = "PRIVACY POLICY"
                     aboutFragmentDescription.setText(R.string.privacy_policy)
                 }
-                HOW_IT_WORKS->{
-                    aboutFragmentTitle.setText("How it Works")
+                HOW_IT_WORKS -> {
+                    aboutFragmentTitle.text = "How it Works"
                     aboutFragmentDescription.setText(R.string.how_it_works)
                 }
-                else->{
+                else -> {
                     aboutFragmentTitle.text = "About"
                     aboutFragmentDescription.setText(R.string.about_des)
                 }

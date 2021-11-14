@@ -9,6 +9,9 @@ interface YTVideoDao {
     suspend fun insertLink(ytVideoLink :YTVideoLink)
 
     @Delete
+    suspend fun deleteLink(ytVideoLink: YTVideoLink)
+
+    @Delete
     suspend fun deleteLiked(ytVideoLinkLiked: YTVideoLinkLiked)
 
     @Query("DELETE FROM YT_VIDEO_TABLE")

@@ -19,35 +19,38 @@ class MusicNotificationManager(
     private val context: Context,
     sessionToken: MediaSessionCompat.Token,
     notificationListener: PlayerNotificationManager.NotificationListener,
-    private val newSongCallback:()-> Unit
+    private val newSongCallback: () -> Unit
 ) {
-    private val notificationManager : PlayerNotificationManager
+
+    private val notificationManager: PlayerNotificationManager
 
     init {
 
-        val mediaController=MediaControllerCompat(context,sessionToken)
+        val mediaController = MediaControllerCompat(context, sessionToken)
 
-        notificationManager = PlayerNotificationManager.createWithNotificationChannel(
+        notificationManager = PlayerNotificationManager.Builder(
             context,
-            NOTIFICATION_CHANNEL_ID,
-            R.string.notification_channel_name,
-            R.string.notification_channel_description,
             NOTIFICATION_ID,
-            DescriptionAdapter(mediaController),
-            notificationListener
-        ).apply {
-            setSmallIcon(R.drawable.ic_play_audio)
-            setMediaSessionToken(sessionToken)
-        }
+            NOTIFICATION_CHANNEL_ID,
+            DescriptionAdapter(mediaController)
+        )
+            .setNotificationListener(notificationListener)
+            .build()
+
+        notificationManager.setSmallIcon(R.drawable.ic_play_audio)
+        notificationManager.setMediaSessionToken(sessionToken)
+//        R.string.notification_channel_name
+//        R.string.notification_channel_description
     }
 
-    fun showNotification(player: Player){
+
+    fun showNotification(player: Player) {
         notificationManager.setPlayer(player)
     }
 
     private inner class DescriptionAdapter(
-        private val mediaController:MediaControllerCompat
-    ):PlayerNotificationManager.MediaDescriptionAdapter{
+        private val mediaController: MediaControllerCompat
+    ) : PlayerNotificationManager.MediaDescriptionAdapter {
         override fun getCurrentContentTitle(player: Player): CharSequence {
             newSongCallback()
             return mediaController.metadata.description.title.toString()
@@ -68,7 +71,9 @@ class MusicNotificationManager(
             Glide.with(context)
                 .asBitmap()
                 .load(mediaController.metadata.description.iconUri)
-                .into(object: CustomTarget<Bitmap>(){
+                .centerCrop()
+                .override(1600, 900)
+                .into(object : CustomTarget<Bitmap>() {
                     override fun onResourceReady(
                         resource: Bitmap,
                         transition: Transition<in Bitmap>?

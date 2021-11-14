@@ -28,7 +28,7 @@ import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SongFragment: Fragment() {
+class SongFragment : Fragment() {
 
     @Inject
     lateinit var glide: RequestManager
@@ -36,12 +36,12 @@ class SongFragment: Fragment() {
     private lateinit var mainViewModel: MainViewModel
     private val songViewModel: SongViewModel by viewModels()
 
-    private var curPlayingSong: YTAudioDataModel? =null
+    private var curPlayingSong: YTAudioDataModel? = null
     private var playbackState: PlaybackStateCompat? = null
 
-    private var shouldUpdateSeekbar:Boolean = true
+    private var shouldUpdateSeekbar: Boolean = true
 
-    private var liked: Boolean=false
+    private var liked: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,22 +53,23 @@ class SongFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mainViewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+        mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
 
         subscribeToObserver()
 
         imageViewRepeatSongFrag.setOnClickListener {
-            mainViewModel.repeatAll = if(mainViewModel.repeatAll){
+            mainViewModel.repeatAll = if (mainViewModel.repeatAll) {
                 imageViewRepeatSongFrag.setImageResource(R.drawable.exo_icon_repeat_off)
                 mainViewModel.repeatAllOff()
                 false
-            }else{
+            } else {
                 imageViewRepeatSongFrag.setImageResource(R.drawable.exo_icon_repeat_all)
                 mainViewModel.repeatAll()
                 true
             }
         }
-        if(mainViewModel.repeatAll){
+
+        if (mainViewModel.repeatAll) {
             imageViewRepeatSongFrag.setImageResource(R.drawable.exo_icon_repeat_all)
         }
 
@@ -82,21 +83,32 @@ class SongFragment: Fragment() {
             )
             startActivity(Intent.createChooser(intent, "Share URL"))
         }
+
         imageViewLikeButton.setOnClickListener {
-            if(liked){
+            if (liked) {
                 imageViewLikeButton.setImageResource(R.drawable.ic_baseline_favorite_border_24)
                 liked = false
-                curPlayingSong?.let { it1 -> mainViewModel.songDisLiked("https://www.youtube.com/watch?v=${it1.mediaId}",it1.mediaId) }
-            }else{
+                curPlayingSong?.let { it1 ->
+                    mainViewModel.songDisLiked(
+                        "https://www.youtube.com/watch?v=${it1.mediaId}",
+                        it1.mediaId
+                    )
+                }
+            } else {
                 imageViewLikeButton.setImageResource(R.drawable.ic_baseline_favorite_24)
                 liked = true
-                curPlayingSong?.let { it1 -> mainViewModel.songLiked("https://www.youtube.com/watch?v=${it1.mediaId}",it1.mediaId) }
+                curPlayingSong?.let { it1 ->
+                    mainViewModel.songLiked(
+                        "https://www.youtube.com/watch?v=${it1.mediaId}",
+                        it1.mediaId
+                    )
+                }
             }
         }
 
         ivPlayPauseSongFragment.setOnClickListener {
-            curPlayingSong?.let{
-                mainViewModel.playOrToggleSong(it,true)
+            curPlayingSong?.let {
+                mainViewModel.playOrToggleSong(it, true)
             }
         }
 
@@ -108,9 +120,9 @@ class SongFragment: Fragment() {
             mainViewModel.skipToPreviousSong()
         }
 
-        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                if(fromUser){
+                if (fromUser) {
                     setCurPLayerTimeToTextView(progress.toLong())
                 }
             }
@@ -120,88 +132,100 @@ class SongFragment: Fragment() {
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                seekBar?.let{
+                seekBar?.let {
                     mainViewModel.seekTo(it.progress.toLong())
                     shouldUpdateSeekbar = true
                 }
             }
 
         })
+
         exitButtonSongFragment.setOnClickListener {
             findNavController().navigateUp()
         }
-        mainViewModel.getLikedList.observe(viewLifecycleOwner){
-            liked = it.find { songLiked->
+
+        mainViewModel.getLikedList.observe(viewLifecycleOwner) {
+            liked = it.find { songLiked ->
                 songLiked.videoId == curPlayingSong?.mediaId
             } != null
 
-            if(liked){
+            if (liked) {
                 imageViewLikeButton.setImageResource(R.drawable.ic_baseline_favorite_24)
-            }else{
+            } else {
                 imageViewLikeButton.setImageResource(R.drawable.ic_baseline_favorite_border_24)
             }
         }
-        liked = mainViewModel.getLikedList.value?.find { songLiked->
-            songLiked.videoId == curPlayingSong?.mediaId
-        } != null
 
-        if(liked){
+        mainViewModel.getLikedList.observeForever {
+            liked = it.find { songLiked ->
+                songLiked.videoId == curPlayingSong?.mediaId
+            } != null
+            likeButtonManager()
+        }
+        likeButtonManager()
+    }
+
+    private fun likeButtonManager() {
+        if (liked) {
             imageViewLikeButton.setImageResource(R.drawable.ic_baseline_favorite_24)
-        }else{
+        } else {
             imageViewLikeButton.setImageResource(R.drawable.ic_baseline_favorite_border_24)
         }
     }
 
-    private fun updateTitleAndSongImage(song:YTAudioDataModel){
+    private fun updateTitleAndSongImage(song: YTAudioDataModel) {
         glide.load(song.thumbnailUrl).into(songThumbnailSongFragment)
-        songTitleSongFragment.text=song.title
-        songAuthorSongFragment.text=song.author
+        songTitleSongFragment.text = song.title
+        songAuthorSongFragment.text = song.author
     }
 
-    @SuppressLint("SimpleDateFormat")
-    private fun subscribeToObserver(){
-        mainViewModel.mediaItems.observe(viewLifecycleOwner){
-            it?.let { result->
-                when(result.status){
-                    Status.SUCCESS ->{
-                        result.data?.let{songs->
-                            if(curPlayingSong==null&& songs.isNotEmpty()){
+    @SuppressLint("SetTextI18n")
+    private fun subscribeToObserver() {
+        mainViewModel.mediaItems.observe(viewLifecycleOwner) {
+            it?.let { result ->
+                when (result.status) {
+                    Status.SUCCESS -> {
+                        result.data?.let { songs ->
+                            if (curPlayingSong == null && songs.isNotEmpty()) {
                                 curPlayingSong = songs[0]
                                 updateTitleAndSongImage(songs[0])
                             }
                         }
                     }
-                    else-> Unit
+                    else -> Unit
                 }
             }
         }
-        mainViewModel.curPlayingSong.observe(viewLifecycleOwner){
-            if(it==null) return@observe
+        mainViewModel.curPlayingSong.observe(viewLifecycleOwner) {
+            if (it == null) return@observe
 
-            curPlayingSong=it.toSong()
+            curPlayingSong = it.toSong()
             updateTitleAndSongImage(curPlayingSong!!)
         }
-        mainViewModel.playbackState.observe(viewLifecycleOwner){
-            playbackState=it
+        mainViewModel.playbackState.observe(viewLifecycleOwner) {
+            playbackState = it
             ivPlayPauseSongFragmentImageView.setImageResource(
-                if(playbackState?.isPlaying==true) R.drawable.exo_icon_pause else R.drawable.exo_icon_play
+                if (playbackState?.isPlaying == true) R.drawable.exo_icon_pause else R.drawable.exo_icon_play
             )
-            seekBar.progress=it?.position?.toInt()?:0
+            seekBar.progress = it?.position?.toInt() ?: 0
         }
-        songViewModel.curPlayerPosition.observe(viewLifecycleOwner){
-            if(shouldUpdateSeekbar){
+        songViewModel.curPlayerPosition.observe(viewLifecycleOwner) {
+            if (shouldUpdateSeekbar) {
                 seekBar.progress = it.toInt()
                 setCurPLayerTimeToTextView(it)
             }
         }
-        songViewModel.curSongDuration.observe(viewLifecycleOwner){
-            seekBar.max=it.toInt()
-            tvSongDuration.text= TimeFunction.songDuration(it/1000L)
+        songViewModel.curSongDuration.observe(viewLifecycleOwner) {
+            seekBar.max = it.toInt()
+            if (it > 0) {
+                tvSongDuration.text = TimeFunction.songDuration(it / 1000L)
+            } else {
+                tvSongDuration.text = "00:00"
+            }
         }
     }
 
-    @SuppressLint("SimpleDateFormat")
     private fun setCurPLayerTimeToTextView(ms: Long) {
-        tvCurTime.text= TimeFunction.songDuration(ms/1000L)
+        tvCurTime.text = TimeFunction.songDuration(ms / 1000L)
     }
 }
