@@ -31,16 +31,17 @@ class MusicNotificationManager(
         notificationManager = PlayerNotificationManager.Builder(
             context,
             NOTIFICATION_ID,
-            NOTIFICATION_CHANNEL_ID,
-            DescriptionAdapter(mediaController)
+            NOTIFICATION_CHANNEL_ID
         )
+            .setMediaDescriptionAdapter(DescriptionAdapter(mediaController))
             .setNotificationListener(notificationListener)
+            .setSmallIconResourceId(R.drawable.ic_play_audio)
+            .setChannelDescriptionResourceId(R.string.notification_channel_description)
+            .setChannelNameResourceId(R.string.notification_channel_name)
             .build()
 
-        notificationManager.setSmallIcon(R.drawable.ic_play_audio)
+//        notificationManager.setSmallIcon(R.drawable.ic_play_audio)
         notificationManager.setMediaSessionToken(sessionToken)
-//        R.string.notification_channel_name
-//        R.string.notification_channel_description
     }
 
 
@@ -68,6 +69,7 @@ class MusicNotificationManager(
             player: Player,
             callback: PlayerNotificationManager.BitmapCallback
         ): Bitmap? {
+            var thumbnail: Bitmap? =null
             Glide.with(context)
                 .asBitmap()
                 .load(mediaController.metadata.description.iconUri)
@@ -79,13 +81,14 @@ class MusicNotificationManager(
                         transition: Transition<in Bitmap>?
                     ) {
                         callback.onBitmap(resource)
+                        thumbnail = resource
                     }
 
                     override fun onLoadCleared(placeholder: Drawable?) {
                     }
 
                 })
-            return null
+            return thumbnail
         }
     }
 

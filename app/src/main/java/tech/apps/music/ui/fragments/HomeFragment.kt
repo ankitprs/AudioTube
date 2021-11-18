@@ -189,6 +189,9 @@ class HomeFragment : Fragment() {
         }
         viewModel.getRecentList.observe(viewLifecycleOwner) {
             recentAudioAdapter.songs = it
+            if(it.size > 5){
+                viewModel.deleteRecentlyAdded5More(it[5].time)
+            }
             recentTextTextView.isVisible = !it.isNullOrEmpty()
         }
     }

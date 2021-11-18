@@ -17,12 +17,10 @@ class Repository
     val database: YTVideoDatabase = YTVideoDatabase.getDatabase(context)
 
     suspend fun insertLink(ytVideoLink: YTVideoLink) {
-//        if(getAllSongs().size > 5){
-//            database.getYTVideoDao().deleteLink(getAllSongs()[4])
-//            database.getYTVideoDao().insertLink(ytVideoLink)
-//        }else{
-            database.getYTVideoDao().insertLink(ytVideoLink)
-//        }
+        database.getYTVideoDao().insertLink(ytVideoLink)
+    }
+    suspend fun deleteRecentlyAdded5More(time5More: Long){
+        database.getYTVideoDao().deleteRecentlyAdded5More(time5More)
     }
 
     suspend fun insertLinkToLiked(ytVideoLinkLiked: YTVideoLinkLiked) {
@@ -39,7 +37,7 @@ class Repository
 
     val songsData: MutableLiveData<YTAudioDataModel> = MutableLiveData<YTAudioDataModel>()
 
-    private fun getAllSongs(): List<YTVideoLink> = database.getYTVideoDao().getAllSongs()
+    fun getAllSongs(): List<YTVideoLink> = database.getYTVideoDao().getAllSongs()
 
     fun getAllSongsLiveData(): LiveData<List<YTVideoLink>> =
         database.getYTVideoDao().getAllSongsLiveData()

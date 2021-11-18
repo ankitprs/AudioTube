@@ -100,8 +100,6 @@ class MainViewModel @Inject constructor(
                 it.description.mediaId == mediaItem.mediaId
             } == null) {
             repository.songsData.postValue(mediaItem)
-            println(repository.songsData)
-            println(ytVideoMusicSource.songs.contains(mediaItem.toMetaData()))
         }
 
         val isPrepared = playbackState.value?.isPrepared ?: false
@@ -171,4 +169,11 @@ class MainViewModel @Inject constructor(
             )
         }
     }
+
+    fun deleteRecentlyAdded5More(time5More: Long){
+        viewModelScope.launch {
+            repository.deleteRecentlyAdded5More(time5More)
+        }
+    }
+
 }

@@ -6,10 +6,10 @@ import androidx.room.*
 @Dao
 interface YTVideoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertLink(ytVideoLink :YTVideoLink)
+    suspend fun insertLink(ytVideoLink: YTVideoLink)
 
-    @Delete
-    suspend fun deleteLink(ytVideoLink: YTVideoLink)
+    @Query("DELETE FROM YT_VIDEO_TABLE WHERE Timing <= :time5More")
+    suspend fun deleteRecentlyAdded5More(time5More: Long)
 
     @Delete
     suspend fun deleteLiked(ytVideoLinkLiked: YTVideoLinkLiked)

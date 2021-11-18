@@ -17,12 +17,11 @@ import tech.apps.music.R
 import tech.apps.music.exoplayer.isPlaying
 import tech.apps.music.exoplayer.toSong
 import tech.apps.music.model.YTAudioDataModel
+import tech.apps.music.others.Constants
 import tech.apps.music.others.Status
+import tech.apps.music.ui.educate.EducateActivity
 import tech.apps.music.ui.viewmodels.MainViewModel
 import javax.inject.Inject
-
-
-
 
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
@@ -42,6 +41,14 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setTheme(R.style.Theme_PlayAudio)
         setContentView(R.layout.home_activity)
+
+        val sharedPref = getSharedPreferences(Constants.SHARED_PREF_APP_INTRO, MODE_PRIVATE)
+        val welcomePageShowed = sharedPref.getBoolean(Constants.WELCOME_PAGE_SHOWED_STATUS, false)
+
+        if(!welcomePageShowed){
+            startActivity(Intent(this, EducateActivity::class.java))
+            finish()
+        }
 
         materialCardViewHome.setOnClickListener {
             navHostFragment.findNavController().navigate(
@@ -127,8 +134,6 @@ class HomeActivity : AppCompatActivity() {
     private fun handleSendText(intent: Intent) {
         intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
 
-            println(it)
-
             val bundle = Bundle()
             bundle.putString("SearchFORM_DIRECT_LINK", it)
             firebaseAnalytics.logEvent("MusicRequestFROM_SEARCH_PAGE", bundle)
@@ -162,13 +167,8 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        this.intent = intent
-    }
-
     override fun onStop() {
         super.onStop()
-        intent.putExtra(Intent.EXTRA_TEXT,"")
+        intent.data = null
     }
 }

@@ -84,28 +84,6 @@ class SongFragment : Fragment() {
             startActivity(Intent.createChooser(intent, "Share URL"))
         }
 
-        imageViewLikeButton.setOnClickListener {
-            if (liked) {
-                imageViewLikeButton.setImageResource(R.drawable.ic_baseline_favorite_border_24)
-                liked = false
-                curPlayingSong?.let { it1 ->
-                    mainViewModel.songDisLiked(
-                        "https://www.youtube.com/watch?v=${it1.mediaId}",
-                        it1.mediaId
-                    )
-                }
-            } else {
-                imageViewLikeButton.setImageResource(R.drawable.ic_baseline_favorite_24)
-                liked = true
-                curPlayingSong?.let { it1 ->
-                    mainViewModel.songLiked(
-                        "https://www.youtube.com/watch?v=${it1.mediaId}",
-                        it1.mediaId
-                    )
-                }
-            }
-        }
-
         ivPlayPauseSongFragment.setOnClickListener {
             curPlayingSong?.let {
                 mainViewModel.playOrToggleSong(it, true)
@@ -144,25 +122,38 @@ class SongFragment : Fragment() {
             findNavController().navigateUp()
         }
 
-        mainViewModel.getLikedList.observe(viewLifecycleOwner) {
-            liked = it.find { songLiked ->
-                songLiked.videoId == curPlayingSong?.mediaId
-            } != null
-
-            if (liked) {
-                imageViewLikeButton.setImageResource(R.drawable.ic_baseline_favorite_24)
-            } else {
-                imageViewLikeButton.setImageResource(R.drawable.ic_baseline_favorite_border_24)
-            }
+        if(curPlayingSong != null){
+            likedButtonFinder()
         }
 
-        mainViewModel.getLikedList.observeForever {
-            liked = it.find { songLiked ->
+        imageViewLikeButton.setOnClickListener {
+            if (liked) {
+                liked = false
+                curPlayingSong?.let { it1 ->
+                    mainViewModel.songDisLiked(
+                        "https://www.youtube.com/watch?v=${it1.mediaId}",
+                        it1.mediaId
+                    )
+                }
+            } else {
+                liked = true
+                curPlayingSong?.let { it1 ->
+                    mainViewModel.songLiked(
+                        "https://www.youtube.com/watch?v=${it1.mediaId}",
+                        it1.mediaId
+                    )
+                }
+            }
+            likeButtonManager()
+        }
+    }
+    private fun likedButtonFinder(){
+        mainViewModel.getLikedList.observe(viewLifecycleOwner){
+            liked =  it.find { songLiked ->
                 songLiked.videoId == curPlayingSong?.mediaId
             } != null
             likeButtonManager()
         }
-        likeButtonManager()
     }
 
     private fun likeButtonManager() {
@@ -201,6 +192,7 @@ class SongFragment : Fragment() {
 
             curPlayingSong = it.toSong()
             updateTitleAndSongImage(curPlayingSong!!)
+            likedButtonFinder()
         }
         mainViewModel.playbackState.observe(viewLifecycleOwner) {
             playbackState = it
