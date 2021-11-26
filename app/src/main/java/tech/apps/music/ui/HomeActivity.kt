@@ -1,13 +1,16 @@
 package tech.apps.music.ui
 
+import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.media.session.PlaybackStateCompat
+import android.view.Window
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.NavigationUI
 import com.bumptech.glide.RequestManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -17,9 +20,7 @@ import tech.apps.music.R
 import tech.apps.music.exoplayer.isPlaying
 import tech.apps.music.exoplayer.toSong
 import tech.apps.music.model.YTAudioDataModel
-import tech.apps.music.others.Constants
 import tech.apps.music.others.Status
-import tech.apps.music.ui.educate.EducateActivity
 import tech.apps.music.ui.viewmodels.MainViewModel
 import javax.inject.Inject
 
@@ -42,17 +43,20 @@ class HomeActivity : AppCompatActivity() {
         setTheme(R.style.Theme_PlayAudio)
         setContentView(R.layout.home_activity)
 
-        val sharedPref = getSharedPreferences(Constants.SHARED_PREF_APP_INTRO, MODE_PRIVATE)
-        val welcomePageShowed = sharedPref.getBoolean(Constants.WELCOME_PAGE_SHOWED_STATUS, false)
-
-        if(!welcomePageShowed){
-            startActivity(Intent(this, EducateActivity::class.java))
-            finish()
+        when (intent?.action) {
+            Intent.ACTION_SEND -> {
+                if ("text/plain" == intent.type) {
+                    handleSendText(intent) // Handle text being sent
+                }
+            }
+            else -> {
+                // Handle other intents, such as being started from the home screen
+            }
         }
 
         materialCardViewHome.setOnClickListener {
             navHostFragment.findNavController().navigate(
-                R.id.globalActionToSongFragment
+                R.id.action_homeFragment2_to_songFragment2
             )
         }
         subscribeToObserver()
@@ -71,26 +75,28 @@ class HomeActivity : AppCompatActivity() {
 
         curPlaying?.let { viewModel.playOrToggleSong(it) }
 
-//        vpSong.setOnClickListener {
-//            navHostFragment.findNavController().navigate(
-//                R.id.globalActionToSongFragment
-//            )
-//        }
+        val navController = navHostFragment.findNavController()
+        NavigationUI.setupWithNavController(bottom_navigation, navController)
+
         navHostFragment.findNavController().addOnDestinationChangedListener { _, destination, _ ->
             run {
                 when (destination.id) {
-                    R.id.songFragment -> showOrHideBottomBar(false)
+                    R.id.songFragment -> showOrHideBottomBar(boolean = false, isNotSong = false)
                     R.id.homeFragment -> showOrHideBottomBar(true)
+                    R.id.searchFragment -> {
+                        showOrHideBottomBar(false)
+                    }
                     else -> showOrHideBottomBar(true)
                 }
             }
         }
     }
 
-    private fun showOrHideBottomBar(boolean: Boolean) {
+    private fun showOrHideBottomBar(boolean: Boolean, isNotSong: Boolean = true) {
         ivCurSongImage.isVisible = boolean
         vpSong.isVisible = boolean
         ivPlayPause.isVisible = boolean
+        bottom_navigation.isVisible = isNotSong
     }
 
 
@@ -138,33 +144,29 @@ class HomeActivity : AppCompatActivity() {
             bundle.putString("SearchFORM_DIRECT_LINK", it)
             firebaseAnalytics.logEvent("MusicRequestFROM_SEARCH_PAGE", bundle)
 
-            progressBarHomeActivity.isVisible = true
+            val dialog = Dialog(this)
+
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog.setContentView(R.layout.dialog_card_item)
+            dialog.show()
+
             viewModel.addSongInRecent(it, this) { result ->
                 if (result) {
                     navHostFragment.findNavController().navigate(
-                        R.id.globalActionToSongFragment
+                        R.id.action_homeFragment2_to_songFragment2
                     )
-                    progressBarHomeActivity.isVisible = false
                 } else {
                     Toast.makeText(this, "Enter YT Video link & Play 🥳", Toast.LENGTH_SHORT).show()
-                    progressBarHomeActivity.isVisible = false
                 }
+                dialog.dismiss()
             }
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        when (intent?.action) {
-            Intent.ACTION_SEND -> {
-                if ("text/plain" == intent.type) {
-                    handleSendText(intent) // Handle text being sent
-                }
-            }
-            else -> {
-                // Handle other intents, such as being started from the home screen
-            }
-        }
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (this.intent != intent)
+            intent?.let { handleSendText(it) }
     }
 
     override fun onStop() {

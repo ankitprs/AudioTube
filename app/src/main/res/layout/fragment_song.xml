@@ -7,15 +7,15 @@
     android:layout_marginStart="10dp"
     android:layout_marginTop="10dp"
     android:layout_marginEnd="10dp"
-    android:layout_marginBottom="20dp"
+    android:layout_marginBottom="10dp"
     android:background="@color/background"
     android:orientation="vertical"
     tools:context=".ui.fragments.SongFragment">
 
     <ImageButton
         android:id="@+id/exitButtonSongFragment"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
         android:background="@android:color/transparent"
         android:scaleType="centerCrop"
         app:layout_constraintStart_toStartOf="parent"
@@ -37,40 +37,34 @@
         android:id="@+id/songThumbnailSongFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:scaleType="centerCrop"
         app:layout_constraintBottom_toTopOf="@+id/songTitleSongFragment"
+        app:layout_constraintDimensionRatio="H,16:9"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.18"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintDimensionRatio="H,16:9"
-        android:scaleType="centerCrop"
         app:layout_constraintTop_toBottomOf="@+id/exitButtonSongFragment"
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
         android:id="@+id/songTitleSongFragment"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginStart="10dp"
-        android:layout_marginBottom="70dp"
+        android:layout_margin="10dp"
         android:text="Video Title"
         android:textColor="@color/white"
         android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/seekBar"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintBottom_toTopOf="@+id/songAuthorSongFragment" />
 
     <TextView
         android:id="@+id/songAuthorSongFragment"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_margin="10dp"
         android:text="Channel Name"
-        android:textColor="@color/white"
+        android:textColor="@color/light_background"
         android:textSize="15sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/songTitleSongFragment" />
+        app:layout_constraintBottom_toTopOf="@+id/coordinatorLayout" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tvCurTime"
@@ -117,16 +111,30 @@
 
     <ImageButton
         android:id="@+id/ivSkipPreviousSongFragment"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
         android:layout_gravity="center"
-        android:layout_marginEnd="24dp"
+        android:layout_marginEnd="16dp"
         android:background="@android:color/transparent"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="@+id/ivPlayPauseSongFragment"
         app:layout_constraintEnd_toStartOf="@+id/ivPlayPauseSongFragment"
         app:layout_constraintTop_toTopOf="@+id/ivPlayPauseSongFragment"
         app:srcCompat="@drawable/exo_controls_previous" />
+
+    <ImageButton
+        android:id="@+id/ivForwardSongFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@color/background"
+        android:scaleType="centerCrop"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/ivPlayPauseSongFragment"
+        app:layout_constraintEnd_toStartOf="@+id/ivSkipNextSongFragment"
+        app:layout_constraintStart_toEndOf="@+id/ivPlayPauseSongFragment"
+        app:layout_constraintTop_toTopOf="@+id/ivPlayPauseSongFragment"
+        app:srcCompat="@drawable/ic_baseline_forward_10_24" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/ivPlayPauseSongFragment"
@@ -143,45 +151,200 @@
 
         <ImageView
             android:id="@+id/ivPlayPauseSongFragmentImageView"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
             android:layout_gravity="center"
-            android:src="@drawable/exo_icon_pause" />
+            android:src="@drawable/exo_icon_play" />
     </com.google.android.material.card.MaterialCardView>
 
     <ImageButton
         android:id="@+id/ivSkipNextSongFragment"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
         android:layout_gravity="center"
-        android:layout_marginStart="24dp"
+        android:layout_marginStart="16dp"
         android:background="@android:color/transparent"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="@+id/ivPlayPauseSongFragment"
-        app:layout_constraintStart_toEndOf="@+id/ivPlayPauseSongFragment"
+        app:layout_constraintStart_toEndOf="@+id/ivForwardSongFragment"
         app:layout_constraintTop_toTopOf="@+id/ivPlayPauseSongFragment"
         app:srcCompat="@drawable/exo_controls_next" />
 
-    <ImageView
-        android:id="@+id/imageViewLikeButton"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="24dp"
-        android:src="@drawable/ic_baseline_favorite_border_24"
-        android:background="@color/background"
-        app:layout_constraintBottom_toTopOf="@+id/seekBar"
-        app:layout_constraintEnd_toEndOf="parent" />
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinatorLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
-    <ImageView
-        android:id="@+id/imageViewRepeatSongFrag"
+        <ImageView
+            android:id="@+id/imageViewLikeButton"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_gravity="end"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            android:background="@color/background"
+            android:src="@drawable/ic_baseline_favorite_border_24" />
+
+        <ImageView
+            android:id="@+id/imageViewRepeatSongFrag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:src="@drawable/exo_icon_repeat_off"
+            android:visibility="gone" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/materialCardViewDisVisible"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="10dp"
+            app:cardBackgroundColor="@color/one_level_up"
+            app:cardCornerRadius="15dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/materialCardView10"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/speedControllerTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="1.0"
+                android:textSize="18sp" />
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/seekBar">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/materialCardView10"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            app:cardBackgroundColor="@color/one_level_up"
+            app:cardCornerRadius="15dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/materialCardView125"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="1.0"
+                android:textSize="18sp" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/materialCardView175"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            app:cardBackgroundColor="@color/one_level_up"
+            app:cardCornerRadius="15dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/materialCardView20"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/materialCardView15"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="1.75"
+                android:textSize="18sp" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/materialCardView125"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            app:cardBackgroundColor="@color/one_level_up"
+            app:cardCornerRadius="15dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/materialCardView15"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/materialCardView10"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="1.25"
+                android:textSize="18sp" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/materialCardView15"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            app:cardBackgroundColor="@color/one_level_up"
+            app:cardCornerRadius="15dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/materialCardView175"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/materialCardView125"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="1.5"
+                android:textSize="18sp" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/materialCardView20"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            app:cardBackgroundColor="@color/one_level_up"
+            app:cardCornerRadius="15dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/materialCardView175"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="2.0"
+                android:textSize="18sp" />
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ImageButton
+        android:id="@+id/ivPreviousReplaySongFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/exo_icon_repeat_off"
-        app:layout_constraintBottom_toBottomOf="@+id/ivSkipNextSongFragment"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/ivSkipNextSongFragment"
-        app:layout_constraintTop_toTopOf="@+id/ivSkipNextSongFragment"
-        android:visibility="gone"/>
+        android:layout_gravity="center"
+        android:background="@color/background"
+        android:scaleType="centerCrop"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/ivPlayPauseSongFragment"
+        app:layout_constraintEnd_toStartOf="@+id/ivPlayPauseSongFragment"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/ivSkipPreviousSongFragment"
+        app:layout_constraintTop_toTopOf="@+id/ivPlayPauseSongFragment"
+        app:srcCompat="@drawable/ic_baseline_replay_10_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

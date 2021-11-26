@@ -1,13 +1,18 @@
 package tech.apps.music.ui.fragments
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.media.session.PlaybackStateCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.widget.SeekBar
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -20,6 +25,7 @@ import tech.apps.music.R
 import tech.apps.music.exoplayer.isPlaying
 import tech.apps.music.exoplayer.toSong
 import tech.apps.music.model.YTAudioDataModel
+import tech.apps.music.others.Constants
 import tech.apps.music.others.Status
 import tech.apps.music.ui.viewmodels.MainViewModel
 import tech.apps.music.ui.viewmodels.SongViewModel
@@ -43,6 +49,8 @@ class SongFragment : Fragment() {
 
     private var liked: Boolean = false
 
+    private var playbackSpeed: Float = 1f
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -56,6 +64,23 @@ class SongFragment : Fragment() {
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
 
         subscribeToObserver()
+        val videoId = arguments?.getString(Constants.SEARCH_FRAGMENT_VIDEO_ID)
+
+        if (videoId != null) {
+            val videoLink = "https://www.youtube.com/watch?v=$videoId"
+            val dialog = Dialog(requireActivity())
+
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog.setContentView(R.layout.dialog_card_item)
+            dialog.show()
+
+            mainViewModel.addSongInRecent(videoLink, requireActivity()) {
+                if (!it) {
+                    Toast.makeText(activity, "Try Again Later", Toast.LENGTH_LONG).show()
+                }
+                dialog.dismiss()
+            }
+        }
 
         imageViewRepeatSongFrag.setOnClickListener {
             mainViewModel.repeatAll = if (mainViewModel.repeatAll) {
@@ -122,7 +147,7 @@ class SongFragment : Fragment() {
             findNavController().navigateUp()
         }
 
-        if(curPlayingSong != null){
+        if (curPlayingSong != null) {
             likedButtonFinder()
         }
 
@@ -146,10 +171,49 @@ class SongFragment : Fragment() {
             }
             likeButtonManager()
         }
+        setPlaybackSpeed()
+        materialCardViewDisVisible.setOnClickListener {
+            constraintLayout.isVisible = !constraintLayout.isVisible
+        }
+        materialCardView10.setOnClickListener {
+            setPlaybackSpeed(1f, "1.0")
+        }
+        materialCardView125.setOnClickListener {
+            setPlaybackSpeed(1.25f, "1.25")
+        }
+        materialCardView15.setOnClickListener {
+            setPlaybackSpeed(1.5f, "1.5")
+        }
+        materialCardView175.setOnClickListener {
+            setPlaybackSpeed(1.75f, "1.75")
+        }
+        materialCardView20.setOnClickListener {
+            setPlaybackSpeed(2f, "2.0")
+        }
     }
-    private fun likedButtonFinder(){
-        mainViewModel.getLikedList.observe(viewLifecycleOwner){
-            liked =  it.find { songLiked ->
+
+    private fun setPlaybackSpeed(playSpeed: Float = 1f, playSpeedString: String = "1.0") {
+
+        val sharedPref = requireActivity().getSharedPreferences(
+            Constants.SHARED_PREF_PLAYBACK_SPEED,
+            AppCompatActivity.MODE_PRIVATE
+        )
+        playbackSpeed = sharedPref.getFloat(Constants.SAVE_PLAYBACK_SPEED, 1f)
+
+        if (playbackSpeed != playSpeed) {
+            playbackSpeed = playSpeed
+            val sharedPrefEditor = sharedPref.edit()
+            sharedPrefEditor.putFloat(Constants.SAVE_PLAYBACK_SPEED, playbackSpeed)
+            sharedPrefEditor.apply()
+        }
+        speedControllerTextView.text = playSpeedString
+        constraintLayout.isVisible = false
+        mainViewModel.setPlaybackSpeed(playSpeed)
+    }
+
+    private fun likedButtonFinder() {
+        mainViewModel.getLikedList.observe(viewLifecycleOwner) {
+            liked = it.find { songLiked ->
                 songLiked.videoId == curPlayingSong?.mediaId
             } != null
             likeButtonManager()

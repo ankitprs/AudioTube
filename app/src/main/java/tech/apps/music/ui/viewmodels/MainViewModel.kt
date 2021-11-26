@@ -92,6 +92,10 @@ class MainViewModel @Inject constructor(
         return musicServiceConnection.playbackState.value?.state?.equals(REPEAT_MODE_ALL) == true
     }
 
+    fun setPlaybackSpeed(speed :Float) {
+        musicServiceConnection.transportControls.setPlaybackSpeed(2f)
+    }
+
 
     @SuppressLint("LogNotTimber")
     fun playOrToggleSong(mediaItem: YTAudioDataModel, toggle: Boolean = false) {
@@ -141,7 +145,7 @@ class MainViewModel @Inject constructor(
                 }
             } else {
                 callback(false)
-                Toast.makeText(context, "Use only Youtube links", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "This video can't play Try Somethings else", Toast.LENGTH_LONG).show()
             }
         }
     }

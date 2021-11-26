@@ -16,9 +16,6 @@
         android:theme="@style/SplashScreen"
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup">
-        <activity
-            android:name=".ui.educate.EducateActivity"
-            android:exported="false"/>
 
         <activity
             android:name=".ui.more.MoreActivity"
@@ -56,6 +53,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <provider android:name=".SearchSuggestionProvider"
+            android:authorities="tech.apps.music.SearchSuggestionProvider" />
     </application>
 
 </manifest>

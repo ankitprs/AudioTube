@@ -46,7 +46,7 @@ object YTVideoExtractor {
                             vMeta.title,
                             vMeta.author,
                             audioLink,
-                            vMeta.hqImageUrl,
+                            vMeta.mqImageUrl,
                             vMeta.videoLength
                         )
                         val bundle = Bundle()
@@ -64,5 +64,8 @@ object YTVideoExtractor {
                 }
             }
         obj.extract(ytLink)
+    }
+    fun clearCache(){
+        SongsCache.SongsMap.clear()
     }
 }

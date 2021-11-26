@@ -3,6 +3,7 @@ package tech.apps.music.exoplayer.callbacks
 import android.widget.Toast
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
+import tech.apps.music.database.network.YTVideoExtractor
 import tech.apps.music.exoplayer.MusicService
 
 class MusicPlayerEventListener(
@@ -23,6 +24,8 @@ class MusicPlayerEventListener(
 
     override fun onPlayerError(error: PlaybackException) {
         super.onPlayerError(error)
-        Toast.makeText(musicService, "An unknown error occurred", Toast.LENGTH_LONG).show()
+        Toast.makeText(musicService, "Please... Retry Again", Toast.LENGTH_LONG).show()
+        YTVideoExtractor.clearCache()
+
     }
 }

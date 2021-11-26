@@ -4,11 +4,13 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../../layout/custom_preview.xml" value="0.1703125" />
+        <entry key="../../../.gradle/caches/transforms-3/c95c9085707817496f300b1bbaea696e/transformed/jetified-exoplayer-ui-2.16.0/res/drawable-anydpi-v21/exo_icon_repeat_off.xml" value="0.20592105263157895" />
         <entry key="../../../.gradle/caches/transforms-3/f4923f3994dada6fbc07bcbba3ef1a1c/transformed/jetified-exoplayer-ui-2.11.8/res/drawable-anydpi-v21/exo_icon_repeat_all.xml" value="0.223828125" />
         <entry key="../../../.gradle/caches/transforms-3/f93c71473255be934f5f8d39dc63d9bc/transformed/jetified-exoplayer-ui-2.16.0/res/drawable-anydpi-v21/exo_icon_previous.xml" value="0.20592105263157895" />
         <entry key="../../../Library/Android/sdk/platforms/android-31/data/res/layout/two_line_list_item.xml" value="0.17828947368421053" />
         <entry key="app/src/main/res/drawable/bottom_curved_background.xml" value="0.19358108108108107" />
         <entry key="app/src/main/res/drawable/bottom_sheet_background.xml" value="0.2652777777777778" />
+        <entry key="app/src/main/res/drawable/explore_list_item.xml" value="0.321025641025641" />
         <entry key="app/src/main/res/drawable/ic_audio_tube_logo.xml" value="0.18664495114006516" />
         <entry key="app/src/main/res/drawable/ic_baseline_image_24.xml" value="0.26164383561643834" />
         <entry key="app/src/main/res/drawable/ic_baseline_keyboard_arrow_down_24.xml" value="0.18848684210526315" />
@@ -19,29 +21,40 @@
         <entry key="app/src/main/res/drawable/ic_play_audio.xml" value="0.18664495114006516" />
         <entry key="app/src/main/res/drawable/ic_search_black_24dp.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/icon_repeat_all_selected.xml" value="0.223828125" />
+        <entry key="app/src/main/res/drawable/liked_null.xml" value="0.2984375" />
+        <entry key="app/src/main/res/drawable/recently_added_null.xml" value="0.2984375" />
         <entry key="app/src/main/res/drawable/splash_screen_image.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_direct_link.xml" value="0.14617486338797814" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_more.xml" value="0.25" />
         <entry key="app/src/main/res/layout/audio_fragment.xml" value="0.165" />
         <entry key="app/src/main/res/layout/boom_sheet_background.xml" value="0.25092592592592594" />
+        <entry key="app/src/main/res/layout/dialog_card_item.xml" value="0.3592592592592593" />
         <entry key="app/src/main/res/layout/educate_activity.xml" value="0.165" />
         <entry key="app/src/main/res/layout/educate_first_fragment.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/explore_list_item.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_abour.xml" value="0.25092592592592594" />
         <entry key="app/src/main/res/layout/fragment_about.xml" value="0.165" />
         <entry key="app/src/main/res/layout/fragment_educate_second.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_educate_third.xml" value="0.25" />
-        <entry key="app/src/main/res/layout/fragment_song.xml" value="0.25" />
-        <entry key="app/src/main/res/layout/home_activity.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/main_fragment.xml" value="0.36049382716049383" />
+        <entry key="app/src/main/res/layout/fragment_song.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/home_activity.xml" value="0.23512496932241897" />
+        <entry key="app/src/main/res/layout/library_fragment.xml" value="0.375" />
+        <entry key="app/src/main/res/layout/main_fragment.xml" value="0.335" />
         <entry key="app/src/main/res/layout/music_player_ui.xml" value="0.17828947368421053" />
+        <entry key="app/src/main/res/layout/search_fragment.xml" value="0.165" />
         <entry key="app/src/main/res/layout/search_result_fragment.xml" value="0.17828947368421053" />
+        <entry key="app/src/main/res/layout/search_result_recom_list_item.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/searchable.xml" value="0.1" />
         <entry key="app/src/main/res/layout/swipe_item.xml" value="0.102880658436214" />
         <entry key="app/src/main/res/layout/switch_item.xml" value="0.25092592592592594" />
-        <entry key="app/src/main/res/layout/yt_video_card_item.xml" value="0.25" />
-        <entry key="app/src/main/res/menu/home_menu.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/yt_video_card_item.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/yt_video_card_view_full.xml" value="0.16393442622950818" />
+        <entry key="app/src/main/res/menu/home_bottom_nav_menu.xml" value="0.17828947368421053" />
+        <entry key="app/src/main/res/menu/home_menu.xml" value="0.1" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.28584474885844746" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.1" />
+        <entry key="app/src/main/res/xml/searchable.xml" value="0.1" />
       </map>
     </option>
   </component>

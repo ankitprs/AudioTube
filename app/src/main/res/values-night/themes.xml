@@ -16,6 +16,10 @@
         <item name="popupMenuBackground">@color/background</item>
 
         <item name="actionBarStyle">@style/MyActionBar</item>
+
+        <item name="android:editTextColor">@android:color/white</item>
+        <item name="android:textColorHint">@color/grey</item>
+
     </style>
 
     <style name="SplashScreen" parent="Theme.PlayAudio">

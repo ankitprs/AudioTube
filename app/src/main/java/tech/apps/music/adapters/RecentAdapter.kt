@@ -3,6 +3,7 @@ package tech.apps.music.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -58,6 +59,16 @@ class RecentAdapter @Inject constructor(
     }
 
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
+
+        if (songs[position].time == 0L) {
+
+            holder.itemView.thumbnailImageTYVideo.setImageResource(R.drawable.recently_added_null)
+
+            holder.itemView.durationTYVideo.isVisible = false
+            holder.itemView.titleTYVideo.isVisible = false
+            holder.itemView.channelTYVideo.isVisible = false
+            return
+        }
 
         repository.getSongModelWithLink(songs[position].link){ song->
             if(song!=null){

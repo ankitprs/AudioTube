@@ -14,4 +14,11 @@ object Constants {
 
     const val WELCOME_PAGE_SHOWED_STATUS = "welcomePageShowedStatus"
     const val SHARED_PREF_APP_INTRO = "sharedPreferAppIntro"
+
+    const val SAVE_PLAYBACK_SPEED = "savePlaybackSpeed"
+    const val SHARED_PREF_PLAYBACK_SPEED = "sharedPreferPlaybackSpeed"
+
+    //bundle KeyWords
+    const val PASS_EXPLORE_KEYWORDS = "passExploreKeywords"
+    const val SEARCH_FRAGMENT_VIDEO_ID = "searchFragmentVideoID"
 }
