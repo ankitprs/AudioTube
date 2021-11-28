@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.view.Window
 import android.widget.SeekBar
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -80,22 +79,6 @@ class SongFragment : Fragment() {
                 }
                 dialog.dismiss()
             }
-        }
-
-        imageViewRepeatSongFrag.setOnClickListener {
-            mainViewModel.repeatAll = if (mainViewModel.repeatAll) {
-                imageViewRepeatSongFrag.setImageResource(R.drawable.exo_icon_repeat_off)
-                mainViewModel.repeatAllOff()
-                false
-            } else {
-                imageViewRepeatSongFrag.setImageResource(R.drawable.exo_icon_repeat_all)
-                mainViewModel.repeatAll()
-                true
-            }
-        }
-
-        if (mainViewModel.repeatAll) {
-            imageViewRepeatSongFrag.setImageResource(R.drawable.exo_icon_repeat_all)
         }
 
         shareButtonSongFragment.setOnClickListener {
@@ -194,18 +177,21 @@ class SongFragment : Fragment() {
 
     private fun setPlaybackSpeed(playSpeed: Float = 1f, playSpeedString: String = "1.0") {
 
-        val sharedPref = requireActivity().getSharedPreferences(
-            Constants.SHARED_PREF_PLAYBACK_SPEED,
-            AppCompatActivity.MODE_PRIVATE
-        )
-        playbackSpeed = sharedPref.getFloat(Constants.SAVE_PLAYBACK_SPEED, 1f)
-
-        if (playbackSpeed != playSpeed) {
-            playbackSpeed = playSpeed
-            val sharedPrefEditor = sharedPref.edit()
-            sharedPrefEditor.putFloat(Constants.SAVE_PLAYBACK_SPEED, playbackSpeed)
-            sharedPrefEditor.apply()
-        }
+//        val sharedPref = requireActivity().getSharedPreferences(
+//            Constants.SHARED_PREF_PLAYBACK_SPEED,
+//            AppCompatActivity.MODE_PRIVATE
+//        )
+//        playbackSpeed = sharedPref.getFloat(Constants.SAVE_PLAYBACK_SPEED, 1f)
+//
+//        print(playbackSpeed)
+//
+//        if (playbackSpeed != playSpeed) {
+//            playbackSpeed = playSpeed
+//            val sharedPrefEditor = sharedPref.edit()
+//            sharedPrefEditor.putFloat(Constants.SAVE_PLAYBACK_SPEED, playbackSpeed)
+//            sharedPrefEditor.apply()
+//        }
+        Toast.makeText(activity,"playSpeed",Toast.LENGTH_LONG).show()
         speedControllerTextView.text = playSpeedString
         constraintLayout.isVisible = false
         mainViewModel.setPlaybackSpeed(playSpeed)

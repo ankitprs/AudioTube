@@ -8,8 +8,9 @@ import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import androidx.media.MediaBrowserServiceCompat
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
@@ -33,7 +34,7 @@ class MusicService : MediaBrowserServiceCompat() {
     lateinit var dataSourceFormat: DefaultDataSourceFactory
 
     @Inject
-    lateinit var exoPlayer: SimpleExoPlayer
+    lateinit var exoPlayer: ExoPlayer
 
     @Inject
     lateinit var ytVideoMusicSource: YTVideoMusicSource
@@ -156,6 +157,10 @@ class MusicService : MediaBrowserServiceCompat() {
                 result.detach()
             }
         }
+    }
+    fun playbackSpeedChanger(speed: Float){
+        val playback = PlaybackParameters(speed)
+        exoPlayer.playbackParameters = playback
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {

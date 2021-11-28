@@ -2,12 +2,10 @@ package tech.apps.music.database.network
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Bundle
 import android.util.SparseArray
 import at.huber.youtubeExtractor.VideoMeta
 import at.huber.youtubeExtractor.YouTubeExtractor
 import at.huber.youtubeExtractor.YtFile
-import com.google.firebase.analytics.FirebaseAnalytics
 import tech.apps.music.model.YTAudioDataModel
 
 object YTVideoExtractor {
@@ -17,7 +15,6 @@ object YTVideoExtractor {
         ytLink: String,
         callback: (ytAudioDataModel: YTAudioDataModel?) -> Unit
     ) {
-        val firebaseAnalytics = FirebaseAnalytics.getInstance(context)
 
         val cacheSong = SongsCache.SongsMap[ytLink]
         val currentTiming = System.currentTimeMillis()
@@ -49,9 +46,6 @@ object YTVideoExtractor {
                             vMeta.mqImageUrl,
                             vMeta.videoLength
                         )
-                        val bundle = Bundle()
-                        bundle.putString("YTVideoLink", ytLink)
-                        firebaseAnalytics.logEvent("MusicRequest", bundle)
                         callback(song)
                         val songCache = SongsCacheModel(System.currentTimeMillis(), song)
                         if (cacheSong == null) {

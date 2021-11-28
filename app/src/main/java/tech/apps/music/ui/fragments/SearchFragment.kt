@@ -17,6 +17,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.search_fragment.*
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -90,6 +92,10 @@ class SearchFragment : Fragment() {
                     query?.let {
                         searchQuery(it)
                         searchButtonViewSearchFragment.clearFocus()
+
+                        val bundle = Bundle()
+                        bundle.putString("Searched_Query", it)
+                        Firebase.analytics.logEvent("Search_Box_Event",bundle)
                     }
                     return true
                 }

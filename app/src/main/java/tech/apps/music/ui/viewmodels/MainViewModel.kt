@@ -1,16 +1,16 @@
 package tech.apps.music.ui.viewmodels
 
-import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat.METADATA_KEY_MEDIA_ID
-import android.support.v4.media.session.PlaybackStateCompat.REPEAT_MODE_ALL
-import android.support.v4.media.session.PlaybackStateCompat.REPEAT_MODE_NONE
 import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import tech.apps.music.database.Repository
@@ -40,9 +40,6 @@ class MainViewModel @Inject constructor(
     val networkError = musicServiceConnection.networkError
     val curPlayingSong = musicServiceConnection.curPlayingSong
     val playbackState = musicServiceConnection.playbackState
-
-    var repeatAll = false
-
 
     init {
         _mediaItems.postValue(Resource.loading(null))
@@ -80,24 +77,11 @@ class MainViewModel @Inject constructor(
         musicServiceConnection.transportControls.seekTo(pos)
     }
 
-    fun repeatAll() {
-        musicServiceConnection.transportControls.setRepeatMode(REPEAT_MODE_ALL)
-    }
-
-    fun repeatAllOff() {
-        musicServiceConnection.transportControls.setRepeatMode(REPEAT_MODE_NONE)
-    }
-
-    fun getRepeatStatus(): Boolean {
-        return musicServiceConnection.playbackState.value?.state?.equals(REPEAT_MODE_ALL) == true
-    }
-
-    fun setPlaybackSpeed(speed :Float) {
-        musicServiceConnection.transportControls.setPlaybackSpeed(2f)
+    fun setPlaybackSpeed(speed: Float) {
+        musicServiceConnection.transportControls.setPlaybackSpeed(speed)
     }
 
 
-    @SuppressLint("LogNotTimber")
     fun playOrToggleSong(mediaItem: YTAudioDataModel, toggle: Boolean = false) {
 
         if (ytVideoMusicSource.songs.find {
@@ -130,6 +114,17 @@ class MainViewModel @Inject constructor(
     fun addSongInRecent(ytLink: String, context: Context, callback: (status: Boolean) -> Unit) {
 
         repository.getSongModelWithLink(ytLink) { audioModel ->
+
+            val bundle = Bundle()
+            bundle.putString("Video_Thumbnail", audioModel?.thumbnailUrl)
+            bundle.putString("Video_Title", audioModel?.title)
+            bundle.putString("Video_ID", audioModel?.mediaId)
+            bundle.putString("Video_Link", ytLink)
+            bundle.putString("Video_Channel_Name", audioModel?.author)
+            bundle.putLong("Video_Duration", audioModel?.duration ?: 0L)
+
+            Firebase.analytics.logEvent("Video_Played", bundle)
+
             if (audioModel != null) {
                 viewModelScope.launch {
 
@@ -145,7 +140,11 @@ class MainViewModel @Inject constructor(
                 }
             } else {
                 callback(false)
-                Toast.makeText(context, "This video can't play Try Somethings else", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    context,
+                    "This video can't play Try Somethings else",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
@@ -174,7 +173,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun deleteRecentlyAdded5More(time5More: Long){
+    fun deleteRecentlyAdded5More(time5More: Long) {
         viewModelScope.launch {
             repository.deleteRecentlyAdded5More(time5More)
         }

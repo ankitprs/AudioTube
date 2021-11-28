@@ -189,14 +189,6 @@
             android:background="@color/background"
             android:src="@drawable/ic_baseline_favorite_border_24" />
 
-        <ImageView
-            android:id="@+id/imageViewRepeatSongFrag"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:src="@drawable/exo_icon_repeat_off"
-            android:visibility="gone" />
-
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/materialCardViewDisVisible"
             android:layout_width="42dp"
@@ -209,8 +201,7 @@
             app:layout_constraintEnd_toStartOf="@+id/materialCardView10"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:visibility="gone">
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/speedControllerTextView"
@@ -228,7 +219,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/seekBar">
 
         <com.google.android.material.card.MaterialCardView

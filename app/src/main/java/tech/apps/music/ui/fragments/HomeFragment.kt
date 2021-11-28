@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.home_activity.*
 import kotlinx.android.synthetic.main.main_fragment.*
@@ -56,7 +55,6 @@ class HomeFragment : Fragment() {
         setUpRecyclerView()
 //        subscribeToObservers()
 
-        val firebaseAnalytics = activity?.let { FirebaseAnalytics.getInstance(it) }
 
         MaterialToolbarHome.inflateMenu(R.menu.home_menu)
 
