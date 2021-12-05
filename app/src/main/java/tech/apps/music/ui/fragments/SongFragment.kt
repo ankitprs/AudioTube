@@ -1,5 +1,8 @@
 package tech.apps.music.ui.fragments
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Intent
@@ -11,6 +14,7 @@ import android.view.ViewGroup
 import android.view.Window
 import android.widget.SeekBar
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -18,9 +22,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.RequestManager
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_song.*
-import kotlinx.android.synthetic.main.home_activity.*
 import tech.apps.music.R
+import tech.apps.music.databinding.FragmentSongBinding
 import tech.apps.music.exoplayer.isPlaying
 import tech.apps.music.exoplayer.toSong
 import tech.apps.music.model.YTAudioDataModel
@@ -40,6 +43,7 @@ class SongFragment : Fragment() {
 
     private lateinit var mainViewModel: MainViewModel
     private val songViewModel: SongViewModel by viewModels()
+    private lateinit var binding: FragmentSongBinding
 
     private var curPlayingSong: YTAudioDataModel? = null
     private var playbackState: PlaybackStateCompat? = null
@@ -48,14 +52,13 @@ class SongFragment : Fragment() {
 
     private var liked: Boolean = false
 
-    private var playbackSpeed: Float = 1f
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_song, container, false)
+    ): View {
+        binding = FragmentSongBinding.inflate(layoutInflater,container,false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -81,7 +84,7 @@ class SongFragment : Fragment() {
             }
         }
 
-        shareButtonSongFragment.setOnClickListener {
+        binding.shareButtonSongFragment.setOnClickListener {
             val intent = Intent(Intent.ACTION_SEND)
             intent.type = "text/plain"
             intent.putExtra(Intent.EXTRA_SUBJECT, "AudioTube app")
@@ -92,21 +95,33 @@ class SongFragment : Fragment() {
             startActivity(Intent.createChooser(intent, "Share URL"))
         }
 
-        ivPlayPauseSongFragment.setOnClickListener {
+        binding.ivPlayPauseSongFragmentImageView.setOnClickListener {
             curPlayingSong?.let {
                 mainViewModel.playOrToggleSong(it, true)
             }
         }
-
-        ivSkipPreviousSongFragment.setOnClickListener {
+        binding.ivSkipPreviousSongFragment.setOnClickListener {
             mainViewModel.skipToNextSong()
         }
 
-        ivSkipNextSongFragment.setOnClickListener {
+        binding.ivSkipNextSongFragment.setOnClickListener {
             mainViewModel.skipToPreviousSong()
         }
+        binding.ivPreviousReplaySongFragment.setOnClickListener {
+            mainViewModel.replayBackSong()
 
-        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            val animator = ObjectAnimator.ofFloat(it, View.ROTATION, 360f, 0f)
+            animator.duration = 500
+            animator.start()
+        }
+        binding.ivForwardSongFragment.setOnClickListener {
+            mainViewModel.fastForwardSong()
+            val animator = ObjectAnimator.ofFloat(it, View.ROTATION, -360f, 0f)
+            animator.duration = 500
+            animator.start()
+        }
+
+        binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
                     setCurPLayerTimeToTextView(progress.toLong())
@@ -126,7 +141,7 @@ class SongFragment : Fragment() {
 
         })
 
-        exitButtonSongFragment.setOnClickListener {
+        binding.exitButtonSongFragment.setOnClickListener {
             findNavController().navigateUp()
         }
 
@@ -134,7 +149,7 @@ class SongFragment : Fragment() {
             likedButtonFinder()
         }
 
-        imageViewLikeButton.setOnClickListener {
+        binding.imageViewLikeButton.setOnClickListener {
             if (liked) {
                 liked = false
                 curPlayingSong?.let { it1 ->
@@ -154,47 +169,131 @@ class SongFragment : Fragment() {
             }
             likeButtonManager()
         }
-        setPlaybackSpeed()
-        materialCardViewDisVisible.setOnClickListener {
-            constraintLayout.isVisible = !constraintLayout.isVisible
+        checkPlaybackSpeed()
+        binding.materialCardViewDisVisible.setOnClickListener {
+            hideAndShowSpeed(!binding.constraintLayout.isVisible)
         }
-        materialCardView10.setOnClickListener {
-            setPlaybackSpeed(1f, "1.0")
+        binding.materialCardView10.setOnClickListener {
+            setPlaybackSpeed(1f, "1x")
         }
-        materialCardView125.setOnClickListener {
-            setPlaybackSpeed(1.25f, "1.25")
+        binding.materialCardView125.setOnClickListener {
+            setPlaybackSpeed(1.25f, "1.25x")
         }
-        materialCardView15.setOnClickListener {
-            setPlaybackSpeed(1.5f, "1.5")
+        binding.materialCardView15.setOnClickListener {
+            setPlaybackSpeed(1.5f, "1.5x")
         }
-        materialCardView175.setOnClickListener {
-            setPlaybackSpeed(1.75f, "1.75")
+        binding.materialCardView175.setOnClickListener {
+            setPlaybackSpeed(1.75f, "1.75x")
         }
-        materialCardView20.setOnClickListener {
-            setPlaybackSpeed(2f, "2.0")
+        binding.materialCardView20.setOnClickListener {
+            setPlaybackSpeed(2f, "2x")
         }
     }
 
-    private fun setPlaybackSpeed(playSpeed: Float = 1f, playSpeedString: String = "1.0") {
+    private fun setPlaybackSpeed(playSpeed: Float = 1f, playSpeedString: String = "1x") {
 
-//        val sharedPref = requireActivity().getSharedPreferences(
-//            Constants.SHARED_PREF_PLAYBACK_SPEED,
-//            AppCompatActivity.MODE_PRIVATE
-//        )
-//        playbackSpeed = sharedPref.getFloat(Constants.SAVE_PLAYBACK_SPEED, 1f)
-//
-//        print(playbackSpeed)
-//
-//        if (playbackSpeed != playSpeed) {
-//            playbackSpeed = playSpeed
-//            val sharedPrefEditor = sharedPref.edit()
-//            sharedPrefEditor.putFloat(Constants.SAVE_PLAYBACK_SPEED, playbackSpeed)
-//            sharedPrefEditor.apply()
-//        }
-        Toast.makeText(activity,"playSpeed",Toast.LENGTH_LONG).show()
-        speedControllerTextView.text = playSpeedString
-        constraintLayout.isVisible = false
-        mainViewModel.setPlaybackSpeed(playSpeed)
+        val sharedPref = requireActivity().getSharedPreferences(
+            Constants.SHARED_PREF_PLAYBACK_SPEED,
+            AppCompatActivity.MODE_PRIVATE
+        )
+
+        val sharedPrefEditor = sharedPref.edit()
+        sharedPrefEditor.putFloat(Constants.SAVE_PLAYBACK_SPEED, playSpeed)
+        sharedPrefEditor.apply()
+
+        binding.speedControllerTextView.text = playSpeedString
+        changePlaybackSpeedState(playSpeed)
+        hideAndShowSpeed(false)
+    }
+
+    private fun changePlaybackSpeedState(speed: Float) {
+        mainViewModel.setPlaybackSpeed(speed)
+    }
+
+    private fun checkPlaybackSpeed() {
+
+        val sharedPref = requireActivity().getSharedPreferences(
+            Constants.SHARED_PREF_PLAYBACK_SPEED,
+            AppCompatActivity.MODE_PRIVATE
+        )
+        val playbackSpeed: Float = sharedPref.getFloat(Constants.SAVE_PLAYBACK_SPEED, 1f)
+        val str: String = when (playbackSpeed) {
+            1f -> {
+                "1x"
+            }
+            1.25f -> {
+                "1.25x"
+            }
+            1.5f -> {
+                "1.5x"
+            }
+            1.75f -> {
+                "1.75x"
+            }
+            2f -> {
+                "2x"
+            }
+            else -> {
+                "1x"
+            }
+        }
+        binding.speedControllerTextView.text = str
+        changePlaybackSpeedState(playbackSpeed)
+    }
+
+    private fun hideAndShowSpeed(speedStatus: Boolean) {
+        if (speedStatus) {
+            binding.coordinatorLayout.apply {
+                animate()
+                    .alphaBy(1f)
+                    .alpha(0f)
+                    .setDuration(400)
+                    .setListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator?) {
+                            super.onAnimationEnd(animation)
+                            visibility = View.INVISIBLE
+                        }
+                    })
+            }
+            binding.constraintLayout.apply {
+                isVisible = speedStatus
+                animate()
+                    .alphaBy(0f)
+                    .alpha(1f)
+                    .setDuration(400)
+                    .setListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator?) {
+                            super.onAnimationEnd(animation)
+                        }
+                    })
+
+            }
+        } else {
+            binding.constraintLayout.apply {
+                animate()
+                    .alphaBy(1f)
+                    .alpha(0.0f)
+                    .setDuration(400)
+                    .setListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator?) {
+                            super.onAnimationEnd(animation)
+                            visibility = View.INVISIBLE
+                        }
+                    })
+            }
+            binding.coordinatorLayout.apply {
+                isVisible = !speedStatus
+                animate()
+                    .alphaBy(0f)
+                    .alpha(1f)
+                    .setDuration(400)
+                    .setListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator?) {
+                            super.onAnimationEnd(animation)
+                        }
+                    })
+            }
+        }
     }
 
     private fun likedButtonFinder() {
@@ -208,16 +307,16 @@ class SongFragment : Fragment() {
 
     private fun likeButtonManager() {
         if (liked) {
-            imageViewLikeButton.setImageResource(R.drawable.ic_baseline_favorite_24)
+            binding.imageViewLikeButton.setImageResource(R.drawable.ic_baseline_favorite_24)
         } else {
-            imageViewLikeButton.setImageResource(R.drawable.ic_baseline_favorite_border_24)
+            binding.imageViewLikeButton.setImageResource(R.drawable.ic_baseline_favorite_border_24)
         }
     }
 
     private fun updateTitleAndSongImage(song: YTAudioDataModel) {
-        glide.load(song.thumbnailUrl).into(songThumbnailSongFragment)
-        songTitleSongFragment.text = song.title
-        songAuthorSongFragment.text = song.author
+        glide.load(song.thumbnailUrl).into(binding.songThumbnailSongFragment)
+        binding.songTitleSongFragment.text = song.title
+        binding.songAuthorSongFragment.text = song.author
     }
 
     @SuppressLint("SetTextI18n")
@@ -246,28 +345,31 @@ class SongFragment : Fragment() {
         }
         mainViewModel.playbackState.observe(viewLifecycleOwner) {
             playbackState = it
-            ivPlayPauseSongFragmentImageView.setImageResource(
-                if (playbackState?.isPlaying == true) R.drawable.exo_icon_pause else R.drawable.exo_icon_play
+            binding.ivPlayPauseSongFragmentImageView.setImageResource(
+                if (playbackState?.isPlaying == true) R.drawable.ic_round_pause_circle_24 else R.drawable.ic_round_play_circle_24
             )
-            seekBar.progress = it?.position?.toInt() ?: 0
+            binding.seekBar.progress = it?.position?.toInt() ?: 0
         }
         songViewModel.curPlayerPosition.observe(viewLifecycleOwner) {
             if (shouldUpdateSeekbar) {
-                seekBar.progress = it.toInt()
+                binding.seekBar.progress = it.toInt()
                 setCurPLayerTimeToTextView(it)
             }
         }
         songViewModel.curSongDuration.observe(viewLifecycleOwner) {
-            seekBar.max = it.toInt()
+            binding.seekBar.max = it.toInt()
             if (it > 0) {
-                tvSongDuration.text = TimeFunction.songDuration(it / 1000L)
+                binding.tvSongDuration.text = TimeFunction.songDuration(it / 1000L)
             } else {
-                tvSongDuration.text = "00:00"
+                binding.tvSongDuration.text = "00:00"
             }
+        }
+        songViewModel.isBuffering.observe(viewLifecycleOwner) {
+            binding.progressBarForBuffering.isVisible = it
         }
     }
 
     private fun setCurPLayerTimeToTextView(ms: Long) {
-        tvCurTime.text = TimeFunction.songDuration(ms / 1000L)
+        binding.tvCurTime.text = TimeFunction.songDuration(ms / 1000L)
     }
 }

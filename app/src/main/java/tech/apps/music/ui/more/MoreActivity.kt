@@ -27,7 +27,7 @@ class MoreActivity : AppCompatActivity() {
         setTheme(R.style.themeWithActionBar)
         setContentView(R.layout.activity_more)
 
-        supportActionBar?.title = "More"
+        supportActionBar?.title = "Settings"
 
         val fragment = AboutFragment()
         val bundle = Bundle()
@@ -93,6 +93,9 @@ class MoreActivity : AppCompatActivity() {
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data = Uri.parse("https://forms.gle/A31zzznjCfmHkr6AA")
             startActivity(intent)
+        }
+        notification_switch.setOnClickListener {
+            Toast.makeText(this, "Coming soon...", Toast.LENGTH_SHORT).show()
         }
     }
 }

@@ -6,10 +6,13 @@ import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Call
+import retrofit2.HttpException
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.http.GET
 import retrofit2.http.Query
+import tech.apps.music.util.BasicStorage
+import java.io.IOException
 import java.net.URLEncoder
 
 const val BASE_URL = "https://www.youtube.com"
@@ -44,6 +47,9 @@ class YoutubeSearch {
         keyword: String,
         callback: (data: ArrayList<VideoObject>) -> Unit
     ) {
+        if (!isInternetExist()) {
+            return
+        }
         val keywordEncoded = URLEncoder.encode(keyword.trim(), "UTF-8")
 
         withContext(Dispatchers.IO) {
@@ -76,8 +82,12 @@ class YoutubeSearch {
 
                     })
 
-            } catch (error: Exception) {
+            } catch (error: IOException) {
                 print(error)
+                callback(ArrayList())
+            } catch (err: HttpException) {
+                print(err)
+                callback(ArrayList())
             }
         }
     }
@@ -87,7 +97,7 @@ class YoutubeSearch {
         val results: ArrayList<VideoObject> = ArrayList()
 
         val start = response.indexOf("ytInitialData") + ("ytInitialData").length + 3
-        val end = response.indexOf("};", start)  + 1
+        val end = response.indexOf("};", start) + 1
 
         val jsonStr = response.substring(start, end)
 
@@ -108,7 +118,7 @@ class YoutubeSearch {
             val video = videos.getJSONObject(i)
             val res = VideoObject()
 
-            if(video.optJSONObject("videoRenderer")!=null){
+            if (video.optJSONObject("videoRenderer") != null) {
                 val video_data = video.getJSONObject("videoRenderer")
                 res.videoId = video_data.getString("videoId")
                 res.thumbnails = video_data.getJSONObject("thumbnail").getJSONArray("thumbnails")
@@ -124,13 +134,16 @@ class YoutubeSearch {
                     results.add(res)
                 }
 
-                if(results.size >= MAX_LIST_SIZE){
+                if (results.size >= MAX_LIST_SIZE) {
                     return results
                 }
             }
         }
         return results
     }
+
+    private fun isInternetExist(): Boolean =
+        BasicStorage.isNetworkConnected.value == true
 
 }
 

@@ -21,4 +21,9 @@ object Constants {
     //bundle KeyWords
     const val PASS_EXPLORE_KEYWORDS = "passExploreKeywords"
     const val SEARCH_FRAGMENT_VIDEO_ID = "searchFragmentVideoID"
+
+    //last song data
+    const val LAST_SONG_DATA = "lastSongData"
+    const val LAST_SONG_DATA_MEDIA_ID = "lastSongMediaId"
+    const val LAST_SONG_DATA_POSITION = "lastSongPosition"
 }

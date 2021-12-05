@@ -8,13 +8,14 @@ import tech.apps.music.exoplayer.MusicService
 
 class MusicPlayerEventListener(
     private val musicService: MusicService
-) : Player.EventListener {
+) : Player.Listener {
 
     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
         super.onPlayerStateChanged(playWhenReady, playbackState)
         if (playbackState == Player.STATE_READY && !playWhenReady) {
             musicService.stopForeground(false)
         }
+        MusicService.bufferingTime.value = playbackState == Player.STATE_BUFFERING
     }
 
 //    override fun onPlayerError(error: ExoPlaybackException) {

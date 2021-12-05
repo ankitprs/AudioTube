@@ -33,71 +33,62 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="150dp">
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/recentTextTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="5dp">
-
-                <View
-                    android:layout_width="5dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/light_background" />
-
-                <TextView
-                    android:id="@+id/recentTextTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:fontFamily="sans-serif-black"
-                    android:text="Recently Added"
-                    android:textColor="@color/white"
-                    android:textSize="20sp" />
-
-            </LinearLayout>
+                android:fontFamily="sans-serif-black"
+                android:text="Recently Added"
+                android:textColor="@color/white"
+                android:textSize="22sp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="5dp"/>
+            <View
+                android:id="@+id/recentLineViewMainFrag"
+                android:layout_marginStart="10dp"
+                android:layout_width="40dp"
+                android:layout_height="3dp"
+                android:background="@color/light_background" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewRecent"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp" />
 
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/exploreTextTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
+                android:fontFamily="sans-serif-black"
+                android:text="Explore"
+                android:textColor="@color/white"
+                android:textSize="22sp"
                 android:layout_marginTop="20dp"
-                android:layout_marginBottom="5dp">
+                android:layout_marginBottom="5dp"/>
 
-                <View
-                    android:layout_width="5dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/light_background" />
-
-                <TextView
-                    android:id="@+id/exploreTextTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:fontFamily="sans-serif-black"
-                    android:text="Explore"
-                    android:textColor="@color/white"
-                    android:textSize="20sp" />
-
-            </LinearLayout>
+            <View
+                android:layout_marginStart="10dp"
+                android:layout_width="40dp"
+                android:layout_height="3dp"
+                android:background="@color/light_background" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewExploreMainFragment"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                tools:listitem="@layout/explore_list_item" />
 
         </LinearLayout>
 

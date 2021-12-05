@@ -17,7 +17,7 @@ class SearchAdapter @Inject constructor(
     private val glide: RequestManager
 ) : RecyclerView.Adapter<SearchAdapter.SongSearchViewHolder>() {
 
-    private val diffCallback= object : DiffUtil.ItemCallback<VideoObject>(){
+    private val diffCallback = object : DiffUtil.ItemCallback<VideoObject>() {
         override fun areItemsTheSame(oldItem: VideoObject, newItem: VideoObject): Boolean {
             return oldItem.videoId == newItem.videoId
         }
@@ -26,13 +26,13 @@ class SearchAdapter @Inject constructor(
             return oldItem.hashCode() == newItem.hashCode()
         }
     }
-    private val differ: AsyncListDiffer<VideoObject> = AsyncListDiffer(this,diffCallback)
+    private val differ: AsyncListDiffer<VideoObject> = AsyncListDiffer(this, diffCallback)
 
     var songs: List<VideoObject>
         get() = differ.currentList
         set(value) = differ.submitList(value)
 
-    class SongSearchViewHolder(listItem: View): RecyclerView.ViewHolder(listItem)
+    class SongSearchViewHolder(listItem: View) : RecyclerView.ViewHolder(listItem)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongSearchViewHolder {
         return SongSearchViewHolder(
@@ -44,10 +44,10 @@ class SearchAdapter @Inject constructor(
         )
     }
 
-    private var onItemClickListener:((VideoObject)->Unit)? =null
+    private var onItemClickListener: ((VideoObject) -> Unit)? = null
 
-    fun setItemClickListener(listener :(VideoObject)->Unit){
-        onItemClickListener=listener
+    fun setItemClickListener(listener: (VideoObject) -> Unit) {
+        onItemClickListener = listener
     }
 
     override fun getItemCount(): Int {
@@ -57,28 +57,28 @@ class SearchAdapter @Inject constructor(
     override fun onBindViewHolder(holder: SongSearchViewHolder, position: Int) {
         val song = songs[position]
 
-        if(song.duration.isEmpty()){
+        if (song.duration.isEmpty()) {
         }
 
         holder.itemView.apply {
-            titleTYVideo.text=song.title
+            titleTYVideo.text = song.title
 
             glide.load(song.thumbnails)
-                .override(1280,720)
+                .override(1280, 720)
                 .centerCrop()
                 .into(thumbnailImageTYVideo)
 
-            channelTYVideo.text=song.channelName
+            channelTYVideo.text = song.channelName
             println(song.duration)
 
-            if(song.duration.isEmpty()){
+            if (song.duration.isEmpty()) {
                 durationTYVideo.isVisible = false
-            }else{
-                durationTYVideo.text= song.duration
+            } else {
+                durationTYVideo.text = song.duration
             }
 
             setOnClickListener {
-                onItemClickListener?.let {click->
+                onItemClickListener?.let { click ->
                     click(song)
                 }
             }

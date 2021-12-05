@@ -81,6 +81,15 @@ class MainViewModel @Inject constructor(
         musicServiceConnection.transportControls.setPlaybackSpeed(speed)
     }
 
+    fun fastForwardSong() {
+        musicServiceConnection.transportControls.fastForward()
+        musicServiceConnection.transportControls.rewind()
+    }
+
+    fun replayBackSong() {
+        musicServiceConnection.transportControls.rewind()
+        musicServiceConnection.transportControls.rewind()
+    }
 
     fun playOrToggleSong(mediaItem: YTAudioDataModel, toggle: Boolean = false) {
 
@@ -178,5 +187,7 @@ class MainViewModel @Inject constructor(
             repository.deleteRecentlyAdded5More(time5More)
         }
     }
+    fun getLastPlayedModel(ytUrl: String, callback: (ytModel: YTAudioDataModel?) -> Unit) = repository.addingSongFromLink(ytUrl,callback)
+
 
 }

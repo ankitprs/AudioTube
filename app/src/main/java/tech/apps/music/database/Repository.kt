@@ -37,13 +37,24 @@ class Repository
 
     val songsData: MutableLiveData<YTAudioDataModel> = MutableLiveData<YTAudioDataModel>()
 
-    fun getAllSongs(): List<YTVideoLink> = database.getYTVideoDao().getAllSongs()
-
     fun getAllSongsLiveData(): LiveData<List<YTVideoLink>> =
         database.getYTVideoDao().getAllSongsLiveData()
 
     fun getAllLikedSongs(): LiveData<List<YTVideoLinkLiked>> =
         database.getYTVideoDao().getAllLikedSongs()
+
+    fun addingSongFromLink(ytUrl: String, callback: (ytModel: YTAudioDataModel?) -> Unit){
+        try{
+            YTVideoExtractor.getObject(context, ytUrl) { audioModel ->
+                if (audioModel != null) {
+                    callback(audioModel)
+                }
+                callback(null)
+            }
+        }catch (err: Exception){
+            callback(null)
+        }
+    }
 
 
     fun getSongModelWithLink(ytUrl: String, callback: (ytModel: YTAudioDataModel?) -> Unit) {
@@ -51,8 +62,6 @@ class Repository
         YTVideoExtractor.getObject(context, ytUrl) { audioModel ->
             if (audioModel != null) {
                 callback(audioModel)
-                println(audioModel.ytSongUrl)
-
             } else {
                 callback(null)
             }

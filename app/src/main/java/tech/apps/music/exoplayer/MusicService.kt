@@ -7,13 +7,15 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
+import android.support.v4.media.session.PlaybackStateCompat
+import androidx.lifecycle.MutableLiveData
 import androidx.media.MediaBrowserServiceCompat
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.upstream.DefaultDataSource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,13 +27,16 @@ import tech.apps.music.exoplayer.callbacks.MusicPlayerNotificationListener
 import tech.apps.music.others.Constants.MEDIA_ROOT_ID
 import javax.inject.Inject
 
+
+
+
 private const val SERVICE_TAG = "MusicService"
 
 @AndroidEntryPoint
 class MusicService : MediaBrowserServiceCompat() {
 
     @Inject
-    lateinit var dataSourceFormat: DefaultDataSourceFactory
+    lateinit var dataSourceFormat: DefaultDataSource.Factory
 
     @Inject
     lateinit var exoPlayer: ExoPlayer
@@ -58,7 +63,7 @@ class MusicService : MediaBrowserServiceCompat() {
     companion object {
         var curSongDuration = 0L
             private set
-
+        var bufferingTime: MutableLiveData<Boolean> = MutableLiveData(false)
     }
 
     override fun onCreate() {
@@ -91,14 +96,25 @@ class MusicService : MediaBrowserServiceCompat() {
             curPlayingSong = it
             preparePlayer(
                 ytVideoMusicSource.songs,
-                it,
-                true
+                it
             )
         }
 
         mediaSessionConnector = MediaSessionConnector(mediaSession)
         mediaSessionConnector.setPlaybackPreparer(musicPlaybackPreparer)
         mediaSessionConnector.setQueueNavigator(MusicQueueNavigator())
+        mediaSessionConnector.setEnabledPlaybackActions(
+            PlaybackStateCompat.ACTION_PLAY_PAUSE
+                    or PlaybackStateCompat.ACTION_PLAY
+                    or PlaybackStateCompat.ACTION_PAUSE
+                    or PlaybackStateCompat.ACTION_SEEK_TO
+                    or PlaybackStateCompat.ACTION_FAST_FORWARD
+                    or PlaybackStateCompat.ACTION_REWIND
+                    or PlaybackStateCompat.ACTION_STOP
+                    or PlaybackStateCompat.ACTION_SET_REPEAT_MODE
+                    or PlaybackStateCompat.ACTION_SET_SHUFFLE_MODE
+                    or PlaybackStateCompat.ACTION_SET_PLAYBACK_SPEED
+        )
         mediaSessionConnector.setPlayer(exoPlayer)
 
         musicPlayerEventListener = MusicPlayerEventListener(this)
@@ -117,7 +133,7 @@ class MusicService : MediaBrowserServiceCompat() {
     private fun preparePlayer(
         songs: List<MediaMetadataCompat>,
         itemToPlay: MediaMetadataCompat?,
-        playNow: Boolean
+        playNow: Boolean = true
     ) {
         val curSongIndex = if (curPlayingSong == null) 0 else songs.indexOf(itemToPlay)
         exoPlayer.prepare(ytVideoMusicSource.asMediaSource(dataSourceFormat))

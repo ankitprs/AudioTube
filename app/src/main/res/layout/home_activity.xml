@@ -1,25 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
-    android:orientation="vertical"
-    tools:context=".ui.HomeActivity">
+    android:orientation="vertical">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/noInternetConnectionView"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="No Network Connection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/one_level_up"
+        android:textColor="@color/white"
+        android:visibility="gone"/>
+
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:background="@color/background"
+        android:orientation="vertical"
+        tools:context=".ui.HomeActivity">
 
         <fragment
             android:id="@+id/navHostFragment"
             android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="match_parent"
             app:defaultNavHost="true"
             app:navGraph="@navigation/home_nav_bottom_nav" />
 
@@ -27,12 +38,11 @@
             android:id="@+id/materialCardViewHome"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:layout_marginTop="2dp"
-            app:cardBackgroundColor="@color/one_level_up"
-            app:cardCornerRadius="10dp"
+            android:layout_gravity="top"
+            app:cardBackgroundColor="@color/background"
+            app:cardCornerRadius="0dp"
+            app:layout_anchor="@+id/bottom_navigation"
+            app:layout_anchorGravity="top"
             app:layout_constraintBottom_toBottomOf="parent">
 
             <LinearLayout
@@ -44,7 +54,6 @@
                     android:layout_width="89dp"
                     android:layout_height="50dp"
                     android:layout_margin="8dp"
-                    android:background="@color/one_level_up"
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_baseline_image_24" />
 
@@ -52,23 +61,31 @@
                     android:id="@+id/vpSong"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:maxHeight="50dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
                     android:layout_weight="1"
-                    android:background="@color/one_level_up"
+                    android:maxHeight="50dp"
                     android:textColor="@color/white" />
 
                 <ImageView
                     android:id="@+id/ivPlayPause"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_margin="8dp"
-                    android:background="@color/one_level_up"
-                    android:src="@drawable/exo_icon_play" />
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/ripple_effect_circle"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_round_play_circle_24" />
 
             </LinearLayout>
+
+            <View
+                android:id="@+id/borderForBottomNav"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_above="@+id/bottom_navigation"
+                android:layout_gravity="bottom"
+                android:background="@color/grey" />
 
         </com.google.android.material.card.MaterialCardView>
 
@@ -77,20 +94,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
+            android:layout_marginTop="5dp"
             android:background="@color/background"
             app:itemIconTint="@color/bottom_nav_selected"
+            app:itemRippleColor="@color/light_background"
             app:itemTextColor="@color/bottom_nav_selected"
             app:labelVisibilityMode="labeled"
             app:menu="@menu/home_bottom_nav_menu" />
 
-    </LinearLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    <ProgressBar
-        android:id="@+id/progressBarHomeActivity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone"
-        android:indeterminateTint="@color/button_color"/>
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

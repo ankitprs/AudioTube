@@ -38,10 +38,13 @@ class MusicNotificationManager(
             .setSmallIconResourceId(R.drawable.ic_play_audio)
             .setChannelDescriptionResourceId(R.string.notification_channel_description)
             .setChannelNameResourceId(R.string.notification_channel_name)
+            .setPlayActionIconResourceId(R.drawable.ic_round_play_circle_24)
+            .setPauseActionIconResourceId(R.drawable.ic_round_pause_circle_24)
             .build()
 
-//        notificationManager.setSmallIcon(R.drawable.ic_play_audio)
         notificationManager.setMediaSessionToken(sessionToken)
+        notificationManager.setUseFastForwardAction(false)
+        notificationManager.setUseRewindAction(false)
     }
 
 

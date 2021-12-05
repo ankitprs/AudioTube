@@ -25,6 +25,8 @@ class SongViewModel @Inject constructor(
     private val _curPlayerPosition: MutableLiveData<Long> = MutableLiveData<Long>()
     val curPlayerPosition: LiveData<Long> = _curPlayerPosition
 
+    val isBuffering: LiveData<Boolean> = MusicService.bufferingTime
+
     init {
         updateCurrentPlayerPosition()
     }

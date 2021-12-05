@@ -39,48 +39,34 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_marginBottom="150dp">
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/recentTextTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="5dp">
+                android:fontFamily="sans-serif-black"
+                android:text="Recently Added"
+                android:textColor="@color/white"
+                android:textSize="22sp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="5dp"/>
 
-                <View
-                    android:layout_width="5dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/light_background" />
+            <View
+                android:layout_marginStart="10dp"
+                android:layout_width="40dp"
+                android:layout_height="3dp"
+                android:background="@color/light_background" />
 
-                <TextView
-                    android:id="@+id/recentTextTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:fontFamily="sans-serif-black"
-                    android:text="Recently Added"
-                    android:textColor="@color/white"
-                    android:textSize="20sp" />
-
-            </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewRecent"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="5dp">
+                android:layout_marginTop="10dp"/>
 
-                <View
-                    android:layout_width="5dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/light_background" />
 
                 <TextView
                     android:id="@+id/likedTextTextView"
@@ -90,13 +76,21 @@
                     android:fontFamily="sans-serif-black"
                     android:text="Liked"
                     android:textColor="@color/white"
-                    android:textSize="20sp" />
-            </LinearLayout>
+                    android:textSize="22sp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="5dp"/>
+
+            <View
+                android:layout_marginStart="10dp"
+                android:layout_width="40dp"
+                android:layout_height="3dp"
+                android:background="@color/light_background" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewLiked"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"/>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

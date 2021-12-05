@@ -22,6 +22,7 @@ import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.search_fragment.*
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import tech.apps.music.R
@@ -116,7 +117,7 @@ class SearchFragment : Fragment() {
     private fun searchQuery(query: String) {
         progressBarSearchFragment.isVisible = true
 
-        GlobalScope.launch {
+        GlobalScope.launch(Dispatchers.IO) {
             YoutubeSearch().searchWithKeywords(query) {
 
                 view?.findViewById<TextView>(R.id.textViewNotFoundSearch)?.isVisible = it.size == 0
@@ -159,7 +160,7 @@ class SearchFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        if(keyboardNeeded){
+        if (keyboardNeeded) {
             searchButtonViewSearchFragment.isIconified = false
             keyboardNeeded = false
         }

@@ -28,31 +28,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <com.google.android.material.card.MaterialCardView
+                <ImageView
                     android:id="@+id/backButtonSearchFragment"
+                    android:background="@drawable/ripple_effect_circle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:outlineSpotShadowColor="@android:color/transparent"
-                    app:cardBackgroundColor="@color/background"
-                    app:cardCornerRadius="100dp">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:src="@drawable/ic_baseline_arrow_back_24" />
-
-                </com.google.android.material.card.MaterialCardView>
+                    android:padding="15dp"
+                    android:src="@drawable/ic_baseline_arrow_back_24" />
 
                 <SearchView
                     android:id="@+id/searchButtonViewSearchFragment"
                     android:layout_width="0dp"
                     android:layout_height="38dp"
-                    android:layout_marginStart="10dp"
                     android:layout_weight="1"
                     android:background="@color/one_level_up"
-                    android:queryHint="Search" />
+                    android:queryHint="Search"/>
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/voiceSearchViewSearch"
@@ -89,7 +79,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="80dp" />
+                android:layout_marginBottom="180dp" />
 
         </LinearLayout>
 

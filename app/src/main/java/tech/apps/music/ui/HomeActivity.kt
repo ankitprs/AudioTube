@@ -1,9 +1,12 @@
 package tech.apps.music.ui
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.media.session.PlaybackStateCompat
+import android.view.View
 import android.view.Window
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -17,11 +20,13 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.home_activity.*
 import tech.apps.music.R
+import tech.apps.music.database.network.ConnectionLiveData
 import tech.apps.music.exoplayer.isPlaying
 import tech.apps.music.exoplayer.toSong
 import tech.apps.music.model.YTAudioDataModel
 import tech.apps.music.others.Status
 import tech.apps.music.ui.viewmodels.MainViewModel
+import tech.apps.music.util.BasicStorage
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -42,6 +47,16 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setTheme(R.style.Theme_PlayAudio)
         setContentView(R.layout.home_activity)
+
+        val connection = ConnectionLiveData(this)
+
+        BasicStorage.isNetworkConnected = connection
+        connection.observe(this) {
+            if (it != null) {
+                noInternetConnectionView.isVisible = !it
+            }
+        }
+        noInternetConnectionView.isVisible = connection.value != true
 
         when (intent?.action) {
             Intent.ACTION_SEND -> {
@@ -82,21 +97,96 @@ class HomeActivity : AppCompatActivity() {
             run {
                 when (destination.id) {
                     R.id.songFragment -> showOrHideBottomBar(boolean = false, isNotSong = false)
-                    R.id.homeFragment -> showOrHideBottomBar(true)
+                    R.id.homeFragment -> {
+                        if (viewModel.curPlayingSong.value != null) {
+                            showOrHideBottomBar(true)
+                        } else {
+                            materialCardViewHome.isVisible = false
+                        }
+                    }
                     R.id.searchFragment -> {
                         showOrHideBottomBar(false)
+                    }
+                    R.id.libraryFragment -> {
+                        if (viewModel.curPlayingSong.value != null) {
+                            showOrHideBottomBar(true)
+                        } else {
+                            materialCardViewHome.isVisible = false
+                        }
                     }
                     else -> showOrHideBottomBar(true)
                 }
             }
         }
+        if (viewModel.curPlayingSong.value != null) {
+            if (!viewModel.getRecentList.value.isNullOrEmpty()) {
+                viewModel.getLastPlayedModel(viewModel.getRecentList.value!![0].link) {
+                    if (it != null) {
+                        viewModel.playOrToggleSong(it, true)
+                    }
+                }
+
+            }
+        }
     }
 
     private fun showOrHideBottomBar(boolean: Boolean, isNotSong: Boolean = true) {
-        ivCurSongImage.isVisible = boolean
-        vpSong.isVisible = boolean
-        ivPlayPause.isVisible = boolean
-        bottom_navigation.isVisible = isNotSong
+        if (boolean) {
+            materialCardViewHome.apply {
+                animate()
+                    .alpha(1f)
+                    .setDuration(400)
+                    .setListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator?) {
+                            super.onAnimationEnd(animation)
+                            visibility = View.VISIBLE
+                        }
+                    })
+            }
+        } else {
+            materialCardViewHome.apply {
+                animate()
+                    .alpha(0.0f)
+                    .setDuration(100)
+                    .setListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator?) {
+                            super.onAnimationEnd(animation)
+                            visibility = View.GONE
+                        }
+                    })
+            }
+        }
+        if (isNotSong) {
+            bottom_navigation.apply {
+                isVisible = isNotSong
+                animate()
+                    .translationYBy(-this.height.toFloat())
+                    .translationY(0f)
+                    .alpha(1f)
+                    .setDuration(400)
+                    .setListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator?) {
+                            super.onAnimationEnd(animation)
+                            isVisible = isNotSong
+                        }
+                    })
+            }
+        } else {
+            bottom_navigation.apply {
+                animate()
+                    .translationY(0f)
+                    .translationYBy(this.height.toFloat())
+                    .alpha(0.0f)
+                    .setDuration(400)
+                    .setListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator?) {
+                            super.onAnimationEnd(animation)
+                            isVisible = isNotSong
+                        }
+                    })
+            }
+        }
+//        bottom_navigation.isVisible = isNotSong
     }
 
 
@@ -106,9 +196,9 @@ class HomeActivity : AppCompatActivity() {
             playbackState = it
             ivPlayPause.setImageResource(
                 if (playbackState?.isPlaying == true)
-                    R.drawable.exo_icon_pause
+                    R.drawable.ic_round_pause_circle_24
                 else
-                    R.drawable.exo_icon_play
+                    R.drawable.ic_round_play_circle_24
             )
         }
         viewModel.isConnected.observe(this) {
@@ -142,6 +232,7 @@ class HomeActivity : AppCompatActivity() {
 
             val bundle = Bundle()
             bundle.putString("SearchFORM_DIRECT_LINK", it)
+            FirebaseAnalytics.Event.SEARCH
             firebaseAnalytics.logEvent("MusicRequestFROM_SEARCH_PAGE", bundle)
 
             val dialog = Dialog(this)

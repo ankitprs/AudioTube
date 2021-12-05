@@ -17,9 +17,6 @@ interface YTVideoDao {
     @Query("DELETE FROM YT_VIDEO_TABLE")
     suspend fun deleteAllHistory()
 
-    @Query("SELECT * FROM YT_VIDEO_TABLE ORDER BY Timing DESC")
-    fun getAllSongs(): List<YTVideoLink>
-
     @Query("SELECT * FROM YT_VIDEO_TABLE_LIKED ORDER BY Timing DESC")
     fun getAllLikedSongs(): LiveData<List<YTVideoLinkLiked>>
 
