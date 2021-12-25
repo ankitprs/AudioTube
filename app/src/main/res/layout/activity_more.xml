@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="@color/dark_background"
     android:orientation="vertical"
     tools:context=".ui.more.MoreActivity">
 
@@ -12,6 +12,41 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
+        <com.google.android.material.appbar.AppBarLayout
+            style="@style/themeWithActionBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/background">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/MaterialToolbarMoreAct"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:theme="@style/MyActionBar">
+
+                <ImageView
+                    android:id="@+id/backButtonMoreAct"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/ripple_effect_circle"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_baseline_arrow_back_24" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="25dp"
+                    android:fontFamily="sans-serif-black"
+                    android:text="Settings"
+                    android:textColor="@color/white"
+                    android:textSize="20dp" />
+
+            </com.google.android.material.appbar.MaterialToolbar>
+
+
+        </com.google.android.material.appbar.AppBarLayout>
+
 
         <TextView
             android:layout_width="match_parent"
@@ -26,7 +61,7 @@
             android:id="@+id/deleteRecentSongs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/ripple_effect_circle"
+            android:background="@drawable/ripple_effect_rectangle"
             android:orientation="vertical"
             android:padding="10dp">
 
@@ -46,12 +81,36 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/deleteDownloadedSongs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ripple_effect_rectangle"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="20dp"
+                android:text="Delete Downloads"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="20dp"
+                android:text="Delete all the downloaded"
+                android:textColor="@color/grey" />
+
+        </LinearLayout>
+
         <TextView
             android:id="@+id/howToUse"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="30dp"
-            android:background="@drawable/ripple_effect_circle"
+            android:background="@drawable/ripple_effect_rectangle"
             android:padding="20dp"
             android:text="How it works"
             android:textColor="@color/white"/>
@@ -73,7 +132,7 @@
             android:id="@+id/notification"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/ripple_effect_circle"
+            android:background="@drawable/ripple_effect_rectangle"
             android:orientation="vertical"
             android:padding="10dp">
 
@@ -123,7 +182,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="30dp"
-            android:background="@drawable/ripple_effect_circle"
+            android:background="@drawable/ripple_effect_rectangle"
             android:padding="10dp"
             android:text="About"
             android:textColor="@color/light_background"/>
@@ -134,7 +193,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="30dp"
-            android:background="@drawable/ripple_effect_circle"
+            android:background="@drawable/ripple_effect_rectangle"
             android:gravity="center_vertical"
             android:padding="20dp"
             android:text="Privacy Policy"
@@ -145,7 +204,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingStart="30dp"
-            android:background="@drawable/ripple_effect_circle"
+            android:background="@drawable/ripple_effect_rectangle"
             android:gravity="center_vertical"
             android:padding="20dp"
             android:text="Feedback"
@@ -156,7 +215,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="30dp"
-            android:background="@drawable/ripple_effect_circle"
+            android:background="@drawable/ripple_effect_rectangle"
             android:gravity="center_vertical"
             android:padding="20dp"
             android:text="Rate Us"
@@ -167,7 +226,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="30dp"
-            android:background="@drawable/ripple_effect_circle"
+            android:background="@drawable/ripple_effect_rectangle"
             android:gravity="center_vertical"
             android:padding="20dp"
             android:text="Check Update"
@@ -178,7 +237,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="30dp"
-            android:background="@drawable/ripple_effect_circle"
+            android:background="@drawable/ripple_effect_rectangle"
             android:gravity="center_vertical"
             android:padding="20dp"
             android:text="Invite Friends"
@@ -189,7 +248,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="30dp"
-            android:background="@drawable/ripple_effect_circle"
+            android:background="@drawable/ripple_effect_rectangle"
             android:gravity="center_vertical"
             android:padding="20dp"
             android:text="Version"

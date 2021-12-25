@@ -7,33 +7,54 @@
 
     <fragment
         android:id="@+id/searchFragment"
-        android:name="tech.apps.music.ui.fragments.SearchFragment"
+        android:name="tech.apps.music.ui.fragments.search.SearchFragment"
         android:label="search_fragment"
         tools:layout="@layout/search_fragment" />
     <fragment
         android:id="@+id/libraryFragment"
-        android:name="tech.apps.music.ui.fragments.LibraryFragment"
+        android:name="tech.apps.music.ui.fragments.library.LibraryFragment"
         android:label="library_fragment"
-        tools:layout="@layout/library_fragment" >
+        tools:layout="@layout/library_fragment">
         <action
-            android:id="@+id/action_libraryFragment_to_searchFragment"
-            app:destination="@id/searchFragment" />
+            android:id="@+id/action_libraryFragment_to_searchCatalogFragment"
+            app:destination="@id/searchCatalogFragment" />
+        <action
+            android:id="@+id/action_libraryFragment_to_myLibraryListFragment"
+            app:destination="@id/myLibraryListFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out" />
     </fragment>
     <fragment
         android:id="@+id/homeFragment"
-        android:name="tech.apps.music.ui.fragments.HomeFragment"
+        android:name="tech.apps.music.ui.fragments.home.HomeFragment"
         android:label="main_fragment"
-        tools:layout="@layout/main_fragment" >
+        tools:layout="@layout/main_fragment">
 
         <action
-            android:id="@+id/action_homeFragment2_to_searchFragment"
+            android:id="@+id/action_homeFragment_to_searchCatalogFragment"
+            app:destination="@id/searchCatalogFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_premiumSongDetailFragment"
+            app:destination="@id/premiumSongDetailFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_searchFragment"
             app:destination="@id/searchFragment" />
     </fragment>
     <fragment
         android:id="@+id/songFragment"
-        android:name="tech.apps.music.ui.fragments.SongFragment"
+        android:name="tech.apps.music.ui.fragments.song.SongFragment"
         android:label="fragment_song"
-        tools:layout="@layout/fragment_song" />
+        tools:layout="@layout/fragment_song">
+        <action
+            android:id="@+id/action_songFragment_to_episodesListFragment"
+            app:destination="@id/episodesListFragment"
+            app:enterAnim="@anim/up"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@anim/down" />
+    </fragment>
 
     <action
         android:id="@+id/action_homeFragment2_to_songFragment2"
@@ -42,4 +63,37 @@
         app:exitAnim="@android:anim/fade_out"
         app:popEnterAnim="@android:anim/fade_in"
         app:popExitAnim="@anim/down" />
+    <fragment
+        android:id="@+id/premiumFragment"
+        android:name="tech.apps.music.ui.fragments.premium.PremiumFragment"
+        android:label="premium_fragment"
+        tools:layout="@layout/premium_fragment">
+        <action
+            android:id="@+id/action_premiumFragment_to_premiumSongDetailFragment"
+            app:destination="@id/premiumSongDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchCatalogFragment"
+        android:name="tech.apps.music.ui.fragments.search.SearchCatalogFragment"
+        android:label="search_catalog_fragment"
+        tools:layout="@layout/search_catalog_fragment">
+        <action
+            android:id="@+id/action_searchCatalogFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/premiumSongDetailFragment"
+        android:name="tech.apps.music.ui.fragments.premium.PremiumSongDetailFragment"
+        android:label="premium_song_detail_fragment"
+        tools:layout="@layout/premium_song_detail_fragment" />
+    <fragment
+        android:id="@+id/episodesListFragment"
+        android:name="tech.apps.music.ui.fragments.song.EpisodesListFragment"
+        android:label="fragment_episodes_list"
+        tools:layout="@layout/fragment_episodes_list" />
+    <fragment
+        android:id="@+id/myLibraryListFragment"
+        android:name="tech.apps.music.ui.fragments.library.detail.MyLibraryListFragment"
+        android:label="fragment_my_library_list"
+        tools:layout="@layout/fragment_my_library_list" />
 </navigation>

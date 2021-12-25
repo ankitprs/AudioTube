@@ -4,9 +4,9 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import tech.apps.music.database.network.YTVideoExtractor
-import tech.apps.music.database.offline.YTVideoDatabase
-import tech.apps.music.database.offline.YTVideoLink
-import tech.apps.music.database.offline.YTVideoLinkLiked
+import tech.apps.music.database.offline.HistorySongModel
+import tech.apps.music.database.offline.OfflineDatabase
+import tech.apps.music.database.offline.WatchLaterSongModel
 import tech.apps.music.model.YTAudioDataModel
 import javax.inject.Inject
 
@@ -14,34 +14,52 @@ class Repository
 @Inject constructor(
     val context: Context
 ) {
-    val database: YTVideoDatabase = YTVideoDatabase.getDatabase(context)
+    val database: OfflineDatabase = OfflineDatabase.getDatabase(context)
 
-    suspend fun insertLink(ytVideoLink: YTVideoLink) {
-        database.getYTVideoDao().insertLink(ytVideoLink)
+    // History Table Repository
+    suspend fun insertSongInHistory(songModel: HistorySongModel) {
+        database.getYTVideoDao().insertSongIntoHistory(songModel)
     }
-    suspend fun deleteRecentlyAdded5More(time5More: Long){
-        database.getYTVideoDao().deleteRecentlyAdded5More(time5More)
+    suspend fun deleteRecentlyAdded5More(time20More: Long){
+        database.getYTVideoDao().deleteFromHistory20More(time20More)
     }
-
-    suspend fun insertLinkToLiked(ytVideoLinkLiked: YTVideoLinkLiked) {
-        database.getYTVideoDao().insertLinkToLiked(ytVideoLinkLiked)
-    }
-
-    suspend fun deleteLiked(ytVideoLink: YTVideoLinkLiked) {
-        database.getYTVideoDao().deleteLiked(ytVideoLink)
-    }
-
     suspend fun deleteAllHistory() {
-        database.getYTVideoDao().deleteAllHistory()
+        database.getYTVideoDao().deleteAllSongsFromHistory()
+    }
+    fun getAllSongsLiveData(): LiveData<List<HistorySongModel>> =
+        database.getYTVideoDao().getListOfHistory()
+
+
+    // watch Later Table Repo
+    suspend fun insertSongIntoWatchLater(watchLaterSongModel: WatchLaterSongModel){
+        database.getYTVideoDao().insertSongIntoWatchLater(watchLaterSongModel)
+    }
+    suspend fun deleteAllSongsFromWatchLater(){
+        database.getYTVideoDao().deleteAllSongsFromWatchLater()
+    }
+    suspend fun deleteSongFromWatchLater(mediaId: String){
+        database.getYTVideoDao().deleteSongFromWatchLater(mediaId)
+    }
+    fun getListOfWatchLater() : LiveData<List<WatchLaterSongModel>> =
+        database.getYTVideoDao().getListOfWatchLater()
+
+
+
+    // list for continue song Repo
+    fun getListOfContinue(): LiveData<List<HistorySongModel>> =
+        database.getYTVideoDao().getListOfContinue()
+
+
+
+    //updating watch time
+    suspend fun updatingSongPosTime(watchedPosition: Long,timing: Long, videoID: String){
+        database.getYTVideoDao().updatingSongPosTime(watchedPosition,timing,videoID)
     }
 
-    val songsData: MutableLiveData<YTAudioDataModel> = MutableLiveData<YTAudioDataModel>()
 
-    fun getAllSongsLiveData(): LiveData<List<YTVideoLink>> =
-        database.getYTVideoDao().getAllSongsLiveData()
 
-    fun getAllLikedSongs(): LiveData<List<YTVideoLinkLiked>> =
-        database.getYTVideoDao().getAllLikedSongs()
+    val songsData: MutableLiveData<List<YTAudioDataModel>> = MutableLiveData<List<YTAudioDataModel>>()
+
 
     fun addingSongFromLink(ytUrl: String, callback: (ytModel: YTAudioDataModel?) -> Unit){
         try{
@@ -57,6 +75,7 @@ class Repository
     }
 
 
+    // networkCall
     fun getSongModelWithLink(ytUrl: String, callback: (ytModel: YTAudioDataModel?) -> Unit) {
 
         YTVideoExtractor.getObject(context, ytUrl) { audioModel ->

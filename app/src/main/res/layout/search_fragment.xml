@@ -4,8 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/dark_background"
     android:orientation="vertical"
-    tools:context=".ui.fragments.SearchFragment">
+    tools:context=".ui.fragments.search.SearchFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -30,10 +31,10 @@
 
                 <ImageView
                     android:id="@+id/backButtonSearchFragment"
-                    android:background="@drawable/ripple_effect_circle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="15dp"
+                    android:background="@drawable/ripple_effect_circle"
+                    android:padding="10dp"
                     android:src="@drawable/ic_baseline_arrow_back_24" />
 
                 <SearchView
@@ -42,7 +43,7 @@
                     android:layout_height="38dp"
                     android:layout_weight="1"
                     android:background="@color/one_level_up"
-                    android:queryHint="Search"/>
+                    android:queryHint="Search" />
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/voiceSearchViewSearch"
@@ -75,11 +76,20 @@
             android:orientation="vertical">
 
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewSearchSuggestion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="200dp"
+                tools:listitem="@layout/search_result_recom_list_item" />
+
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewSearchResult"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="180dp" />
+                android:layout_marginBottom="200dp"
+                tools:listitem="@layout/song_item_vertical" />
 
         </LinearLayout>
 

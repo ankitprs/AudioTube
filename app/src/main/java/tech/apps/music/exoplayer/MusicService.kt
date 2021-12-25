@@ -11,7 +11,6 @@ import android.support.v4.media.session.PlaybackStateCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.media.MediaBrowserServiceCompat
 import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.PlaybackParameters
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
@@ -28,25 +27,18 @@ import tech.apps.music.others.Constants.MEDIA_ROOT_ID
 import javax.inject.Inject
 
 
-
-
 private const val SERVICE_TAG = "MusicService"
 
 @AndroidEntryPoint
 class MusicService : MediaBrowserServiceCompat() {
 
-    @Inject
-    lateinit var dataSourceFormat: DefaultDataSource.Factory
-
-    @Inject
-    lateinit var exoPlayer: ExoPlayer
+    lateinit var musicNotificationManager: MusicNotificationManager
 
     @Inject
     lateinit var ytVideoMusicSource: YTVideoMusicSource
 
-    private lateinit var musicPlayerEventListener: MusicPlayerEventListener
-
-    private lateinit var musicNotificationManager: MusicNotificationManager
+    @Inject
+    lateinit var exoPlayer: ExoPlayer
 
     private val serviceJob = Job()
     private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
@@ -54,11 +46,17 @@ class MusicService : MediaBrowserServiceCompat() {
     private lateinit var mediaSession: MediaSessionCompat
     private lateinit var mediaSessionConnector: MediaSessionConnector
 
+    @Inject
+    lateinit var dataSourceFormat: DefaultDataSource.Factory
+
     var isForegroundService = false
 
+    private lateinit var musicPlayerEventListener: MusicPlayerEventListener
+
+    private var currentPlaylistItems: List<MediaMetadataCompat> = emptyList()
     private var curPlayingSong: MediaMetadataCompat? = null
 
-//    private var isInitialized=false
+    private var isInitialized = false
 
     companion object {
         var curSongDuration = 0L
@@ -70,10 +68,10 @@ class MusicService : MediaBrowserServiceCompat() {
         super.onCreate()
 
         val activityIntent = packageManager.getLaunchIntentForPackage(packageName)?.let {
-            PendingIntent.getActivity(this, 0, it, 0)
+            PendingIntent.getActivity(this, 0, it, PendingIntent.FLAG_IMMUTABLE)
         }
 
-        mediaSession = MediaSessionCompat(this, SERVICE_TAG).apply {
+        mediaSession = MediaSessionCompat(this, SERVICE_TAG, null, activityIntent).apply {
             setSessionActivity(activityIntent)
             isActive = true
         }
@@ -174,13 +172,17 @@ class MusicService : MediaBrowserServiceCompat() {
             }
         }
     }
-    fun playbackSpeedChanger(speed: Float){
-        val playback = PlaybackParameters(speed)
-        exoPlayer.playbackParameters = playback
-    }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
+        val position = exoPlayer.currentPosition
+        serviceScope.launch {
+            ytVideoMusicSource.saveSongPosition(
+                position,
+                System.currentTimeMillis(),
+                curPlayingSong?.description?.mediaId.toString()
+            )
+        }
         exoPlayer.stop()
     }
 
@@ -193,5 +195,17 @@ class MusicService : MediaBrowserServiceCompat() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         return START_STICKY
+    }
+
+    fun saveRecentSongDataToStorage() {
+        val position = exoPlayer.currentPosition
+
+        serviceScope.launch {
+            ytVideoMusicSource.saveSongPosition(
+                position,
+                System.currentTimeMillis(),
+                curPlayingSong?.description?.mediaId.toString()
+            )
+        }
     }
 }

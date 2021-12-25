@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/home"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="@color/dark_background"
     android:orientation="vertical"
-    tools:context=".ui.fragments.LibraryFragment">
+    tools:context=".ui.fragments.library.LibraryFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         style="@style/themeWithActionBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background">
+        android:background="@color/dark_background">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/MaterialToolbarHome"
@@ -28,6 +27,17 @@
                 android:layout_marginStart="20dp"
                 android:src="@drawable/ic_audio_tube_logo" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="5dp"
+                android:fontFamily="sans-serif-black"
+                android:text="Library"
+                android:textColor="@color/white"
+                android:textSize="22sp" />
+
         </com.google.android.material.appbar.MaterialToolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -39,58 +49,109 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:layout_marginBottom="150dp">
+            android:layout_marginBottom="150dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/bookmarkGoto"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/ripple_effect_rectangle">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:padding="15dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_round_bookmark_24" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="Bookmark"
+                        android:textColor="@color/white"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/bookmarkTextItemLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="0 items"
+                        android:textColor="@color/grey"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/DownloadedGoto"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/ripple_effect_rectangle">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:padding="15dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_round_download_24" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="Download"
+                        android:textColor="@color/white"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="0 items"
+                        android:textColor="@color/grey"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </LinearLayout>
+
 
             <TextView
                 android:id="@+id/recentTextTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:fontFamily="sans-serif-black"
-                android:text="Recently Added"
-                android:textColor="@color/white"
-                android:textSize="22sp"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="5dp"/>
-
-            <View
-                android:layout_marginStart="10dp"
-                android:layout_width="40dp"
-                android:layout_height="3dp"
-                android:background="@color/light_background" />
+                android:layout_marginBottom="5dp"
+                android:text="History"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
 
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewRecent"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"/>
-
-
-                <TextView
-                    android:id="@+id/likedTextTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:fontFamily="sans-serif-black"
-                    android:text="Liked"
-                    android:textColor="@color/white"
-                    android:textSize="22sp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="5dp"/>
-
-            <View
-                android:layout_marginStart="10dp"
-                android:layout_width="40dp"
-                android:layout_height="3dp"
-                android:background="@color/light_background" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewLiked"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"/>
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center"/>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

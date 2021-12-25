@@ -20,6 +20,6 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 -keep class com.github.HaarigerHarald.**{*;}
--keep class tech.apps.music.database.offline.YTVideoLink.*{*;}
--keep class tech.apps.music.database.offline.YTVideoLinkLiked.*{*;}
+-keep class tech.apps.music.database.offline.WatchLaterSongModel.*{*;}
+-keep class tech.apps.music.database.offline.HistorySongModel.*{*;}
 -keepnames @dagger.hilt.android.lifecycle.HiltViewModel class * extends androidx.lifecycle.ViewModel

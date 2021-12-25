@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/home"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="@color/dark_background"
     android:orientation="vertical"
-    tools:context=".ui.fragments.HomeFragment">
+    tools:context=".ui.fragments.home.HomeFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         style="@style/themeWithActionBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background">
+        android:background="@color/dark_background">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/MaterialToolbarHome"
@@ -21,11 +22,21 @@
             android:theme="@style/MyActionBar">
 
             <ImageView
-                android:id="@+id/imageView6"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:layout_marginStart="20dp"
                 android:src="@drawable/ic_audio_tube_logo" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="5dp"
+                android:fontFamily="sans-serif-black"
+                android:text="Home"
+                android:textColor="@color/white"
+                android:textSize="22sp" />
 
         </com.google.android.material.appbar.MaterialToolbar>
 
@@ -38,57 +49,70 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginBottom="150dp">
+            android:layout_marginBottom="150dp"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/recentTextTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:fontFamily="sans-serif-black"
-                android:text="Recently Added"
-                android:textColor="@color/white"
-                android:textSize="22sp"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="5dp"/>
-            <View
-                android:id="@+id/recentLineViewMainFrag"
-                android:layout_marginStart="10dp"
-                android:layout_width="40dp"
-                android:layout_height="3dp"
-                android:background="@color/light_background" />
+                android:text="Continue Watching"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewRecent"
+                android:id="@+id/recyclerViewContinueWatchMFrag"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp" />
 
             <TextView
-                android:id="@+id/exploreTextTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:fontFamily="sans-serif-black"
+                android:layout_marginTop="20dp"
                 android:text="Explore"
                 android:textColor="@color/white"
-                android:textSize="22sp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="5dp"/>
-
-            <View
-                android:layout_marginStart="10dp"
-                android:layout_width="40dp"
-                android:layout_height="3dp"
-                android:background="@color/light_background" />
+                android:textSize="18sp" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewExploreMainFragment"
+                android:id="@+id/recyclerViewLatestMFrag"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                tools:listitem="@layout/explore_list_item" />
+                android:layout_marginTop="10dp" />
+
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="10dp"-->
+<!--                android:layout_marginTop="20dp"-->
+<!--                android:text="Thriller &amp; Mystery"-->
+<!--                android:textColor="@color/white"-->
+<!--                android:textSize="18sp" />-->
+
+
+<!--            <androidx.recyclerview.widget.RecyclerView-->
+<!--                android:id="@+id/recyclerViewThrillerMFrag"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="10dp" />-->
+
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="10dp"-->
+<!--                android:layout_marginTop="20dp"-->
+<!--                android:text="Biography"-->
+<!--                android:textColor="@color/white"-->
+<!--                android:textSize="18sp" />-->
+
+<!--            <androidx.recyclerview.widget.RecyclerView-->
+<!--                android:id="@+id/recyclerViewBiographyMFrag"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="10dp" />-->
 
         </LinearLayout>
 

@@ -25,7 +25,7 @@ import tech.apps.music.exoplayer.isPlaying
 import tech.apps.music.exoplayer.toSong
 import tech.apps.music.model.YTAudioDataModel
 import tech.apps.music.others.Status
-import tech.apps.music.ui.viewmodels.MainViewModel
+import tech.apps.music.ui.fragments.MainViewModel
 import tech.apps.music.util.BasicStorage
 import javax.inject.Inject
 
@@ -97,37 +97,28 @@ class HomeActivity : AppCompatActivity() {
             run {
                 when (destination.id) {
                     R.id.songFragment -> showOrHideBottomBar(boolean = false, isNotSong = false)
-                    R.id.homeFragment -> {
+                    R.id.episodesListFragment -> showOrHideBottomBar(boolean = false,
+                        isNotSong = false)
+                    else -> {
                         if (viewModel.curPlayingSong.value != null) {
                             showOrHideBottomBar(true)
                         } else {
                             materialCardViewHome.isVisible = false
                         }
                     }
-                    R.id.searchFragment -> {
-                        showOrHideBottomBar(false)
-                    }
-                    R.id.libraryFragment -> {
-                        if (viewModel.curPlayingSong.value != null) {
-                            showOrHideBottomBar(true)
-                        } else {
-                            materialCardViewHome.isVisible = false
-                        }
-                    }
-                    else -> showOrHideBottomBar(true)
                 }
             }
         }
-        if (viewModel.curPlayingSong.value != null) {
-            if (!viewModel.getRecentList.value.isNullOrEmpty()) {
-                viewModel.getLastPlayedModel(viewModel.getRecentList.value!![0].link) {
-                    if (it != null) {
-                        viewModel.playOrToggleSong(it, true)
-                    }
-                }
-
-            }
-        }
+//        if (viewModel.curPlayingSong.value != null) {
+//            if (!viewModel.getRecentList.value.isNullOrEmpty()) {
+//                viewModel.getLastPlayedModel(viewModel.getRecentList.value!![0].link) {
+//                    if (it != null) {
+//                        viewModel.playOrToggleSong(it, true)
+//                    }
+//                }
+//
+//            }
+//        }
     }
 
     private fun showOrHideBottomBar(boolean: Boolean, isNotSong: Boolean = true) {

@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_more.*
 import kotlinx.coroutines.Dispatchers
@@ -17,20 +18,24 @@ import tech.apps.music.others.Constants.ABOUT
 import tech.apps.music.others.Constants.ABOUT_SENDING_DATA
 import tech.apps.music.others.Constants.HOW_IT_WORKS
 import tech.apps.music.others.Constants.PRIVACY_POLICY
-import tech.apps.music.ui.bottomsheet.AboutFragment
 
 class MoreActivity : AppCompatActivity() {
 
     @SuppressLint("UseCompatLoadingForDrawables", "ResourceAsColor")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(R.style.themeWithActionBar)
         setContentView(R.layout.activity_more)
 
-        supportActionBar?.title = "Settings"
+        backButtonMoreAct.setOnClickListener {
+            finish()
+        }
 
         val fragment = AboutFragment()
         val bundle = Bundle()
+
+        deleteDownloadedSongs.setOnClickListener {
+            Snackbar.make(it, "Deleted All the Downloads", Snackbar.LENGTH_LONG).show()
+        }
 
         deleteRecentSongs.setOnClickListener {
 

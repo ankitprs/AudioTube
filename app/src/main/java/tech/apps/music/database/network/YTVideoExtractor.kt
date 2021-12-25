@@ -7,6 +7,7 @@ import at.huber.youtubeExtractor.VideoMeta
 import at.huber.youtubeExtractor.YouTubeExtractor
 import at.huber.youtubeExtractor.YtFile
 import tech.apps.music.model.YTAudioDataModel
+import tech.apps.music.util.VideoData
 
 object YTVideoExtractor {
 
@@ -43,7 +44,7 @@ object YTVideoExtractor {
                             vMeta.title,
                             vMeta.author,
                             audioLink,
-                            vMeta.mqImageUrl,
+                            VideoData.getThumbnailFromId(vMeta.videoId),
                             vMeta.videoLength
                         )
                         callback(song)

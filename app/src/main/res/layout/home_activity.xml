@@ -4,18 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:background="@color/dark_background"
+    android:orientation="vertical"
+    tools:context=".ui.HomeActivity">
 
     <TextView
         android:id="@+id/noInternetConnectionView"
-        android:gravity="center"
-        android:padding="5dp"
-        android:text="No Network Connection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/one_level_up"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="No Network Connection"
         android:textColor="@color/white"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -36,9 +38,11 @@
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/materialCardViewHome"
+            style="?attr/materialCardViewFilledStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
+            android:elevation="100dp"
             app:cardBackgroundColor="@color/background"
             app:cardCornerRadius="0dp"
             app:layout_anchor="@+id/bottom_navigation"
@@ -82,24 +86,22 @@
             <View
                 android:id="@+id/borderForBottomNav"
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="2dp"
                 android:layout_above="@+id/bottom_navigation"
                 android:layout_gravity="bottom"
-                android:background="@color/grey" />
+                android:background="@color/light_background" />
 
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottom_navigation"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="55dp"
             android:layout_gravity="bottom"
-            android:layout_marginTop="5dp"
             android:background="@color/background"
             app:itemIconTint="@color/bottom_nav_selected"
             app:itemRippleColor="@color/light_background"
             app:itemTextColor="@color/bottom_nav_selected"
-            app:labelVisibilityMode="labeled"
             app:menu="@menu/home_bottom_nav_menu" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

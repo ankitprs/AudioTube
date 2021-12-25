@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import com.bumptech.glide.Glide
@@ -47,6 +48,9 @@ class MusicNotificationManager(
         notificationManager.setUseRewindAction(false)
     }
 
+    fun hideNotification() {
+        notificationManager.setPlayer(null)
+    }
 
     fun showNotification(player: Player) {
         notificationManager.setPlayer(player)
@@ -55,6 +59,10 @@ class MusicNotificationManager(
     private inner class DescriptionAdapter(
         private val mediaController: MediaControllerCompat
     ) : PlayerNotificationManager.MediaDescriptionAdapter {
+
+        var currentIconUri: Uri? = null
+        var currentBitmap: Bitmap? = null
+
         override fun getCurrentContentTitle(player: Player): CharSequence {
             newSongCallback()
             return mediaController.metadata.description.title.toString()
@@ -72,26 +80,35 @@ class MusicNotificationManager(
             player: Player,
             callback: PlayerNotificationManager.BitmapCallback
         ): Bitmap? {
-            var thumbnail: Bitmap? =null
-            Glide.with(context)
-                .asBitmap()
-                .load(mediaController.metadata.description.iconUri)
-                .centerCrop()
-                .override(1600, 900)
-                .into(object : CustomTarget<Bitmap>() {
-                    override fun onResourceReady(
-                        resource: Bitmap,
-                        transition: Transition<in Bitmap>?
-                    ) {
-                        callback.onBitmap(resource)
-                        thumbnail = resource
-                    }
+            val iconUri = mediaController.metadata.description.iconUri
 
-                    override fun onLoadCleared(placeholder: Drawable?) {
-                    }
+            return if (currentIconUri != iconUri || currentBitmap == null){
 
-                })
-            return thumbnail
+                currentIconUri = iconUri
+
+                Glide.with(context)
+                    .asBitmap()
+                    .load(mediaController.metadata.description.iconUri)
+                    .centerCrop()
+                    .override(1600, 900)
+                    .into(object : CustomTarget<Bitmap>() {
+                        override fun onResourceReady(
+                            resource: Bitmap,
+                            transition: Transition<in Bitmap>?
+                        ) {
+                            currentBitmap = resource
+                            callback.onBitmap(resource)
+                        }
+
+                        override fun onLoadCleared(placeholder: Drawable?) {
+                        }
+
+                    })
+                null
+            }else{
+                currentBitmap
+            }
+
         }
     }
 

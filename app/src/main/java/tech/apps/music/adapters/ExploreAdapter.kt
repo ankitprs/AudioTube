@@ -1,6 +1,5 @@
 package tech.apps.music.adapters
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -54,7 +53,6 @@ class ExploreAdapter @Inject constructor(
         return songs.size
     }
 
-    @SuppressLint("ResourceAsColor")
     override fun onBindViewHolder(holder: ExploreViewHolder, position: Int) {
         val song = songs[position]
 

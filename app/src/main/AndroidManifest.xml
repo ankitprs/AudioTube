@@ -27,7 +27,9 @@
 
         <service
             android:name=".exoplayer.MusicService"
-            android:exported="false">
+            android:enabled="true"
+            android:exported="true"
+            tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
@@ -53,8 +55,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <provider android:name=".SearchSuggestionProvider"
-            android:authorities="tech.apps.music.SearchSuggestionProvider" />
+
     </application>
 
 </manifest>

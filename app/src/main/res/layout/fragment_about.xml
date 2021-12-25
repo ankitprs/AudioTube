@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@drawable/bottom_sheet_background"
-    tools:context=".ui.bottomsheet.AboutFragment"
+    tools:context=".ui.more.AboutFragment"
     android:layout_margin="10dp">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout

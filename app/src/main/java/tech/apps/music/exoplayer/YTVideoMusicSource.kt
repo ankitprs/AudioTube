@@ -26,14 +26,21 @@ class YTVideoMusicSource @Inject constructor(
 
         withContext(Dispatchers.Main) {
             state = State.STATE_INITIALIZING
-            musicDatabase.songsData.observeForever {
-                if (it != null) {
-                    songs = listOf(it.toMetaData())
+            musicDatabase.songsData.observeForever { list ->
+                if (list != null) {
+                    songs = emptyList()
+                    list.forEach {
+                        songs = songs + it.toMetaData()
+                    }
 
                     state = State.STATE_INITIALIZED
                 }
             }
         }
+    }
+
+    suspend fun saveSongPosition(watchedPosition: Long, timing: Long, videoID: String) {
+        musicDatabase.updatingSongPosTime(watchedPosition, timing, videoID)
     }
 
     private val onReadyListeners = mutableListOf<(Boolean) -> Unit>()

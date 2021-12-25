@@ -1,5 +1,6 @@
 package tech.apps.music.database.network
 
+import android.annotation.SuppressLint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -11,6 +12,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.http.GET
 import retrofit2.http.Query
+import tech.apps.music.model.SongModelForList
 import tech.apps.music.util.BasicStorage
 import java.io.IOException
 import java.net.URLEncoder
@@ -45,7 +47,7 @@ class YoutubeSearch {
 
     suspend fun searchWithKeywords(
         keyword: String,
-        callback: (data: ArrayList<VideoObject>) -> Unit
+        callback: (data: ArrayList<SongModelForList>) -> Unit
     ) {
         if (!isInternetExist()) {
             return
@@ -92,9 +94,10 @@ class YoutubeSearch {
         }
     }
 
-    private fun parseHtml(response: String): ArrayList<VideoObject> {
+    @SuppressLint("SimpleDateFormat")
+    private fun parseHtml(response: String): ArrayList<SongModelForList> {
 
-        val results: ArrayList<VideoObject> = ArrayList()
+        val results: ArrayList<SongModelForList> = ArrayList()
 
         val start = response.indexOf("ytInitialData") + ("ytInitialData").length + 3
         val end = response.indexOf("};", start) + 1
@@ -116,24 +119,22 @@ class YoutubeSearch {
 
         for (i in 0 until (size - 1)) {
             val video = videos.getJSONObject(i)
-            val res = VideoObject()
+            val res = SongModelForList()
 
             if (video.optJSONObject("videoRenderer") != null) {
                 val video_data = video.getJSONObject("videoRenderer")
                 res.videoId = video_data.getString("videoId")
-                res.thumbnails = video_data.getJSONObject("thumbnail").getJSONArray("thumbnails")
-                    .getJSONObject(0).getString("url")
                 res.title = video_data.getJSONObject("title").getJSONArray("runs").getJSONObject(0)
                     .getString("text")
-                res.channelName =
+                res.ChannelName =
                     video_data.getJSONObject("longBylineText").getJSONArray("runs").getJSONObject(0)
                         .getString("text")
 
                 if (video_data.optJSONObject("lengthText") != null) {
-                    res.duration = video_data.getJSONObject("lengthText").getString("simpleText")
+                    res.durationText = video_data.getJSONObject("lengthText").getString("simpleText")
                     results.add(res)
                 }
-
+                res.time = 1L
                 if (results.size >= MAX_LIST_SIZE) {
                     return results
                 }
@@ -146,12 +147,3 @@ class YoutubeSearch {
         BasicStorage.isNetworkConnected.value == true
 
 }
-
-data class VideoObject(
-    var videoId: String = "",
-    var thumbnails: String = "",
-    var title: String = "",
-    var channelName: String = "",
-    var duration: String = "",
-    var viewsCount: String = ""
-)
