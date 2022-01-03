@@ -36,9 +36,6 @@
             android:id="@+id/action_homeFragment_to_searchCatalogFragment"
             app:destination="@id/searchCatalogFragment" />
         <action
-            android:id="@+id/action_homeFragment_to_premiumSongDetailFragment"
-            app:destination="@id/premiumSongDetailFragment" />
-        <action
             android:id="@+id/action_homeFragment_to_searchFragment"
             app:destination="@id/searchFragment" />
     </fragment>
@@ -64,15 +61,6 @@
         app:popEnterAnim="@android:anim/fade_in"
         app:popExitAnim="@anim/down" />
     <fragment
-        android:id="@+id/premiumFragment"
-        android:name="tech.apps.music.ui.fragments.premium.PremiumFragment"
-        android:label="premium_fragment"
-        tools:layout="@layout/premium_fragment">
-        <action
-            android:id="@+id/action_premiumFragment_to_premiumSongDetailFragment"
-            app:destination="@id/premiumSongDetailFragment" />
-    </fragment>
-    <fragment
         android:id="@+id/searchCatalogFragment"
         android:name="tech.apps.music.ui.fragments.search.SearchCatalogFragment"
         android:label="search_catalog_fragment"
@@ -81,11 +69,6 @@
             android:id="@+id/action_searchCatalogFragment_to_searchFragment"
             app:destination="@id/searchFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/premiumSongDetailFragment"
-        android:name="tech.apps.music.ui.fragments.premium.PremiumSongDetailFragment"
-        android:label="premium_song_detail_fragment"
-        tools:layout="@layout/premium_song_detail_fragment" />
     <fragment
         android:id="@+id/episodesListFragment"
         android:name="tech.apps.music.ui.fragments.song.EpisodesListFragment"
@@ -96,4 +79,9 @@
         android:name="tech.apps.music.ui.fragments.library.detail.MyLibraryListFragment"
         android:label="fragment_my_library_list"
         tools:layout="@layout/fragment_my_library_list" />
+    <fragment
+        android:id="@+id/songDetailFragment"
+        android:name="tech.apps.music.ui.fragments.premium.SongDetailFragment"
+        android:label="song_detail_fragment"
+        tools:layout="@layout/song_detail_fragment" />
 </navigation>

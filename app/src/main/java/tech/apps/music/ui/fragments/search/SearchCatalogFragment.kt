@@ -16,7 +16,6 @@ import tech.apps.music.adapters.ExploreAdapter
 import tech.apps.music.databinding.SearchCatalogFragmentBinding
 import tech.apps.music.others.Constants
 import tech.apps.music.util.VideoData
-import javax.inject.Inject
 
 @DelicateCoroutinesApi
 @AndroidEntryPoint
@@ -24,7 +23,6 @@ class SearchCatalogFragment : Fragment() {
 
     private lateinit var binding: SearchCatalogFragmentBinding
 
-    @Inject
     lateinit var exploreAdapter: ExploreAdapter
 
     override fun onCreateView(
@@ -37,6 +35,8 @@ class SearchCatalogFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        exploreAdapter = ExploreAdapter()
 
         binding.recyclerViewExploreMainFragment.apply {
             adapter = exploreAdapter

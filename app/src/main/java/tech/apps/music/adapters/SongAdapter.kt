@@ -93,7 +93,7 @@ class SongAdapter @Inject constructor(
         holder.itemView.apply {
             titleTYVideo.text = song.title
 
-            glide.load(VideoData.getThumbnailFromId(song.videoId))
+            glide.load(VideoData.getThumbnailLowQFromId(song.videoId))
                 .fitCenter()
                 .override(480, 270)
                 .centerCrop()

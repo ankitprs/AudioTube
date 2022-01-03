@@ -14,14 +14,4 @@
     <color name="red_live">#FF0000</color>
     <color name="button_color">#0099FF</color>
     <color name="grey">#8E8E8E</color>
-
-    <color name="violate">#700B97</color>
-    <color name="dark_red">#CD1818</color>
-    <color name="dark_green">#1E5128</color>
-    <color name="navi_blue">#2E4C6D</color>
-    <color name="brown">#310B0B</color>
-    <color name="orange">#F58840</color>
-    <color name="dark_violate">#1F1D36</color>
-    <color name="diff_green">#346751</color>
-    <color name="marune">#2C061F</color>
 </resources>

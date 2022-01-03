@@ -31,7 +31,6 @@ class HomeFragment : Fragment() {
     @Inject
     lateinit var recentAudioAdapter: SongAdapter
 
-    @Inject
     lateinit var exploreAdapter: ExploreAdapter
 
     private lateinit var binding: MainFragmentBinding
@@ -81,17 +80,10 @@ class HomeFragment : Fragment() {
             bundle.putString(Constants.PASS_EXPLORE_KEYWORDS, it.keyword)
             findNavController().navigate(R.id.action_homeFragment_to_searchFragment,bundle)
         }
-    //        premiumLisAdapter.setItemClickListener {
-//            val bundle = Bundle()
-//            bundle.putSerializable(Constants.PASSING_EPISODES_MODEL, it)
-//            findNavController().navigate(
-//                R.id.action_homeFragment_to_premiumSongDetailFragment,
-//                bundle
-//            )
-//        }
     }
 
     private fun setUpRecyclerView() {
+        exploreAdapter = ExploreAdapter()
 
         binding.recyclerViewContinueWatchMFrag.apply {
             adapter = recentAudioAdapter
@@ -108,21 +100,7 @@ class HomeFragment : Fragment() {
                 2
             )
         }
-//        setUpRecyclerView(binding.recyclerViewThrillerMFrag, premiumLisAdapter)
-//        setUpRecyclerView(binding.recyclerViewBiographyMFrag, premiumLisAdapter)
     }
-
-//    private fun setUpRecyclerView(recyclerView: RecyclerView, preAdapter: PremiumListAdapter) {
-//        recyclerView.apply {
-//            adapter = preAdapter
-//            layoutManager = LinearLayoutManager(
-//                requireContext(),
-//                LinearLayoutManager.HORIZONTAL,
-//                false
-//            )
-//        }
-//    }
-
     private fun addingSongIntoRecyclerView() {
         viewModel.getContinueWatchingList.observe(viewLifecycleOwner) {
             if (!it.isNullOrEmpty()) {

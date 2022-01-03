@@ -17,7 +17,7 @@ object YTVideoExtractor {
         callback: (ytAudioDataModel: YTAudioDataModel?) -> Unit
     ) {
 
-        val cacheSong = SongsCache.SongsMap[ytLink]
+        val cacheSong = SongsMap[ytLink]
         val currentTiming = System.currentTimeMillis()
         if (cacheSong != null && currentTiming - cacheSong.time < 18000000L) {
             callback(cacheSong.ytAudioDataModel)
@@ -50,7 +50,7 @@ object YTVideoExtractor {
                         callback(song)
                         val songCache = SongsCacheModel(System.currentTimeMillis(), song)
                         if (cacheSong == null) {
-                            SongsCache.SongsMap[ytLink] = songCache
+                            SongsMap[ytLink] = songCache
                         } else {
                             songCache.ytAudioDataModel = songCache.ytAudioDataModel
                             songCache.time = songCache.time
@@ -61,6 +61,6 @@ object YTVideoExtractor {
         obj.extract(ytLink)
     }
     fun clearCache(){
-        SongsCache.SongsMap.clear()
+        SongsMap.clear()
     }
 }

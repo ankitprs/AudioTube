@@ -89,14 +89,14 @@ class LibraryFragment : Fragment() {
                 bundle
             )
         }
-        DownloadedGoto.setOnClickListener {
-            val bundle = Bundle()
-            bundle.putString(Constants.PASSING_MY_LIBRARY_TYPE, Constants.MY_LIBRARY_TYPE_DOWNLOAD)
-            findNavController().navigate(
-                R.id.action_libraryFragment_to_myLibraryListFragment,
-                bundle
-            )
-        }
+//        DownloadedGoto.setOnClickListener {
+//            val bundle = Bundle()
+//            bundle.putString(Constants.PASSING_MY_LIBRARY_TYPE, Constants.MY_LIBRARY_TYPE_DOWNLOAD)
+//            findNavController().navigate(
+//                R.id.action_libraryFragment_to_myLibraryListFragment,
+//                bundle
+//            )
+//        }
     }
 
     private fun addingSongIntoRecyclerView() {

@@ -11,6 +11,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import tech.apps.music.R
 import tech.apps.music.database.Repository
+import tech.apps.music.database.offline.OfflineDatabase
 import tech.apps.music.exoplayer.MusicServiceConnection
 import javax.inject.Singleton
 
@@ -28,8 +29,14 @@ object AppModule {
     @Singleton
     @Provides
     fun provideMusicDatabase(
-        @ApplicationContext context: Context,
-    ) = Repository(context)
+        @ApplicationContext context: Context
+    ) = Repository(context, provideRoomDatabase(context))
+
+    @Singleton
+    @Provides
+    fun provideRoomDatabase(
+        @ApplicationContext context: Context
+    ) = OfflineDatabase.getDatabase(context)
 
     @Singleton
     @Provides

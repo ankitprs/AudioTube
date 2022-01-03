@@ -1,7 +1,5 @@
 package tech.apps.music.ui.fragments.song
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.Dialog
@@ -12,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.widget.PopupMenu
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -49,7 +48,7 @@ class SongFragment : Fragment() {
     private var playbackState: PlaybackStateCompat? = null
 
     private var shouldUpdateSeekbar: Boolean = true
-    var isWatchLater = false
+    private var isWatchLater = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,20 +68,34 @@ class SongFragment : Fragment() {
 
         if (videoId != null) {
             val videoLink = "https://www.youtube.com/watch?v=$videoId"
-            val dialog = Dialog(requireActivity())
             val position: Long = arguments?.getLong(Constants.PASSING_SONG_LAST_WATCHED_POS) ?: 0
 
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            dialog.setContentView(R.layout.dialog_card_item)
-            dialog.show()
+            if (mainViewModel.getSongFromCache(videoId) == null) {
+                val dialog = Dialog(requireActivity())
 
-            mainViewModel.addSongInRecent(videoLink, requireActivity()) {
-                if (!it) {
-                    Toast.makeText(activity, "Try Again Later", Toast.LENGTH_LONG).show()
-                } else {
-                    mainViewModel.seekTo(position)
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                dialog.setContentView(R.layout.dialog_card_item)
+                dialog.show()
+
+                mainViewModel.addSongInRecent(videoLink, requireActivity()) {
+                    if (!it) {
+                        Toast.makeText(activity, "Try Again Later", Toast.LENGTH_LONG).show()
+                    } else {
+                        mainViewModel.seekTo(position)
+                    }
+                    dialog.dismiss()
                 }
-                dialog.dismiss()
+            } else if (curPlayingSong?.mediaId == null || curPlayingSong?.mediaId == videoId) {
+            } else {
+                mainViewModel.addSongInRecent(videoLink, requireActivity()) {
+                    if (!it) {
+                        Toast.makeText(activity, "Try Again Later", Toast.LENGTH_LONG).show()
+                    } else {
+                        if (position > 0L) {
+                            mainViewModel.seekTo(position)
+                        }
+                    }
+                }
             }
         }
 
@@ -150,22 +163,7 @@ class SongFragment : Fragment() {
 
         checkPlaybackSpeed()
         binding.materialCardViewDisVisible.setOnClickListener {
-            hideAndShowSpeed(!binding.constraintLayout.isVisible)
-        }
-        binding.materialCardView10.setOnClickListener {
-            setPlaybackSpeed(1f, "1x")
-        }
-        binding.materialCardView125.setOnClickListener {
-            setPlaybackSpeed(1.25f, "1.25x")
-        }
-        binding.materialCardView15.setOnClickListener {
-            setPlaybackSpeed(1.5f, "1.5x")
-        }
-        binding.materialCardView175.setOnClickListener {
-            setPlaybackSpeed(1.75f, "1.75x")
-        }
-        binding.materialCardView20.setOnClickListener {
-            setPlaybackSpeed(2f, "2x")
+            handleSpeedController(it)
         }
         binding.imageViewEpisodesListButton.setOnClickListener {
             findNavController().navigate(R.id.action_songFragment_to_episodesListFragment)
@@ -186,7 +184,6 @@ class SongFragment : Fragment() {
 
         binding.materialCardViewDisVisible.text = playSpeedString
         changePlaybackSpeedState(playSpeed)
-        hideAndShowSpeed(false)
     }
 
     private fun changePlaybackSpeedState(speed: Float) {
@@ -200,7 +197,17 @@ class SongFragment : Fragment() {
             AppCompatActivity.MODE_PRIVATE
         )
         val playbackSpeed: Float = sharedPref.getFloat(Constants.SAVE_PLAYBACK_SPEED, 1f)
+
         val str: String = when (playbackSpeed) {
+            0.25f -> {
+                "0.25x"
+            }
+            0.5f -> {
+                "0.5x"
+            }
+            0.75f -> {
+                "0.75x"
+            }
             1f -> {
                 "1x"
             }
@@ -220,59 +227,9 @@ class SongFragment : Fragment() {
                 "1x"
             }
         }
+
         binding.materialCardViewDisVisible.text = str
         changePlaybackSpeedState(playbackSpeed)
-    }
-
-    private fun hideAndShowSpeed(speedStatus: Boolean) {
-        if (speedStatus) {
-            binding.coordinatorLayout.apply {
-                animate().alphaBy(1f)
-                    .alpha(0f)
-                    .setDuration(400)
-                    .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator?) {
-                            super.onAnimationEnd(animation)
-                            visibility = View.INVISIBLE
-                        }
-                    })
-            }
-            binding.constraintLayout.apply {
-                isVisible = speedStatus
-                animate().alphaBy(0f)
-                    .alpha(1f)
-                    .setDuration(400)
-                    .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator?) {
-                            super.onAnimationEnd(animation)
-                        }
-                    })
-
-            }
-        } else {
-            binding.constraintLayout.apply {
-                animate().alphaBy(1f)
-                    .alpha(0.0f)
-                    .setDuration(400)
-                    .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator?) {
-                            super.onAnimationEnd(animation)
-                            visibility = View.INVISIBLE
-                        }
-                    })
-            }
-            binding.coordinatorLayout.apply {
-                isVisible = !speedStatus
-                animate().alphaBy(0f)
-                    .alpha(1f)
-                    .setDuration(400)
-                    .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator?) {
-                            super.onAnimationEnd(animation)
-                        }
-                    })
-            }
-        }
     }
 
     private fun updateTitleAndSongImage(song: YTAudioDataModel) {
@@ -388,6 +345,46 @@ class SongFragment : Fragment() {
             binding.imageViewBookMarkButton.setImageResource(R.drawable.ic_round_bookmark_24)
         } else {
             binding.imageViewBookMarkButton.setImageResource(R.drawable.ic_round_bookmark_border_24)
+        }
+    }
+
+    private fun handleSpeedController(view: View) {
+        val popupMenu = PopupMenu(requireActivity(), view)
+        val inflater = popupMenu.menuInflater
+        inflater.inflate(R.menu.speed_control_menu, popupMenu.menu)
+        popupMenu.show()
+
+        popupMenu.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.speedControlMenu025 -> {
+                    setPlaybackSpeed(0.25f, "0.25x")
+                }
+                R.id.speedControlMenu05 -> {
+                    setPlaybackSpeed(0.5f, "0.5x")
+                }
+                R.id.speedControlMenu075 -> {
+                    setPlaybackSpeed(0.75f, "0.75x")
+                }
+                R.id.speedControlMenu10 -> {
+                    setPlaybackSpeed(1f, "1x")
+                }
+                R.id.speedControlMenu125 -> {
+                    setPlaybackSpeed(1.25f, "1.25x")
+                }
+                R.id.speedControlMenu15 -> {
+                    setPlaybackSpeed(1.5f, "1.5x")
+                }
+                R.id.speedControlMenu175 -> {
+                    setPlaybackSpeed(1.75f, "1.75x")
+                }
+                R.id.speedControlMenu20 -> {
+                    setPlaybackSpeed(2f, "2x")
+                }
+                else -> {
+                    setPlaybackSpeed(1f, "1x")
+                }
+            }
+            true
         }
     }
 }

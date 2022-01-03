@@ -11,7 +11,7 @@
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="42dp">
 
         <ImageButton
             android:id="@+id/exitButtonSongFragment"
@@ -23,14 +23,12 @@
 
         <ImageView
             android:id="@+id/shareButtonSongFragment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
             android:layout_gravity="end"
-            android:layout_margin="?android:attr/buttonCornerRadius"
             android:background="@drawable/ripple_effect_circle"
             android:padding="8dp"
-            app:srcCompat="@drawable/ic_baseline_share_24"
-            tools:targetApi="p" />
+            app:srcCompat="@drawable/ic_baseline_share_24"/>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
@@ -61,7 +59,7 @@
             android:id="@+id/songTitleSongFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:gravity="center"
             android:text="Video Title"
             android:textColor="@color/white"
@@ -89,7 +87,7 @@
             android:id="@+id/coordinatorLayout"
             android:layout_width="match_parent"
             android:layout_height="70dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
@@ -167,120 +165,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout"
-            android:layout_width="match_parent"
-            android:layout_height="46dp"
-            android:layout_marginBottom="24dp"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="parent">
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/materialCardView10"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
-                app:cardBackgroundColor="@color/one_level_up"
-                app:cardCornerRadius="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/materialCardView125"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="1x"
-                    android:textColor="@color/white"
-                    android:textSize="14sp" />
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/materialCardView125"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
-                app:cardBackgroundColor="@color/one_level_up"
-                app:cardCornerRadius="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/materialCardView15"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/materialCardView10"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="1.25x"
-                    android:textColor="@color/white"
-                    android:textSize="14sp" />
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/materialCardView15"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
-                app:cardBackgroundColor="@color/one_level_up"
-                app:cardCornerRadius="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/materialCardView175"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/materialCardView125"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="1.5x"
-                    android:textColor="@color/white"
-                    android:textSize="14sp" />
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/materialCardView175"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
-                app:cardBackgroundColor="@color/one_level_up"
-                app:cardCornerRadius="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/materialCardView20"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/materialCardView15"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="1.75x"
-                    android:textColor="@color/white"
-                    android:textSize="14sp" />
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/materialCardView20"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
-                app:cardBackgroundColor="@color/one_level_up"
-                app:cardCornerRadius="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/materialCardView175"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="2x"
-                    android:textColor="@color/white"
-                    android:textSize="14sp" />
-            </com.google.android.material.card.MaterialCardView>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
         <SeekBar
             android:id="@+id/seekBar"
             android:layout_width="match_parent"
@@ -302,7 +186,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:gravity="center"
             android:text="00:00"
             android:textColor="@color/white"
@@ -353,7 +237,7 @@
             android:layout_width="95dp"
             android:layout_height="95dp"
             android:layout_gravity="center"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="16dp"
             android:background="@drawable/ripple_effect_circle"
             android:padding="10dp"
             android:src="@drawable/ic_round_play_circle_24"
@@ -393,13 +277,11 @@
             android:id="@+id/progressBarForBuffering"
             android:layout_width="95dp"
             android:layout_height="95dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="16dp"
             android:indeterminateTint="@color/button_color"
             app:layout_constraintBottom_toTopOf="@+id/coordinatorLayout"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/seekBar" />
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

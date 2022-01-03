@@ -3,45 +3,17 @@ package tech.apps.music.database.network
 import android.annotation.SuppressLint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.HttpException
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.http.GET
-import retrofit2.http.Query
 import tech.apps.music.model.SongModelForList
 import tech.apps.music.util.BasicStorage
 import java.io.IOException
 import java.net.URLEncoder
 
-const val BASE_URL = "https://www.youtube.com"
 const val MAX_LIST_SIZE = 20
-
-interface RetrofitCreateRoom {
-    @GET("/results")
-    fun ytSearchResult(@Query("search_query") keyword: String): Call<ResponseBody>
-}
-
-object YtSearchInstance {
-
-    val ytSearchInstant: RetrofitCreateRoom
-
-    init {
-
-        val okHttpClient = OkHttpClient().newBuilder()
-            .build()
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(okHttpClient)
-            .build()
-
-        ytSearchInstant = retrofit.create(RetrofitCreateRoom::class.java)
-    }
-}
 
 class YoutubeSearch {
 
@@ -57,7 +29,7 @@ class YoutubeSearch {
         withContext(Dispatchers.IO) {
             try {
 
-                YtSearchInstance.ytSearchInstant.ytSearchResult(keywordEncoded)
+                YoutubeRetrofitInstance.ytSearchInstant.ytSearchResult(keywordEncoded)
                     .enqueue(object : retrofit2.Callback<ResponseBody> {
                         override fun onResponse(
                             call: Call<ResponseBody>,

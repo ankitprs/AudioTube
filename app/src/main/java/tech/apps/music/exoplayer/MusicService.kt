@@ -53,7 +53,6 @@ class MusicService : MediaBrowserServiceCompat() {
 
     private lateinit var musicPlayerEventListener: MusicPlayerEventListener
 
-    private var currentPlaylistItems: List<MediaMetadataCompat> = emptyList()
     private var curPlayingSong: MediaMetadataCompat? = null
 
     private var isInitialized = false

@@ -128,7 +128,10 @@ class MainViewModel @Inject constructor(
 
         val isPrepared = playbackState.value?.isPrepared ?: false
 
-        if (isPrepared && mediaItem[position].mediaId == curPlayingSong.value?.getString(METADATA_KEY_MEDIA_ID)) {
+        if (isPrepared && mediaItem[position].mediaId == curPlayingSong.value?.getString(
+                METADATA_KEY_MEDIA_ID
+            )
+        ) {
             playbackState.value?.let {
                 when {
                     it.isPlaying -> if (toggle) musicServiceConnection.transportControls.pause()
@@ -137,7 +140,10 @@ class MainViewModel @Inject constructor(
                 }
             }
         } else {
-            musicServiceConnection.transportControls.playFromMediaId(mediaItem[position].mediaId, null)
+            musicServiceConnection.transportControls.playFromMediaId(
+                mediaItem[position].mediaId,
+                null
+            )
         }
     }
 
@@ -204,5 +210,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun getSongFromCache(ytLink: String): YTAudioDataModel?=
+        repository.getSongFromCache(ytLink)
 
 }
