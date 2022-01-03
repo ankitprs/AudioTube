@@ -31,7 +31,7 @@ class HomeFragment : Fragment() {
     @Inject
     lateinit var recentAudioAdapter: SongAdapter
 
-    lateinit var exploreAdapter: ExploreAdapter
+    private lateinit var exploreAdapter: ExploreAdapter
 
     private lateinit var binding: MainFragmentBinding
 
@@ -102,7 +102,7 @@ class HomeFragment : Fragment() {
         }
     }
     private fun addingSongIntoRecyclerView() {
-        viewModel.getContinueWatchingList.observe(viewLifecycleOwner) {
+        viewModel.getRecentList.observe(viewLifecycleOwner) {
             if (!it.isNullOrEmpty()) {
 
                 recentAudioAdapter.songs = it.toSongModelForList()
