@@ -30,7 +30,7 @@ class MusicPlaybackPreparer(
 
     override fun onPrepareFromMediaId(mediaId: String, playWhenReady: Boolean, extras: Bundle?) {
         ytVideoMusicSource.whenReady {
-            val itemToPlay = ytVideoMusicSource.songs.find {
+            val itemToPlay = YTVideoMusicSource.songs.find {
                 mediaId == it.description.mediaId
             }
             playerPrepared(itemToPlay)

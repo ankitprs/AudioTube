@@ -20,6 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import tech.apps.music.database.offline.HistorySongModel
 import tech.apps.music.exoplayer.callbacks.MusicPlaybackPreparer
 import tech.apps.music.exoplayer.callbacks.MusicPlayerEventListener
 import tech.apps.music.exoplayer.callbacks.MusicPlayerNotificationListener
@@ -61,6 +62,8 @@ class MusicService : MediaBrowserServiceCompat() {
         var curSongDuration = 0L
             private set
         var bufferingTime: MutableLiveData<Boolean> = MutableLiveData(false)
+
+        var isYoutubeVideoCurSong = true
     }
 
     override fun onCreate() {
@@ -92,7 +95,7 @@ class MusicService : MediaBrowserServiceCompat() {
 
             curPlayingSong = it
             preparePlayer(
-                ytVideoMusicSource.songs,
+                YTVideoMusicSource.songs,
                 it
             )
         }
@@ -123,7 +126,7 @@ class MusicService : MediaBrowserServiceCompat() {
 
     private inner class MusicQueueNavigator : TimelineQueueNavigator(mediaSession) {
         override fun getMediaDescription(player: Player, windowIndex: Int): MediaDescriptionCompat {
-            return ytVideoMusicSource.songs[windowIndex].description
+            return YTVideoMusicSource.songs[windowIndex].description
         }
     }
 
@@ -133,6 +136,8 @@ class MusicService : MediaBrowserServiceCompat() {
         playNow: Boolean = true
     ) {
         val curSongIndex = if (curPlayingSong == null) 0 else songs.indexOf(itemToPlay)
+        exoPlayer.stop(true)
+//        exoPlayer.addMediaSource()
         exoPlayer.prepare(ytVideoMusicSource.asMediaSource(dataSourceFormat))
         exoPlayer.seekTo(curSongIndex, 0L)
         exoPlayer.playWhenReady = playNow
@@ -173,21 +178,19 @@ class MusicService : MediaBrowserServiceCompat() {
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
+        saveRecentSongDataToStorage()
         super.onTaskRemoved(rootIntent)
-        val position = exoPlayer.currentPosition
-        serviceScope.launch {
-            ytVideoMusicSource.saveSongPosition(
-                position,
-                System.currentTimeMillis(),
-                curPlayingSong?.description?.mediaId.toString()
-            )
-        }
+
         exoPlayer.stop()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-
+        mediaSession.run {
+            isActive = false
+            release()
+        }
+        serviceJob.cancel()
         exoPlayer.removeListener(musicPlayerEventListener)
         exoPlayer.release()
     }
@@ -200,11 +203,18 @@ class MusicService : MediaBrowserServiceCompat() {
         val position = exoPlayer.currentPosition
 
         serviceScope.launch {
-            ytVideoMusicSource.saveSongPosition(
-                position,
-                System.currentTimeMillis(),
-                curPlayingSong?.description?.mediaId.toString()
-            )
+            if(isYoutubeVideoCurSong){
+                ytVideoMusicSource.savingSongInHistory(
+                    HistorySongModel(
+                        curPlayingSong?.description?.mediaId.toString(),
+                        curPlayingSong?.description?.title.toString(),
+                        curPlayingSong?.description?.subtitle.toString(),
+                        curSongDuration,
+                        System.currentTimeMillis(),
+                        position,
+                    )
+                )
+            }
         }
     }
 }

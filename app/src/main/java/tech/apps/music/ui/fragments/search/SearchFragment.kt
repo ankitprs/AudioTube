@@ -15,11 +15,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.search_fragment.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -28,7 +28,10 @@ import tech.apps.music.R
 import tech.apps.music.adapters.SearchSuggestionAdapter
 import tech.apps.music.adapters.SongAdapter
 import tech.apps.music.database.network.YoutubeSearch
+import tech.apps.music.databinding.SearchFragmentBinding
+import tech.apps.music.model.toYtAudioDataModel
 import tech.apps.music.others.Constants
+import tech.apps.music.ui.fragments.MainViewModel
 import javax.inject.Inject
 
 @DelicateCoroutinesApi
@@ -42,19 +45,22 @@ class SearchFragment : Fragment() {
 
     lateinit var searchSuggestionAdapter: SearchSuggestionAdapter
     private var keyboardNeeded = true
+    private lateinit var binding: SearchFragmentBinding
+    private lateinit var mainViewModel: MainViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         viewModel = ViewModelProvider(this)[SearchViewModel::class.java]
-        return inflater.inflate(R.layout.search_fragment, container, false)
+        binding = SearchFragmentBinding.inflate(layoutInflater,container,false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        voiceSearchViewSearch.setOnClickListener {
+        mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
+        binding.voiceSearchViewSearch.setOnClickListener {
             startVoiceRecognitionActivity()
         }
 
@@ -67,21 +73,31 @@ class SearchFragment : Fragment() {
             findNavController().navigate(R.id.action_homeFragment2_to_songFragment2, bundle)
         }
 
-        searchSuggestionAdapter.setItemClickListener {
-            searchButtonViewSearchFragment.setQuery(it, true)
+        binding.floatingActionButtonPlayListSearchFrg.setOnClickListener {
+            if(searchAdapter.songs.isEmpty()){
+                Snackbar.make(it,"Nothing To Play... Search Something For Play",Snackbar.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            mainViewModel.changeIsYoutubeVideoCurSong(true)
+            mainViewModel.playOrToggleListOfSongs(searchAdapter.songs.toYtAudioDataModel(),true,0)
+            findNavController().navigate(R.id.action_homeFragment2_to_songFragment2)
         }
 
-        backButtonSearchFragment.setOnClickListener {
+        searchSuggestionAdapter.setItemClickListener {
+            binding.searchButtonViewSearchFragment.setQuery(it, true)
+        }
+
+        binding.backButtonSearchFragment.setOnClickListener {
             findNavController().navigateUp()
         }
 
-        searchButtonViewSearchFragment.setOnQueryTextListener(
+        binding.searchButtonViewSearchFragment.setOnQueryTextListener(
             object : SearchView.OnQueryTextListener,
                 android.widget.SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     query?.let {
                         searchQuery(it)
-                        searchButtonViewSearchFragment.clearFocus()
+                        binding.searchButtonViewSearchFragment.clearFocus()
                         hideSearchSuggestion(false)
 
                         val firebaseAnalytics = Firebase.analytics
@@ -93,7 +109,7 @@ class SearchFragment : Fragment() {
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
-                    recyclerViewSearchSuggestion.visibility = View.VISIBLE
+                    binding.recyclerViewSearchSuggestion.visibility = View.VISIBLE
                     newText?.let {
                         hideSearchSuggestion(true)
                         viewModel.searchSuggestionText(it) { list ->
@@ -107,7 +123,7 @@ class SearchFragment : Fragment() {
         val keyword = arguments?.getString(Constants.PASS_EXPLORE_KEYWORDS)
 
         if (keyword != null) {
-            searchButtonViewSearchFragment.setQuery(keyword, true)
+            binding.searchButtonViewSearchFragment.setQuery(keyword, true)
             keyboardNeeded = false
         }
     }
@@ -115,12 +131,12 @@ class SearchFragment : Fragment() {
     private fun settingUpRecyclerView() {
 
         searchSuggestionAdapter = SearchSuggestionAdapter()
-        recyclerViewSearchSuggestion.apply {
+        binding.recyclerViewSearchSuggestion.apply {
             adapter = searchSuggestionAdapter
             layoutManager = LinearLayoutManager(requireContext())
         }
 
-        recyclerViewSearchResult.apply {
+        binding.recyclerViewSearchResult.apply {
             adapter = searchAdapter
             layoutManager = LinearLayoutManager(requireContext())
         }
@@ -128,7 +144,7 @@ class SearchFragment : Fragment() {
     }
 
     private fun searchQuery(query: String) {
-        progressBarSearchFragment.isVisible = true
+        binding.progressBarSearchFragment.isVisible = true
 
         GlobalScope.launch(Dispatchers.IO) {
             YoutubeSearch().searchWithKeywords(query) {
@@ -164,7 +180,7 @@ class SearchFragment : Fragment() {
                 }
 
             if (!matches.isNullOrEmpty()) {
-                searchButtonViewSearchFragment.setQuery(matches.toString(), true)
+                binding.searchButtonViewSearchFragment.setQuery(matches.toString(), true)
                 keyboardNeeded = false
             }
         }
@@ -174,13 +190,13 @@ class SearchFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         if (keyboardNeeded) {
-            searchButtonViewSearchFragment.isIconified = false
+            binding.searchButtonViewSearchFragment.isIconified = false
             keyboardNeeded = false
         }
     }
 
     private fun hideSearchSuggestion(isSearch: Boolean) {
-        recyclerViewSearchSuggestion.isVisible = isSearch
-        recyclerViewSearchResult.isVisible = !isSearch
+        binding.recyclerViewSearchSuggestion.isVisible = isSearch
+        binding.recyclerViewSearchResult.isVisible = !isSearch
     }
 }

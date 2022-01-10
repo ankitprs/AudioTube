@@ -20,6 +20,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.RequestManager
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import tech.apps.music.R
 import tech.apps.music.database.offline.WatchLaterSongModel
@@ -67,17 +68,22 @@ class SongFragment : Fragment() {
         val videoId = arguments?.getString(Constants.SEARCH_FRAGMENT_VIDEO_ID)
 
         if (videoId != null) {
+            mainViewModel.changeIsYoutubeVideoCurSong(true)
+
             val videoLink = "https://www.youtube.com/watch?v=$videoId"
             val position: Long = arguments?.getLong(Constants.PASSING_SONG_LAST_WATCHED_POS) ?: 0
+
+            arguments = null
 
             if (mainViewModel.getSongFromCache(videoId) == null) {
                 val dialog = Dialog(requireActivity())
 
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
                 dialog.setContentView(R.layout.dialog_card_item)
+                dialog.setCanceledOnTouchOutside(false)
                 dialog.show()
 
-                mainViewModel.addSongInRecent(videoLink, requireActivity()) {
+                mainViewModel.addSongInRecent(videoLink) {
                     if (!it) {
                         Toast.makeText(activity, "Try Again Later", Toast.LENGTH_LONG).show()
                     } else {
@@ -87,7 +93,7 @@ class SongFragment : Fragment() {
                 }
             } else if (curPlayingSong?.mediaId == null || curPlayingSong?.mediaId == videoId) {
             } else {
-                mainViewModel.addSongInRecent(videoLink, requireActivity()) {
+                mainViewModel.addSongInRecent(videoLink) {
                     if (!it) {
                         Toast.makeText(activity, "Try Again Later", Toast.LENGTH_LONG).show()
                     } else {
@@ -238,14 +244,14 @@ class SongFragment : Fragment() {
         binding.songAuthorSongFragment.text = song.author
     }
 
-    private fun updateSongImage(thumbnailUrl: String, isPremium: Boolean = false) {
-        if (isPremium) {
+    private fun updateSongImage(thumbnailUrl: String) {
+        if (mainViewModel.isYoutubeVideoCurSong()) {
             glide.load(thumbnailUrl)
+                .override(480, 270)
                 .centerCrop()
                 .into(binding.songThumbnailSongFragment)
         } else {
             glide.load(thumbnailUrl)
-                .override(480, 270)
                 .centerCrop()
                 .into(binding.songThumbnailSongFragment)
         }
@@ -315,6 +321,11 @@ class SongFragment : Fragment() {
         }
 
         binding.imageViewBookMarkButton.setOnClickListener {
+            if(!mainViewModel.isYoutubeVideoCurSong()){
+                Snackbar.make(it,"Only Youtube video can be Bookmark as of now",Snackbar.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             if (isWatchLater) {
                 isWatchLater = false
                 curPlayingSong?.let { it1 ->

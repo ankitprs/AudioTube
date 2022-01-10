@@ -1,9 +1,8 @@
 package tech.apps.music.ui.fragments
 
-import android.content.Context
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat.METADATA_KEY_MEDIA_ID
-import android.widget.Toast
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -17,6 +16,7 @@ import tech.apps.music.database.Repository
 import tech.apps.music.database.offline.HistorySongModel
 import tech.apps.music.database.offline.WatchLaterSongModel
 import tech.apps.music.exoplayer.*
+import tech.apps.music.model.EpisodesListModel
 import tech.apps.music.model.YTAudioDataModel
 import tech.apps.music.others.Constants.MEDIA_ROOT_ID
 import tech.apps.music.others.Resource
@@ -25,8 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val musicServiceConnection: MusicServiceConnection,
-    private val repository: Repository,
-    private val ytVideoMusicSource: YTVideoMusicSource
+    private val repository: Repository
 ) : ViewModel() {
 
     private val _mediaItems = MutableLiveData<Resource<List<YTAudioDataModel>>>()
@@ -37,10 +36,16 @@ class MainViewModel @Inject constructor(
     val getRecentList: LiveData<List<HistorySongModel>> = repository.getAllSongsLiveData()
     val getWatchLaterList: LiveData<List<WatchLaterSongModel>> = repository.getListOfWatchLater()
 
+    val getLast5RecentList: LiveData<List<HistorySongModel>> = repository.getLast5RecentList()
+
     val isConnected = musicServiceConnection.isConnected
     val networkError = musicServiceConnection.networkError
     val curPlayingSong = musicServiceConnection.curPlayingSong
     val playbackState = musicServiceConnection.playbackState
+
+    val playlistItems: LiveData<List<YTAudioDataModel>> = repository.songsData
+
+    var listOfAudioBooks: MutableLiveData<List<EpisodesListModel>> = MutableLiveData()
 
     init {
         _mediaItems.postValue(Resource.loading(null))
@@ -64,6 +69,12 @@ class MainViewModel @Inject constructor(
                     _mediaItems.postValue(Resource.success(item))
                 }
             })
+
+        viewModelScope.launch {
+            repository.getListOfAudioBooks {
+                listOfAudioBooks.postValue(it)
+            }
+        }
     }
 
     fun skipToNextSong() {
@@ -93,8 +104,11 @@ class MainViewModel @Inject constructor(
     }
 
     fun playOrToggleSong(mediaItem: YTAudioDataModel, toggle: Boolean = false) {
-
-        if (ytVideoMusicSource.songs.find {
+        Log.d(
+            "SongLogMainViewModel",
+            "it.description -> ${YTVideoMusicSource.songs},mediaItem.mediaId -> ${mediaItem.mediaId}"
+        )
+        if (YTVideoMusicSource.songs.find {
                 it.description.mediaId == mediaItem.mediaId
             } == null) {
             repository.songsData.postValue(listOf(mediaItem))
@@ -120,7 +134,7 @@ class MainViewModel @Inject constructor(
         toggle: Boolean = false,
         position: Int = 0
     ) {
-        if (ytVideoMusicSource.songs.find {
+        if (YTVideoMusicSource.songs.find {
                 it.description.mediaId == mediaItem[position].mediaId
             } == null) {
             repository.songsData.postValue(mediaItem)
@@ -153,7 +167,7 @@ class MainViewModel @Inject constructor(
             object : MediaBrowserCompat.SubscriptionCallback() {})
     }
 
-    fun addSongInRecent(ytLink: String, context: Context, callback: (status: Boolean) -> Unit) {
+    fun addSongInRecent(ytLink: String, callback: (status: Boolean) -> Unit) {
 
         repository.getSongModelWithLink(ytLink) { audioModel ->
 
@@ -162,30 +176,12 @@ class MainViewModel @Inject constructor(
                 param("Video_Title", audioModel?.title.toString())
                 param("Video_Channel_Name", audioModel?.author.toString())
             }
-
             if (audioModel != null) {
-                viewModelScope.launch {
-
-                    repository.insertSongInHistory(
-                        HistorySongModel(
-                            audioModel.mediaId,
-                            audioModel.title,
-                            audioModel.author,
-                            audioModel.duration,
-                            System.currentTimeMillis(),
-                            0
-                        )
-                    )
-                    playOrToggleSong(audioModel, true)
-                    callback(true)
-                }
+                playOrToggleSong(audioModel, true)
+                changeIsYoutubeVideoCurSong(true)
+                callback(true)
             } else {
                 callback(false)
-                Toast.makeText(
-                    context,
-                    "This video can't play Try Somethings else",
-                    Toast.LENGTH_LONG
-                ).show()
             }
         }
     }
@@ -204,13 +200,13 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun deleteRecentlyAdded5More(time20More: Long) {
-        viewModelScope.launch {
-            repository.deleteRecentlyAdded5More(time20More)
-        }
-    }
-
-    fun getSongFromCache(ytLink: String): YTAudioDataModel?=
+    fun getSongFromCache(ytLink: String): YTAudioDataModel? =
         repository.getSongFromCache(ytLink)
+
+    fun isYoutubeVideoCurSong(): Boolean = MusicService.isYoutubeVideoCurSong
+
+    fun changeIsYoutubeVideoCurSong(isYoutubeVideoCurSong: Boolean) {
+        MusicService.isYoutubeVideoCurSong = isYoutubeVideoCurSong
+    }
 
 }

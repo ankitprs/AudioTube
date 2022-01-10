@@ -100,7 +100,7 @@ class SongAdapter @Inject constructor(
                 .into(thumbnailImageTYVideo)
 
             if(song.duration != 0L){
-                durationTYVideo.text = TimeFunction.songDuration(song.duration)
+                durationTYVideo.text = TimeFunction.songDuration(song.duration / 1000L)
             }else{
                 durationTYVideo.text = song.durationText
 
@@ -109,7 +109,7 @@ class SongAdapter @Inject constructor(
                 determinateBar.isVisible = false
             } else {
                 determinateBar.progress =
-                    ((song.watchedPosition) / ((song.duration)*10)).toInt()
+                    ((song.watchedPosition)*100 / ((song.duration))).toInt()
             }
 
             channelTYVideo.text = song.ChannelName

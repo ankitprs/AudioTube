@@ -44,6 +44,7 @@
         <entry key="app/src/main/res/drawable/ic_round_format_list_bulleted_24.xml" value="0.18848684210526315" />
         <entry key="app/src/main/res/drawable/ic_round_forward_10_24.xml" value="0.18848684210526315" />
         <entry key="app/src/main/res/drawable/ic_round_pause_circle_24.xml" value="0.18848684210526315" />
+        <entry key="app/src/main/res/drawable/ic_round_play_arrow_24.xml" value="0.18848684210526315" />
         <entry key="app/src/main/res/drawable/ic_round_play_circle_24.xml" value="0.18848684210526315" />
         <entry key="app/src/main/res/drawable/ic_round_replay_10_24.xml" value="0.18848684210526315" />
         <entry key="app/src/main/res/drawable/ic_round_replay_5_24.xml" value="0.18664495114006516" />
@@ -62,7 +63,7 @@
         <entry key="app/src/main/res/layout/activity_premium.xml" value="0.17828947368421053" />
         <entry key="app/src/main/res/layout/audio_fragment.xml" value="0.165" />
         <entry key="app/src/main/res/layout/boom_sheet_background.xml" value="0.25092592592592594" />
-        <entry key="app/src/main/res/layout/dialog_card_item.xml" value="0.27731683511244604" />
+        <entry key="app/src/main/res/layout/dialog_card_item.xml" value="0.25" />
         <entry key="app/src/main/res/layout/educate_activity.xml" value="0.165" />
         <entry key="app/src/main/res/layout/educate_first_fragment.xml" value="0.25" />
         <entry key="app/src/main/res/layout/episode_list_item.xml" value="0.165" />
@@ -80,21 +81,23 @@
         <entry key="app/src/main/res/layout/main_fragment.xml" value="0.165" />
         <entry key="app/src/main/res/layout/music_player_ui.xml" value="0.17828947368421053" />
         <entry key="app/src/main/res/layout/premium_fragment.xml" value="0.20201267238166232" />
-        <entry key="app/src/main/res/layout/premium_item_list.xml" value="0.125" />
+        <entry key="app/src/main/res/layout/premium_item_list.xml" value="0.21608074144555436" />
         <entry key="app/src/main/res/layout/premium_song_detail_fragment.xml" value="0.25" />
         <entry key="app/src/main/res/layout/premium_song_fragment.xml" value="0.1448087431693989" />
         <entry key="app/src/main/res/layout/search_catalog_fragment.xml" value="0.16666666666666666" />
-        <entry key="app/src/main/res/layout/search_fragment.xml" value="0.165" />
+        <entry key="app/src/main/res/layout/search_fragment.xml" value="0.45" />
         <entry key="app/src/main/res/layout/search_result_fragment.xml" value="0.17828947368421053" />
         <entry key="app/src/main/res/layout/search_result_recom_list_item.xml" value="0.24166666666666667" />
         <entry key="app/src/main/res/layout/searchable.xml" value="0.1" />
         <entry key="app/src/main/res/layout/setting_list_view_item.xml" value="0.335" />
         <entry key="app/src/main/res/layout/share.xml" value="0.13547000490184163" />
         <entry key="app/src/main/res/layout/song_card_view_item.xml" value="0.375" />
+        <entry key="app/src/main/res/layout/song_detail_fragment.xml" value="0.17828947368421053" />
         <entry key="app/src/main/res/layout/song_item_horizontal.xml" value="0.19101123595505617" />
         <entry key="app/src/main/res/layout/song_item_vertical.xml" value="0.375" />
         <entry key="app/src/main/res/layout/swipe_item.xml" value="0.102880658436214" />
         <entry key="app/src/main/res/layout/switch_item.xml" value="0.25092592592592594" />
+        <entry key="app/src/main/res/layout/text_item.xml" value="0.335" />
         <entry key="app/src/main/res/layout/yt_video_card_item.xml" value="0.1" />
         <entry key="app/src/main/res/layout/yt_video_card_view_full.xml" value="0.19900727896021903" />
         <entry key="app/src/main/res/menu/episodes_fragment_menu.xml" value="0.17828947368421053" />

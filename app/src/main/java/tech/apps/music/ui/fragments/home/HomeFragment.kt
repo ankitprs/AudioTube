@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import tech.apps.music.R
 import tech.apps.music.adapters.ExploreAdapter
+import tech.apps.music.adapters.PremiumListAdapter
 import tech.apps.music.adapters.SongAdapter
 import tech.apps.music.databinding.MainFragmentBinding
 import tech.apps.music.model.SongModelForList
@@ -32,8 +34,10 @@ class HomeFragment : Fragment() {
     lateinit var recentAudioAdapter: SongAdapter
 
     private lateinit var exploreAdapter: ExploreAdapter
-
     private lateinit var binding: MainFragmentBinding
+
+    @Inject
+    lateinit var audioBookAdapter: PremiumListAdapter
 
 
     override fun onCreateView(
@@ -78,7 +82,15 @@ class HomeFragment : Fragment() {
         exploreAdapter.setItemClickListener {
             val bundle = Bundle()
             bundle.putString(Constants.PASS_EXPLORE_KEYWORDS, it.keyword)
-            findNavController().navigate(R.id.action_homeFragment_to_searchFragment,bundle)
+            findNavController().navigate(R.id.action_homeFragment_to_searchFragment, bundle)
+        }
+        audioBookAdapter.setItemClickListener {
+            val bundle = Bundle()
+            bundle.putString(Constants.PASSING_EPISODES_MODEL_ID, it.id)
+            findNavController().navigate(
+                R.id.action_homeFragment_to_songDetailFragment,
+                bundle
+            )
         }
     }
 
@@ -100,15 +112,21 @@ class HomeFragment : Fragment() {
                 2
             )
         }
-    }
-    private fun addingSongIntoRecyclerView() {
-        viewModel.getRecentList.observe(viewLifecycleOwner) {
-            if (!it.isNullOrEmpty()) {
+        binding.recyclerViewAudioBookMFrag.apply {
 
+            adapter = audioBookAdapter
+            layoutManager = LinearLayoutManager(
+                requireContext(),
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
+        }
+    }
+
+    private fun addingSongIntoRecyclerView() {
+        viewModel.getLast5RecentList.observe(viewLifecycleOwner) {
+            if (!it.isNullOrEmpty()) {
                 recentAudioAdapter.songs = it.toSongModelForList()
-                if (it.size > 20) {
-                    viewModel.deleteRecentlyAdded5More(it[20].time)
-                }
             } else {
                 recentAudioAdapter.songs = listOf(
                     SongModelForList()
@@ -116,6 +134,15 @@ class HomeFragment : Fragment() {
             }
         }
         exploreAdapter.songs = VideoData.creatingListOfExplores()
+
+        viewModel.listOfAudioBooks.observe(viewLifecycleOwner) {
+            if (!it.isNullOrEmpty()) {
+                audioBookAdapter.songs = it
+            } else {
+                binding.textViewAudioBookMainFr.isVisible = false
+                binding.recyclerViewAudioBookMFrag.isVisible = false
+            }
+        }
     }
 
 //    private fun subscribeToObservers() {

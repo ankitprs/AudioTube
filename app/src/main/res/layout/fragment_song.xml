@@ -43,7 +43,7 @@
             android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@tools:sample/avatars" />
@@ -96,8 +96,7 @@
                 android:id="@+id/materialCardViewDisVisible"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginStart="16dp"
                 android:background="@drawable/ripple_effect_rectangle"
                 android:padding="10dp"
                 android:text="1x"
@@ -113,7 +112,7 @@
                 android:layout_gravity="end"
                 android:layout_marginEnd="32dp"
                 android:background="@drawable/ripple_effect_circle"
-                android:padding="20dp"
+                android:padding="10dp"
                 android:src="@drawable/ic_round_bookmark_border_24"
                 app:layout_constraintEnd_toStartOf="@+id/imageViewEpisodesListButton"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -123,11 +122,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="16dp"
                 android:background="@drawable/ripple_effect_circle"
-                android:padding="20dp"
+                android:padding="10dp"
                 android:src="@drawable/ic_round_format_list_bulleted_24"
-                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -139,7 +137,8 @@
                 android:textColor="@color/grey"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/materialCardViewDisVisible"
-                app:layout_constraintStart_toStartOf="@+id/materialCardViewDisVisible" />
+                app:layout_constraintStart_toStartOf="@+id/materialCardViewDisVisible"
+                app:layout_constraintTop_toBottomOf="@+id/materialCardViewDisVisible" />
 
             <TextView
                 android:id="@+id/bookmarkLabel"
@@ -149,19 +148,19 @@
                 android:textColor="@color/grey"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/imageViewBookMarkButton"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/imageViewBookMarkButton" />
+                app:layout_constraintStart_toStartOf="@+id/imageViewBookMarkButton"
+                app:layout_constraintTop_toBottomOf="@+id/imageViewBookMarkButton" />
 
             <TextView
                 android:id="@+id/episodesListLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Episodes"
+                android:text="Playlist"
                 android:textColor="@color/grey"
-                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/imageViewEpisodesListButton"
-                app:layout_constraintStart_toStartOf="@+id/imageViewEpisodesListButton" />
+                app:layout_constraintStart_toStartOf="@+id/imageViewEpisodesListButton"
+                app:layout_constraintTop_toBottomOf="@+id/imageViewEpisodesListButton" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

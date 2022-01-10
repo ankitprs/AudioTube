@@ -4,7 +4,9 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
+import android.support.v4.media.MediaMetadataCompat.METADATA_KEY_MEDIA_ID
 import android.support.v4.media.MediaMetadataCompat.METADATA_KEY_MEDIA_URI
+import android.util.Log
 import androidx.core.net.toUri
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
@@ -13,12 +15,16 @@ import com.google.android.exoplayer2.upstream.DefaultDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import tech.apps.music.database.Repository
+import tech.apps.music.database.offline.HistorySongModel
+import tech.apps.music.util.VideoData
 import javax.inject.Inject
 
 class YTVideoMusicSource @Inject constructor(
     private val musicDatabase: Repository
 ) {
-    var songs = emptyList<MediaMetadataCompat>()
+    companion object{
+        var songs = emptyList<MediaMetadataCompat>()
+    }
 
     suspend fun fetchSong() = withContext(Dispatchers.IO) {
 
@@ -32,6 +38,7 @@ class YTVideoMusicSource @Inject constructor(
                     list.forEach {
                         songs = songs + it.toMetaData()
                     }
+                    Log.i("SongLOG","song -> ${songs.size}")
 
                     state = State.STATE_INITIALIZED
                 }
@@ -41,6 +48,10 @@ class YTVideoMusicSource @Inject constructor(
 
     suspend fun saveSongPosition(watchedPosition: Long, timing: Long, videoID: String) {
         musicDatabase.updatingSongPosTime(watchedPosition, timing, videoID)
+    }
+
+    suspend fun savingSongInHistory(historySongModel: HistorySongModel) {
+        musicDatabase.insertSongInHistory(historySongModel)
     }
 
     private val onReadyListeners = mutableListOf<(Boolean) -> Unit>()
@@ -64,9 +75,38 @@ class YTVideoMusicSource @Inject constructor(
     ): ConcatenatingMediaSource {
         val concatenatingMediaSource = ConcatenatingMediaSource()
         songs.forEach {
-            val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-                .createMediaSource(MediaItem.fromUri(it.getString(METADATA_KEY_MEDIA_URI).toUri()))
-            concatenatingMediaSource.addMediaSource(mediaSource)
+            if (it.getString(METADATA_KEY_MEDIA_URI) == "") {
+                musicDatabase.getSongModelWithLink(
+                    VideoData.getYoutubeLinkFromId(
+                        it.getString(
+                            METADATA_KEY_MEDIA_ID
+                        )
+                    )
+                ) { audioModel ->
+                    if (audioModel != null) {
+                        val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
+                            .createMediaSource(MediaItem.fromUri(audioModel.ytSongUrl.toUri()))
+                        concatenatingMediaSource.addMediaSource(mediaSource)
+                    } else {
+                        val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
+                            .createMediaSource(
+                                MediaItem.fromUri(
+                                    it.getString(METADATA_KEY_MEDIA_URI).toUri()
+                                )
+                            )
+                        concatenatingMediaSource.addMediaSource(mediaSource)
+                    }
+                }
+            } else {
+                val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
+                    .createMediaSource(
+                        MediaItem.fromUri(
+                            it.getString(METADATA_KEY_MEDIA_URI).toUri()
+                        )
+                    )
+                concatenatingMediaSource.addMediaSource(mediaSource)
+            }
+
         }
         return concatenatingMediaSource
     }

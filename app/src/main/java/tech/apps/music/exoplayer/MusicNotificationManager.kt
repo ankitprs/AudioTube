@@ -90,7 +90,6 @@ class MusicNotificationManager(
                     .asBitmap()
                     .load(mediaController.metadata.description.iconUri)
                     .centerCrop()
-                    .override(1600, 900)
                     .into(object : CustomTarget<Bitmap>() {
                         override fun onResourceReady(
                             resource: Bitmap,

@@ -16,11 +16,14 @@ interface YTVideoDao {
     @Query("DELETE FROM History_Song_Model")
     suspend fun deleteAllSongsFromHistory()
 
-    @Query("DELETE FROM History_Song_Model WHERE Timing <= :time20More")
-    suspend fun deleteFromHistory20More(time20More: Long)
+    @Query("DELETE FROM History_Song_Model where videoId NOT IN (SELECT videoId from History_Song_Model ORDER BY timing DESC LIMIT 20)")
+    suspend fun deleteFromHistory20More()
 
     @Query("SELECT * FROM History_Song_Model ORDER BY Timing DESC")
     fun getListOfHistory(): LiveData<List<HistorySongModel>>
+
+    @Query("SELECT * FROM History_Song_Model ORDER BY timing DESC  LIMIT 5")
+    fun getLast5RecentList(): LiveData<List<HistorySongModel>>
 
 
 

@@ -3,6 +3,7 @@ package tech.apps.music.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -44,11 +45,11 @@ class EpisodeAdapter @Inject constructor(
         )
     }
 
-    var iconUri: String? = null
+    var currentlyPlayingSongId: String? = null
 
-    private var onItemClickListener: ((Int) -> Unit)? = null
+    private var onItemClickListener: ((EpisodeModel) -> Unit)? = null
 
-    fun setItemClickListener(listener: (Int) -> Unit) {
+    fun setItemClickListener(listener: (EpisodeModel) -> Unit) {
         onItemClickListener = listener
     }
 
@@ -57,18 +58,39 @@ class EpisodeAdapter @Inject constructor(
     }
 
     override fun onBindViewHolder(holder: EpisodeViewHolder, position: Int) {
+
+        val song = songs[position]
         holder.itemView.apply {
 
-            if (!iconUri.isNullOrEmpty()) {
-                glide.load(iconUri).centerCrop().into(imageViewEpisodeThumbnail)
-            }
-            textViewEpisodeText.text = songs[position].title
+//            if (currentlyPlayingSongId === song.songId) {
+//                val gradientDrawable = GradientDrawable(
+//                    GradientDrawable.Orientation.BL_TR,
+//                    intArrayOf(
+//                        Color.parseColor("#00dbff"),
+//                        Color.parseColor("#0800ff")
+//                    )
+//                )
+//                gradientDrawable.cornerRadius = 0f
+//
+//                //Set Gradient
+//                episodesListCardView.background = gradientDrawable
+//                imageViewEpisodesGoTo
+//            }
 
-            determinateBarEpisodesIt.progress = ((songs[position].watchedPosition) / (songs[position].duration*10)).toInt()
+            glide.load(song.songThumbnailUrl).centerCrop().into(imageViewEpisodeThumbnail)
+
+            textViewEpisodeText.text = song.title
+
+            if (song.watchedPosition == 0L) {
+                determinateBarEpisodesIt.isVisible = false
+            } else {
+                determinateBarEpisodesIt.progress =
+                    ((song.watchedPosition) / (song.duration * 10)).toInt()
+            }
 
             setOnClickListener {
                 onItemClickListener?.let { click ->
-                    click(position)
+                    click(song)
                 }
             }
         }

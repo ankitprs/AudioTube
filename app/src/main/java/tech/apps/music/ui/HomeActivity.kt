@@ -52,11 +52,8 @@ class HomeActivity : AppCompatActivity() {
 
         BasicStorage.isNetworkConnected = connection
         connection.observe(this) {
-            if (it != null) {
-                noInternetConnectionView.isVisible = !it
-            }
+            noInternetConnectionView.isVisible = !(it == true)
         }
-        noInternetConnectionView.isVisible = connection.value != true
 
         when (intent?.action) {
             Intent.ACTION_SEND -> {
@@ -232,7 +229,7 @@ class HomeActivity : AppCompatActivity() {
             dialog.setContentView(R.layout.dialog_card_item)
             dialog.show()
 
-            viewModel.addSongInRecent(it, this) { result ->
+            viewModel.addSongInRecent(it) { result ->
                 if (result) {
                     navHostFragment.findNavController().navigate(
                         R.id.action_homeFragment2_to_songFragment2

@@ -34,7 +34,7 @@ object Constants {
     const val MY_LIBRARY_TYPE_BOOKMARK = "Bookmark"
 
     //Premium Content Bundle
-    const val PASSING_EPISODES_MODEL = "passingEpisodesModel"
+    const val PASSING_EPISODES_MODEL_ID = "passingEpisodesModelID"
 
     //passing Position
     const val PASSING_SONG_LAST_WATCHED_POS = "passingSongLastWatchedPos"
