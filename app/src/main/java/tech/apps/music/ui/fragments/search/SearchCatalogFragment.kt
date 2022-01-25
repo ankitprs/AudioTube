@@ -21,15 +21,16 @@ import tech.apps.music.util.VideoData
 @AndroidEntryPoint
 class SearchCatalogFragment : Fragment() {
 
-    private lateinit var binding: SearchCatalogFragmentBinding
+    private var _binding: SearchCatalogFragmentBinding? = null
+    private  val binding: SearchCatalogFragmentBinding get() = _binding!!
 
-    lateinit var exploreAdapter: ExploreAdapter
+    private lateinit var exploreAdapter: ExploreAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = SearchCatalogFragmentBinding.inflate(layoutInflater, container, false)
+        _binding = SearchCatalogFragmentBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
 
@@ -71,10 +72,16 @@ class SearchCatalogFragment : Fragment() {
                 isShow = true
                 binding.searchCatalogFragmentSearchBar.isVisible = true
             } else if (isShow) {
-                isShow = false;
+                isShow = false
                 binding.searchCatalogFragmentSearchBar.isVisible = false
             }
         })
 
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.recyclerViewExploreMainFragment.adapter = null
+        _binding = null
     }
 }

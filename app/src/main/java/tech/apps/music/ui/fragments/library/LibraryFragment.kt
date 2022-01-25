@@ -1,5 +1,6 @@
 package tech.apps.music.ui.fragments.library
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,6 +16,7 @@ import tech.apps.music.adapters.SongAdapter
 import tech.apps.music.databinding.LibraryFragmentBinding
 import tech.apps.music.model.SongModelForList
 import tech.apps.music.model.toSongModelForList
+import tech.apps.music.model.toYtAudioDataModel
 import tech.apps.music.others.Constants
 import tech.apps.music.ui.fragments.MainViewModel
 import tech.apps.music.ui.more.MoreActivity
@@ -23,32 +25,31 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class LibraryFragment : Fragment() {
 
-    private lateinit var libraryViewModel: LibraryViewModel
     private lateinit var viewModel: MainViewModel
     @Inject
     lateinit var recentAudioAdapter: SongAdapter
-    lateinit var binding: LibraryFragmentBinding
+
+    private var _binding: LibraryFragmentBinding? = null
+    private val binding: LibraryFragmentBinding
+        get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = LibraryFragmentBinding.inflate(layoutInflater,container,false)
+        _binding = LibraryFragmentBinding.inflate(layoutInflater,container,false)
         return binding.root
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         viewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
-        libraryViewModel = ViewModelProvider(requireActivity())[LibraryViewModel::class.java]
 
         recentAudioAdapter.isViewHorizontal = true
-
         setUpRecyclerView()
 
         binding.MaterialToolbarHome.inflateMenu(R.menu.home_menu)
-
         binding.MaterialToolbarHome.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.app_bar_more -> {
@@ -63,10 +64,9 @@ class LibraryFragment : Fragment() {
         }
 
         recentAudioAdapter.setItemClickListener {
-            val bundle = Bundle()
-            bundle.putString(Constants.SEARCH_FRAGMENT_VIDEO_ID, it.videoId)
-            bundle.putLong(Constants.PASSING_SONG_LAST_WATCHED_POS, it.watchedPosition)
-            findNavController().navigate(R.id.action_homeFragment2_to_songFragment2, bundle)
+            viewModel.changeIsYoutubeVideoCurSong(true)
+            viewModel.playOrToggleListOfSongs((listOf(it)).toYtAudioDataModel(),true,0,it.watchedPosition)
+            findNavController().navigate(R.id.action_homeFragment2_to_songFragment2)
         }
 
         viewModel.getWatchLaterList.observe(viewLifecycleOwner) {
@@ -97,14 +97,6 @@ class LibraryFragment : Fragment() {
                 bundle
             )
         }
-//        DownloadedGoto.setOnClickListener {
-//            val bundle = Bundle()
-//            bundle.putString(Constants.PASSING_MY_LIBRARY_TYPE, Constants.MY_LIBRARY_TYPE_DOWNLOAD)
-//            findNavController().navigate(
-//                R.id.action_libraryFragment_to_myLibraryListFragment,
-//                bundle
-//            )
-//        }
     }
 
     private fun addingSongIntoRecyclerView() {
@@ -117,6 +109,12 @@ class LibraryFragment : Fragment() {
                 )
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.recyclerViewRecent.adapter = null
+        _binding = null
     }
 
 }

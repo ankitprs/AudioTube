@@ -8,10 +8,11 @@ import android.support.v4.media.session.PlaybackStateCompat
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import tech.apps.music.exoplayer.YTVideoMusicSource
+import tech.apps.music.others.Constants
 
 class MusicPlaybackPreparer(
     private val ytVideoMusicSource: YTVideoMusicSource,
-    private val playerPrepared: (MediaMetadataCompat?) -> Unit
+    private val playerPrepared: (Pair<MediaMetadataCompat?, Long>) -> Unit
 ) : MediaSessionConnector.PlaybackPreparer {
 
     override fun onCommand(
@@ -33,7 +34,12 @@ class MusicPlaybackPreparer(
             val itemToPlay = YTVideoMusicSource.songs.find {
                 mediaId == it.description.mediaId
             }
-            playerPrepared(itemToPlay)
+            playerPrepared(
+                Pair(
+                    itemToPlay,
+                    extras?.getLong(Constants.PASSING_SONG_LAST_WATCHED_POS) ?: 0L
+                )
+            )
         }
     }
 

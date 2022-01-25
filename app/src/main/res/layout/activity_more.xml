@@ -100,6 +100,44 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingStart="30dp"
+            android:text="Advertisement"
+            android:textColor="@color/light_background"
+            android:textSize="14sp"
+            android:padding="10dp"/>
+
+        <LinearLayout
+            android:id="@+id/adsReview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ripple_effect_rectangle"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="20dp"
+                android:text="Ads Review"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="20dp"
+                android:text="Experience due to Ads - Feedback"
+                android:textColor="@color/grey" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/light_background" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingStart="30dp"
             android:text="Notifications"
             android:textColor="@color/light_background"
             android:padding="10dp" />

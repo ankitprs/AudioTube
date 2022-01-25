@@ -11,10 +11,18 @@ import android.support.v4.media.session.PlaybackStateCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.media.MediaBrowserServiceCompat
 import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.analytics.AnalyticsListener
+import com.google.android.exoplayer2.analytics.AnalyticsListener.EventTime
+import com.google.android.exoplayer2.analytics.PlaybackStats
+import com.google.android.exoplayer2.analytics.PlaybackStatsListener
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
 import com.google.android.exoplayer2.upstream.DefaultDataSource
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +33,7 @@ import tech.apps.music.exoplayer.callbacks.MusicPlaybackPreparer
 import tech.apps.music.exoplayer.callbacks.MusicPlayerEventListener
 import tech.apps.music.exoplayer.callbacks.MusicPlayerNotificationListener
 import tech.apps.music.others.Constants.MEDIA_ROOT_ID
+import tech.apps.music.others.Constants.NETWORK_ERROR
 import javax.inject.Inject
 
 
@@ -40,22 +49,17 @@ class MusicService : MediaBrowserServiceCompat() {
 
     @Inject
     lateinit var exoPlayer: ExoPlayer
-
     private val serviceJob = Job()
     private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
-
-    private lateinit var mediaSession: MediaSessionCompat
+    lateinit var mediaSession: MediaSessionCompat
     private lateinit var mediaSessionConnector: MediaSessionConnector
 
     @Inject
     lateinit var dataSourceFormat: DefaultDataSource.Factory
 
     var isForegroundService = false
-
     private lateinit var musicPlayerEventListener: MusicPlayerEventListener
-
     private var curPlayingSong: MediaMetadataCompat? = null
-
     private var isInitialized = false
 
     companion object {
@@ -70,17 +74,20 @@ class MusicService : MediaBrowserServiceCompat() {
         super.onCreate()
 
         val activityIntent = packageManager.getLaunchIntentForPackage(packageName)?.let {
-            PendingIntent.getActivity(this, 0, it, PendingIntent.FLAG_IMMUTABLE)
+            PendingIntent.getActivity(
+                this,
+                0,
+                it,
+                PendingIntent.FLAG_IMMUTABLE
+            )
         }
 
         mediaSession = MediaSessionCompat(this, SERVICE_TAG, null, activityIntent).apply {
             setSessionActivity(activityIntent)
             isActive = true
         }
-        serviceScope.launch {
-            ytVideoMusicSource.fetchSong()
-        }
 
+        ytVideoMusicSource.fetchSong()
 
         sessionToken = mediaSession.sessionToken
 
@@ -91,12 +98,14 @@ class MusicService : MediaBrowserServiceCompat() {
         ) {
             curSongDuration = exoPlayer.duration
         }
-        val musicPlaybackPreparer = MusicPlaybackPreparer(ytVideoMusicSource) {
 
-            curPlayingSong = it
+        val musicPlaybackPreparer = MusicPlaybackPreparer(ytVideoMusicSource) {
+            curPlayingSong = it.first
             preparePlayer(
                 YTVideoMusicSource.songs,
-                it
+                it.first,
+                true,
+                position = it.second
             )
         }
 
@@ -116,12 +125,32 @@ class MusicService : MediaBrowserServiceCompat() {
                     or PlaybackStateCompat.ACTION_SET_PLAYBACK_SPEED
         )
         mediaSessionConnector.setPlayer(exoPlayer)
-
         musicPlayerEventListener = MusicPlayerEventListener(this)
-
         exoPlayer.addListener(musicPlayerEventListener)
-
         musicNotificationManager.showNotification(exoPlayer)
+
+        exoPlayer.addAnalyticsListener(object : AnalyticsListener {
+            override fun onMediaItemTransition(
+                eventTime: EventTime,
+                mediaItem: MediaItem?,
+                reason: Int
+            ) {
+                super.onMediaItemTransition(eventTime, mediaItem, reason)
+                Firebase.analytics.logEvent("Video_Played") {
+                    param("Video_ID", mediaItem?.mediaId.toString())
+                    param("Video_Title", mediaItem?.mediaMetadata?.title.toString())
+                    param("Video_Channel_Name", mediaItem?.mediaMetadata?.subtitle.toString())
+                }
+            }
+        })
+        exoPlayer.addAnalyticsListener(
+            PlaybackStatsListener( /* keepHistory= */
+                true
+            ) { _: EventTime?, playbackStats: PlaybackStats? ->
+                Firebase.analytics.logEvent("Video_Played") {
+                    param("Video_Played_Duration", playbackStats?.totalPlayTimeMs.toString())
+                }
+            })
     }
 
     private inner class MusicQueueNavigator : TimelineQueueNavigator(mediaSession) {
@@ -133,13 +162,13 @@ class MusicService : MediaBrowserServiceCompat() {
     private fun preparePlayer(
         songs: List<MediaMetadataCompat>,
         itemToPlay: MediaMetadataCompat?,
-        playNow: Boolean = true
+        playNow: Boolean = true,
+        position: Long = 0L
     ) {
         val curSongIndex = if (curPlayingSong == null) 0 else songs.indexOf(itemToPlay)
-        exoPlayer.stop(true)
-//        exoPlayer.addMediaSource()
-        exoPlayer.prepare(ytVideoMusicSource.asMediaSource(dataSourceFormat))
-        exoPlayer.seekTo(curSongIndex, 0L)
+        exoPlayer.setMediaSource(ytVideoMusicSource.asMediaSource(dataSourceFormat))
+        exoPlayer.prepare()
+        exoPlayer.seekTo(curSongIndex, position)
         exoPlayer.playWhenReady = playNow
     }
 
@@ -157,22 +186,25 @@ class MusicService : MediaBrowserServiceCompat() {
     ) {
         when (parentId) {
             MEDIA_ROOT_ID -> {
-//                val resultsSent=ytVideoMusicSource.whenReady {
-//                    if(it){
-//                        result.sendResult(ytVideoMusicSource.asMediaItems().toMutableList())
-////                        if(!isInitialized && ytVideoMusicSource.songs.isNotEmpty()){
-////                            preparePlayer(ytVideoMusicSource.songs,ytVideoMusicSource.songs[0],false)
-////                            isInitialized=true
-////                        }
-//                    }else{
-//                        mediaSession.sendSessionEvent(NETWORK_ERROR,null)
-//                        result.sendResult(null)
-//                    }
-//                }
-//                if(!resultsSent){
-//                    result.detach()
-//                }
-                result.detach()
+                val resultsSent = ytVideoMusicSource.whenReady {
+                    if (it) {
+                        result.sendResult(ytVideoMusicSource.asMediaItems().toMutableList())
+                        if (!isInitialized && YTVideoMusicSource.songs.isNotEmpty()) {
+//                            preparePlayer(
+//                                YTVideoMusicSource.songs,
+//                                YTVideoMusicSource.songs[0],
+//                                false
+//                            )
+                            isInitialized = true
+                        }
+                    } else {
+                        mediaSession.sendSessionEvent(NETWORK_ERROR, null)
+                        result.sendResult(null)
+                    }
+                }
+                if (!resultsSent) {
+                    result.detach()
+                }
             }
         }
     }
@@ -186,13 +218,15 @@ class MusicService : MediaBrowserServiceCompat() {
 
     override fun onDestroy() {
         super.onDestroy()
+
+        exoPlayer.removeListener(musicPlayerEventListener)
+        exoPlayer.release()
+
         mediaSession.run {
             isActive = false
             release()
         }
         serviceJob.cancel()
-        exoPlayer.removeListener(musicPlayerEventListener)
-        exoPlayer.release()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -200,18 +234,18 @@ class MusicService : MediaBrowserServiceCompat() {
     }
 
     fun saveRecentSongDataToStorage() {
-        val position = exoPlayer.currentPosition
+        val description = YTVideoMusicSource.songs[exoPlayer.currentMediaItemIndex].description
 
         serviceScope.launch {
-            if(isYoutubeVideoCurSong){
+            if (isYoutubeVideoCurSong) {
                 ytVideoMusicSource.savingSongInHistory(
                     HistorySongModel(
-                        curPlayingSong?.description?.mediaId.toString(),
-                        curPlayingSong?.description?.title.toString(),
-                        curPlayingSong?.description?.subtitle.toString(),
-                        curSongDuration,
+                        description.mediaId.toString(),
+                        description.title.toString(),
+                        description.subtitle.toString(),
+                        exoPlayer.duration,
                         System.currentTimeMillis(),
-                        position,
+                        exoPlayer.currentPosition,
                     )
                 )
             }

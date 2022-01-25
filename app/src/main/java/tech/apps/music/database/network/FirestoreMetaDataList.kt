@@ -1,6 +1,5 @@
 package tech.apps.music.database.network
 
-import android.util.Log
 import com.google.firebase.firestore.Source
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
@@ -32,13 +31,11 @@ class FirestoreMetaDataList {
                             callback(null)
                         }
                     } catch (err: Exception) {
-                        Log.d(TAG, "Cached get failed: ", err)
                         callback(null)
                     }
 
                 } else {
                     callback(null)
-                    Log.d(TAG, "Cached get failed: ", task.exception)
                 }
             }
 

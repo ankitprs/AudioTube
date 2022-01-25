@@ -6,49 +6,38 @@ import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.MediaMetadataCompat.METADATA_KEY_MEDIA_ID
 import android.support.v4.media.MediaMetadataCompat.METADATA_KEY_MEDIA_URI
-import android.util.Log
 import androidx.core.net.toUri
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSource
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import tech.apps.music.database.Repository
 import tech.apps.music.database.offline.HistorySongModel
+import tech.apps.music.model.YTAudioDataModel
 import tech.apps.music.util.VideoData
 import javax.inject.Inject
 
 class YTVideoMusicSource @Inject constructor(
     private val musicDatabase: Repository
 ) {
-    companion object{
+    companion object {
         var songs = emptyList<MediaMetadataCompat>()
+            private set
     }
 
-    suspend fun fetchSong() = withContext(Dispatchers.IO) {
-
+    fun fetchSong() {
         state = State.STATE_INITIALIZING
-
-        withContext(Dispatchers.Main) {
-            state = State.STATE_INITIALIZING
-            musicDatabase.songsData.observeForever { list ->
-                if (list != null) {
-                    songs = emptyList()
-                    list.forEach {
-                        songs = songs + it.toMetaData()
-                    }
-                    Log.i("SongLOG","song -> ${songs.size}")
-
-                    state = State.STATE_INITIALIZED
-                }
-            }
-        }
+        state = State.STATE_INITIALIZED
     }
 
-    suspend fun saveSongPosition(watchedPosition: Long, timing: Long, videoID: String) {
-        musicDatabase.updatingSongPosTime(watchedPosition, timing, videoID)
+    fun stateIn(list: List<YTAudioDataModel>) {
+        songs = list.toMetaData()
+        state = State.STATE_INITIALIZED
     }
+
+//    suspend fun saveSongPosition(watchedPosition: Long, timing: Long, videoID: String) {
+//        musicDatabase.updatingSongPosTime(watchedPosition, timing, videoID)
+//    }
 
     suspend fun savingSongInHistory(historySongModel: HistorySongModel) {
         musicDatabase.insertSongInHistory(historySongModel)
@@ -74,6 +63,7 @@ class YTVideoMusicSource @Inject constructor(
         dataSourceFactory: DefaultDataSource.Factory
     ): ConcatenatingMediaSource {
         val concatenatingMediaSource = ConcatenatingMediaSource()
+
         songs.forEach {
             if (it.getString(METADATA_KEY_MEDIA_URI) == "") {
                 musicDatabase.getSongModelWithLink(
@@ -128,7 +118,7 @@ class YTVideoMusicSource @Inject constructor(
             false
         } else {
             action(state == State.STATE_INITIALIZED)
-            false
+            true
         }
     }
 }

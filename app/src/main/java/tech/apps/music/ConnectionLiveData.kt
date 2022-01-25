@@ -1,4 +1,4 @@
-package tech.apps.music.database.network
+package tech.apps.music
 
 import android.content.Context
 import android.content.Context.CONNECTIVITY_SERVICE
@@ -46,7 +46,7 @@ class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
           Source: https://developer.android.com/reference/android/net/ConnectivityManager.NetworkCallback#onAvailable(android.net.Network)
          */
         override fun onAvailable(network: Network) {
-            Log.d(TAG, "onAvailable: ${network}")
+            Log.d(TAG, "onAvailable: $network")
             val networkCapabilities = cm.getNetworkCapabilities(network)
             val hasInternetCapability = networkCapabilities?.hasCapability(NET_CAPABILITY_INTERNET)
             Log.d(TAG, "onAvailable: ${network}, $hasInternetCapability")
@@ -56,7 +56,7 @@ class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
                     val hasInternet = DoesNetworkHaveInternet.execute()
                     if (hasInternet) {
                         withContext(Dispatchers.Main) {
-                            Log.d(TAG, "onAvailable: adding network. ${network}")
+                            Log.d(TAG, "onAvailable: adding network. $network")
                             validNetworks.add(network)
                             checkValidNetworks()
                         }
@@ -70,7 +70,7 @@ class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
           Source: https://developer.android.com/reference/android/net/ConnectivityManager.NetworkCallback#onLost(android.net.Network)
          */
         override fun onLost(network: Network) {
-            Log.d(TAG, "onLost: ${network}")
+            Log.d(TAG, "onLost: $network")
             validNetworks.remove(network)
             checkValidNetworks()
         }

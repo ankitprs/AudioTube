@@ -10,8 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_more.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import tech.apps.music.BuildConfig
 import tech.apps.music.R
@@ -42,7 +42,7 @@ class MoreActivity : AppCompatActivity() {
 
         deleteRecentSongs.setOnClickListener {
 
-            GlobalScope.launch(Dispatchers.IO) {
+            CoroutineScope(Dispatchers.IO).launch {
                 repository.deleteAllHistory()
             }
             Snackbar.make(it, "Deleted All the History", Snackbar.LENGTH_LONG).show()
@@ -105,6 +105,14 @@ class MoreActivity : AppCompatActivity() {
         }
         notification_switch.setOnClickListener {
             Toast.makeText(this, "Coming soon...", Toast.LENGTH_SHORT).show()
+        }
+        adsReview.setOnClickListener {
+            Toast.makeText(this, "Thank You 😊 We Love Feedback", Toast.LENGTH_SHORT).show()
+            val text =
+                "App Version - ${BuildConfig.VERSION_NAME}\n" +
+                        "SDK Version - ${Build.VERSION.SDK_INT}\n" +
+                        "\n Feedback -\n\n   "
+            composeEmail(arrayOf("ankitpr2001@gmail.com"), "FeedBack - AudioTube For Ads", text)
         }
     }
 

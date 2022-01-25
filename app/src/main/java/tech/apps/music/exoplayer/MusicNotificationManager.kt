@@ -39,17 +39,13 @@ class MusicNotificationManager(
             .setSmallIconResourceId(R.drawable.ic_play_audio)
             .setChannelDescriptionResourceId(R.string.notification_channel_description)
             .setChannelNameResourceId(R.string.notification_channel_name)
-            .setPlayActionIconResourceId(R.drawable.ic_round_play_circle_24)
-            .setPauseActionIconResourceId(R.drawable.ic_round_pause_circle_24)
+            .setStopActionIconResourceId(R.drawable.ic_round_clear_24)
             .build()
 
+        notificationManager.setUseStopAction(true)
         notificationManager.setMediaSessionToken(sessionToken)
         notificationManager.setUseFastForwardAction(false)
         notificationManager.setUseRewindAction(false)
-    }
-
-    fun hideNotification() {
-        notificationManager.setPlayer(null)
     }
 
     fun showNotification(player: Player) {

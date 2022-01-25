@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:shimmer="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/songFragmentContainerLinearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/dark_background"
@@ -28,31 +30,36 @@
             android:layout_gravity="end"
             android:background="@drawable/ripple_effect_circle"
             android:padding="8dp"
-            app:srcCompat="@drawable/ic_baseline_share_24"/>
+            app:srcCompat="@drawable/ic_baseline_share_24" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer_view_container_song_fragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        shimmer:duration="800">
+
+        <include layout="@layout/placeholder_song_fragment_shimmer"/>
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+    <LinearLayout
+        android:id="@+id/content_container_song_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
 
         <ImageView
             android:id="@+id/songThumbnailSongFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             tools:srcCompat="@tools:sample/avatars" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/songTitleSongFragment"
@@ -62,10 +69,7 @@
             android:gravity="center"
             android:text="Video Title"
             android:textColor="@color/white"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/songAuthorSongFragment"
@@ -76,11 +80,14 @@
             android:gravity="center"
             android:text="Channel Name"
             android:textColor="@color/light_background"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toTopOf="@+id/seekBar"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/songTitleSongFragment" />
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/coordinatorLayout"
@@ -167,7 +174,7 @@
             android:id="@+id/seekBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:layout_marginBottom="32dp"
             android:progressBackgroundTint="@color/white"
             android:progressTint="@color/white"
@@ -177,7 +184,7 @@
             app:layout_constraintEnd_toStartOf="@+id/tvSongDuration"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/songAuthorSongFragment" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvCurTime"

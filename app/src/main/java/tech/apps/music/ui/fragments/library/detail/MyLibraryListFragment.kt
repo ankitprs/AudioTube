@@ -14,16 +14,17 @@ import tech.apps.music.adapters.SongAdapter
 import tech.apps.music.databinding.FragmentMyLibraryListBinding
 import tech.apps.music.model.SongModelForList
 import tech.apps.music.model.toSongForList
+import tech.apps.music.model.toYtAudioDataModel
 import tech.apps.music.others.Constants
-import tech.apps.music.ui.fragments.library.LibraryViewModel
+import tech.apps.music.ui.fragments.MainViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MyLibraryListFragment : Fragment() {
 
-
-    private lateinit var binding: FragmentMyLibraryListBinding
-    private lateinit var libraryViewModel: LibraryViewModel
+    private var _binding:  FragmentMyLibraryListBinding? = null
+    private val binding: FragmentMyLibraryListBinding get() = _binding!!
+    private lateinit var mainViewModel: MainViewModel
 
     @Inject
     lateinit var watchLaterAdapter: SongAdapter
@@ -32,14 +33,13 @@ class MyLibraryListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentMyLibraryListBinding.inflate(layoutInflater, container, false)
+        _binding = FragmentMyLibraryListBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        libraryViewModel = ViewModelProvider(requireActivity())[LibraryViewModel::class.java]
+        mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
 
         val myLibraryType = arguments?.getString(Constants.PASSING_MY_LIBRARY_TYPE)
 
@@ -65,9 +65,9 @@ class MyLibraryListFragment : Fragment() {
             bookmark()
         }
         watchLaterAdapter.setItemClickListener {
-            val bundle = Bundle()
-            bundle.putString(Constants.SEARCH_FRAGMENT_VIDEO_ID, it.videoId)
-            findNavController().navigate(R.id.action_homeFragment2_to_songFragment2, bundle)
+            mainViewModel.changeIsYoutubeVideoCurSong(true)
+            mainViewModel.playOrToggleListOfSongs((listOf(it)).toYtAudioDataModel(),true,0)
+            findNavController().navigate(R.id.action_homeFragment2_to_songFragment2)
         }
     }
 
@@ -78,7 +78,7 @@ class MyLibraryListFragment : Fragment() {
     }
 
     private fun bookmark() {
-        libraryViewModel.getWatchLaterList.observe(viewLifecycleOwner) {
+        mainViewModel.getWatchLaterList.observe(viewLifecycleOwner) {
             println(it)
             if (it.isNullOrEmpty()) {
                 watchLaterAdapter.songs = listOf(
@@ -88,5 +88,10 @@ class MyLibraryListFragment : Fragment() {
                 watchLaterAdapter.songs = it.toSongForList()
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

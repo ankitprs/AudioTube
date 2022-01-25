@@ -45,6 +45,8 @@
         android:id="@+id/recyclerViewWatchLater"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="10dp"/>
+        android:paddingBottom="180dp"
+        android:clipToPadding="false"
+        tools:listitem="@layout/song_item_horizontal"/>
 
 </LinearLayout>

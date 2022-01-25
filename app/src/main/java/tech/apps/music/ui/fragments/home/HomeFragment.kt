@@ -1,5 +1,6 @@
 package tech.apps.music.ui.fragments.home
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,6 +12,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdLoader
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.nativead.NativeAd
+import com.google.android.gms.ads.nativead.NativeAdOptions
+import com.google.android.gms.ads.nativead.NativeAdOptions.ADCHOICES_TOP_RIGHT
+import com.google.android.gms.ads.nativead.NativeAdOptions.NATIVE_MEDIA_ASPECT_RATIO_LANDSCAPE
 import dagger.hilt.android.AndroidEntryPoint
 import tech.apps.music.R
 import tech.apps.music.adapters.ExploreAdapter
@@ -19,11 +28,13 @@ import tech.apps.music.adapters.SongAdapter
 import tech.apps.music.databinding.MainFragmentBinding
 import tech.apps.music.model.SongModelForList
 import tech.apps.music.model.toSongModelForList
+import tech.apps.music.model.toYtAudioDataModel
 import tech.apps.music.others.Constants
 import tech.apps.music.ui.fragments.MainViewModel
 import tech.apps.music.ui.more.MoreActivity
 import tech.apps.music.util.VideoData
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -34,18 +45,20 @@ class HomeFragment : Fragment() {
     lateinit var recentAudioAdapter: SongAdapter
 
     private lateinit var exploreAdapter: ExploreAdapter
-    private lateinit var binding: MainFragmentBinding
+    private var _binding: MainFragmentBinding? = null
+    private val binding: MainFragmentBinding get() = _binding!!
 
     @Inject
     lateinit var audioBookAdapter: PremiumListAdapter
 
+    private var nativeAdGlobal: NativeAd? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = MainFragmentBinding.inflate(layoutInflater, container, false)
+        _binding = MainFragmentBinding.inflate(layoutInflater, container, false)
 
         binding.MaterialToolbarHome.inflateMenu(R.menu.home_menu)
 
@@ -71,12 +84,17 @@ class HomeFragment : Fragment() {
 
         setUpRecyclerView()
         addingSongIntoRecyclerView()
+        adsHandling()
 
         recentAudioAdapter.setItemClickListener {
-            val bundle = Bundle()
-            bundle.putString(Constants.SEARCH_FRAGMENT_VIDEO_ID, it.videoId)
-            bundle.putLong(Constants.PASSING_SONG_LAST_WATCHED_POS, it.watchedPosition)
-            findNavController().navigate(R.id.action_homeFragment2_to_songFragment2, bundle)
+            viewModel.changeIsYoutubeVideoCurSong(true)
+            viewModel.playOrToggleListOfSongs(
+                (listOf(it)).toYtAudioDataModel(),
+                true,
+                0,
+                it.watchedPosition
+            )
+            findNavController().navigate(R.id.action_homeFragment2_to_songFragment2)
         }
 
         exploreAdapter.setItemClickListener {
@@ -92,6 +110,52 @@ class HomeFragment : Fragment() {
                 bundle
             )
         }
+    }
+
+    @SuppressLint("ResourceAsColor")
+    private fun adsHandling() {
+        val adLoader = AdLoader.Builder(requireActivity(), "ca-app-pub-8154643218867307/2178194367")
+
+            .withNativeAdOptions(
+                NativeAdOptions.Builder()
+                    .setAdChoicesPlacement(ADCHOICES_TOP_RIGHT)
+                    .setMediaAspectRatio(NATIVE_MEDIA_ASPECT_RATIO_LANDSCAPE)
+                    .build()
+            )
+            .forNativeAd { nativeAd ->
+                addingViewIntoNativeAds(nativeAd)
+                nativeAdGlobal = nativeAd
+            }
+            .withAdListener(object : AdListener() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    binding.nativeAdTemplateMainFrg.visibility = View.GONE
+                }
+            })
+            .build()
+        adLoader.loadAd(AdRequest.Builder().build())
+    }
+
+    @SuppressLint("ResourceAsColor")
+    private fun addingViewIntoNativeAds(nativeAd: NativeAd) {
+
+        binding.nativeAdsMediumTemplateView.apply {
+
+            binding.nativeAdTemplateMainFrg.mediaView = mediaView
+            binding.nativeAdTemplateMainFrg.callToActionView = cta
+            binding.nativeAdTemplateMainFrg.iconView = icon
+            binding.nativeAdTemplateMainFrg.headlineView = headline
+            binding.nativeAdTemplateMainFrg.advertiserView = advertiserName
+            binding.nativeAdTemplateMainFrg.bodyView = description
+
+            icon.setImageDrawable(nativeAd.icon?.drawable)
+            headline.text = nativeAd.headline
+            description.text = nativeAd.body
+            cta.text = nativeAd.callToAction
+            advertiserName.text  = nativeAd.advertiser
+        }
+//        binding.nativeAdTemplateMainFrg.removeAllViews()
+        binding.nativeAdTemplateMainFrg.setNativeAd(nativeAd)
+
     }
 
     private fun setUpRecyclerView() {
@@ -145,18 +209,12 @@ class HomeFragment : Fragment() {
         }
     }
 
-//    private fun subscribeToObservers() {
-//        viewModel.mediaItems.observe(viewLifecycleOwner) {
-//            when (it.status) {
-//                Status.SUCCESS -> {
-////                    recentRecyclerViewProgressBar.visibility=View.GONE
-//                }
-//                Status.ERROR -> Unit
-//                Status.LOADING -> {
-////                    recentRecyclerViewProgressBar.visibility=View.VISIBLE
-//                }
-//            }
-//        }
-//    }
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        nativeAdGlobal?.destroy()
+        binding.recyclerViewAudioBookMFrag.adapter = null
+        binding.recyclerViewContinueWatchMFrag.adapter = null
+        binding.recyclerViewLatestMFrag.adapter = null
+        _binding = null
+    }
 }

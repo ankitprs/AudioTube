@@ -1,5 +1,7 @@
 package tech.apps.music.model
 
+import android.support.v4.media.MediaMetadataCompat
+
 data class EpisodesListModel(
     var id: String = "",
     var title: String = "",
@@ -21,15 +23,16 @@ data class EpisodeModel(
     var watchedPosition: Long = 0L,
 )
 
-fun List<YTAudioDataModel>.toEpisodes(): List<EpisodeModel> {
+fun List<MediaMetadataCompat>.toEpisodes(): List<EpisodeModel> {
     val list: ArrayList<EpisodeModel> = ArrayList()
     forEach {
+        val description = it.description
         list.add(
             EpisodeModel(
-                it.mediaId,
-                it.ytSongUrl,
-                it.title,
-                it.thumbnailUrl
+                description.mediaId.toString(),
+                description.mediaUri.toString(),
+                description.title.toString(),
+                description.iconUri.toString()
             )
         )
     }

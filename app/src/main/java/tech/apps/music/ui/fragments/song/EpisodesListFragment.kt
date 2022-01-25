@@ -12,14 +12,14 @@ import dagger.hilt.android.AndroidEntryPoint
 import tech.apps.music.adapters.EpisodeAdapter
 import tech.apps.music.databinding.FragmentEpisodesListBinding
 import tech.apps.music.model.toEpisodes
-import tech.apps.music.model.ytAudioDataModel
 import tech.apps.music.ui.fragments.MainViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class EpisodesListFragment : Fragment() {
 
-    private lateinit var binding: FragmentEpisodesListBinding
+    private var _binding: FragmentEpisodesListBinding? = null
+    private val binding: FragmentEpisodesListBinding get() = _binding!!
 
     @Inject
     lateinit var episodeAdapter: EpisodeAdapter
@@ -29,7 +29,7 @@ class EpisodesListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        binding = FragmentEpisodesListBinding.inflate(layoutInflater, container, false)
+        _binding = FragmentEpisodesListBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
 
@@ -47,20 +47,28 @@ class EpisodesListFragment : Fragment() {
                 requireContext()
             )
         }
-        episodeAdapter.currentlyPlayingSongId = mainViewModel.curPlayingSong.value?.description?.mediaId
+        episodeAdapter.songs = mainViewModel.currentlyPlayingPlaylist().toEpisodes()
 
-        mainViewModel.playlistItems.observe(viewLifecycleOwner){
-            it?.toEpisodes().also {
-                if (it != null) {
-                    episodeAdapter.songs = it
-                }
-            }
-        }
+        episodeAdapter.currentlyPlayingSongId =
+            mainViewModel.curPlayingSong.value?.description?.mediaId
+
 
         episodeAdapter.setItemClickListener {
-            mainViewModel.playOrToggleSong(it.ytAudioDataModel(),true)
+            mainViewModel.gotoIndex(
+                mainViewModel.currentlyPlayingPlaylist().indexOf(
+                    mainViewModel.currentlyPlayingPlaylist().find { song ->
+                        song.description.mediaId == it.songId
+                    }
+                ).toLong()
+            )
             findNavController().navigateUp()
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.recyclerViewEpisodesList.adapter = null
+        _binding = null
     }
 
 }

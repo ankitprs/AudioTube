@@ -18,6 +18,10 @@ class MusicPlayerNotificationListener(
             stopForeground(true)
             isForegroundService = false
             stopSelf()
+            mediaSession.run {
+                setMetadata(null)
+            }
+            android.os.Process.killProcess(android.os.Process.myPid())
         }
     }
 

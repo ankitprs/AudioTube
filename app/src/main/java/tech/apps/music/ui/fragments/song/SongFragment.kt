@@ -2,26 +2,31 @@ package tech.apps.music.ui.fragments.song
 
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.support.v4.media.session.PlaybackStateCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
 import android.widget.PopupMenu
 import android.widget.SeekBar
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.palette.graphics.Palette
 import com.bumptech.glide.RequestManager
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.explore_list_item.view.*
 import tech.apps.music.R
 import tech.apps.music.database.offline.WatchLaterSongModel
 import tech.apps.music.databinding.FragmentSongBinding
@@ -43,7 +48,8 @@ class SongFragment : Fragment() {
 
     private lateinit var mainViewModel: MainViewModel
     private val songViewModel: SongViewModel by viewModels()
-    private lateinit var binding: FragmentSongBinding
+    private var _binding: FragmentSongBinding? = null
+    private val binding: FragmentSongBinding get() = _binding!!
 
     private var curPlayingSong: YTAudioDataModel? = null
     private var playbackState: PlaybackStateCompat? = null
@@ -56,7 +62,7 @@ class SongFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentSongBinding.inflate(layoutInflater, container, false)
+        _binding = FragmentSongBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
 
@@ -64,46 +70,9 @@ class SongFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
 
+        toggleShimmer(true)
+
         subscribeToObserver()
-        val videoId = arguments?.getString(Constants.SEARCH_FRAGMENT_VIDEO_ID)
-
-        if (videoId != null) {
-            mainViewModel.changeIsYoutubeVideoCurSong(true)
-
-            val videoLink = "https://www.youtube.com/watch?v=$videoId"
-            val position: Long = arguments?.getLong(Constants.PASSING_SONG_LAST_WATCHED_POS) ?: 0
-
-            arguments = null
-
-            if (mainViewModel.getSongFromCache(videoId) == null) {
-                val dialog = Dialog(requireActivity())
-
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-                dialog.setContentView(R.layout.dialog_card_item)
-                dialog.setCanceledOnTouchOutside(false)
-                dialog.show()
-
-                mainViewModel.addSongInRecent(videoLink) {
-                    if (!it) {
-                        Toast.makeText(activity, "Try Again Later", Toast.LENGTH_LONG).show()
-                    } else {
-                        mainViewModel.seekTo(position)
-                    }
-                    dialog.dismiss()
-                }
-            } else if (curPlayingSong?.mediaId == null || curPlayingSong?.mediaId == videoId) {
-            } else {
-                mainViewModel.addSongInRecent(videoLink) {
-                    if (!it) {
-                        Toast.makeText(activity, "Try Again Later", Toast.LENGTH_LONG).show()
-                    } else {
-                        if (position > 0L) {
-                            mainViewModel.seekTo(position)
-                        }
-                    }
-                }
-            }
-        }
 
         binding.shareButtonSongFragment.setOnClickListener {
             val intent = Intent(Intent.ACTION_SEND)
@@ -175,6 +144,7 @@ class SongFragment : Fragment() {
             findNavController().navigate(R.id.action_songFragment_to_episodesListFragment)
         }
         bookMarkToggle()
+        bookMarkToggleSetOnClickListener()
     }
 
     private fun setPlaybackSpeed(playSpeed: Float = 1f, playSpeedString: String = "1x") {
@@ -239,22 +209,55 @@ class SongFragment : Fragment() {
     }
 
     private fun updateTitleAndSongImage(song: YTAudioDataModel) {
+        toggleShimmer(song.title == "null")
         updateSongImage(song.thumbnailUrl)
         binding.songTitleSongFragment.text = song.title
         binding.songAuthorSongFragment.text = song.author
     }
 
     private fun updateSongImage(thumbnailUrl: String) {
-        if (mainViewModel.isYoutubeVideoCurSong()) {
-            glide.load(thumbnailUrl)
-                .override(480, 270)
-                .centerCrop()
-                .into(binding.songThumbnailSongFragment)
-        } else {
-            glide.load(thumbnailUrl)
-                .centerCrop()
-                .into(binding.songThumbnailSongFragment)
-        }
+//        if (mainViewModel.isYoutubeVideoCurSong()) {
+//            glide.load(thumbnailUrl)
+//                .override(480, 270)
+//                .centerCrop()
+//                .into(binding.songThumbnailSongFragment)
+//        } else {
+//            glide.load(thumbnailUrl)
+//                .centerCrop()
+//                .into(binding.songThumbnailSongFragment)
+//        }
+        glide.asBitmap()
+            .load(thumbnailUrl)
+            .centerCrop()
+            .into(object : CustomTarget<Bitmap>() {
+                override fun onResourceReady(
+                    resource: Bitmap,
+                    transition: Transition<in Bitmap>?
+                ) {
+                    binding.songThumbnailSongFragment.setImageBitmap(resource)
+                    Palette.from(resource).generate {
+                        val gradientDrawable = GradientDrawable(
+                            GradientDrawable.Orientation.TOP_BOTTOM,
+                            intArrayOf(
+                                it?.mutedSwatch?.rgb ?: ContextCompat.getColor(
+                                    requireActivity(),
+                                    R.color.dark_background
+                                ),
+                                ContextCompat.getColor(
+                                    requireActivity(),
+                                    R.color.dark_background
+                                )
+                            )
+                        )
+                        gradientDrawable.cornerRadius = 0f
+                        binding.songFragmentContainerLinearLayout.background = gradientDrawable
+                    }
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {
+                }
+
+            })
     }
 
     @SuppressLint("SetTextI18n")
@@ -278,6 +281,7 @@ class SongFragment : Fragment() {
             if (it == null) return@observe
 
             curPlayingSong = it.toSong()
+            bookMarkToggle()
             updateTitleAndSongImage(curPlayingSong!!)
         }
         mainViewModel.playbackState.observe(viewLifecycleOwner) {
@@ -313,35 +317,43 @@ class SongFragment : Fragment() {
 
     private fun bookMarkToggle() {
 
-        mainViewModel.getWatchLaterList.observe(viewLifecycleOwner) { list ->
-            isWatchLater = list.find {
-                it.videoId == curPlayingSong?.mediaId
-            } != null
-            watchLaterIconToggle()
-        }
+        val list = mainViewModel.getWatchLaterList.value
 
+        isWatchLater = list?.find {
+            it.videoId == curPlayingSong?.mediaId
+        } != null
+        watchLaterIconToggle()
+    }
+
+    private fun bookMarkToggleSetOnClickListener() {
         binding.imageViewBookMarkButton.setOnClickListener {
-            if(!mainViewModel.isYoutubeVideoCurSong()){
-                Snackbar.make(it,"Only Youtube video can be Bookmark as of now",Snackbar.LENGTH_SHORT).show()
+            if (!mainViewModel.isYoutubeVideoCurSong()) {
+                Snackbar.make(
+                    it,
+                    "Only Youtube video can be Bookmark as of now",
+                    Snackbar.LENGTH_SHORT
+                ).show()
                 return@setOnClickListener
             }
 
             if (isWatchLater) {
                 isWatchLater = false
                 curPlayingSong?.let { it1 ->
-                    mainViewModel.removeSongListenLater(
-                        it1.mediaId
-                    )
+                    mainViewModel.removeSongListenLater( it1.mediaId )
                 }
             } else {
                 isWatchLater = true
                 curPlayingSong?.let { it1 ->
+
+                    if (it1.title == "null")
+                        return@setOnClickListener
+
                     mainViewModel.songListenLater(
                         WatchLaterSongModel(
                             it1.mediaId,
                             it1.title,
                             it1.author,
-                            it1.duration,
+                            it1.duration * 1000,
                             System.currentTimeMillis()
                         )
                     )
@@ -349,6 +361,7 @@ class SongFragment : Fragment() {
             }
             watchLaterIconToggle()
         }
+
     }
 
     private fun watchLaterIconToggle() {
@@ -397,5 +410,15 @@ class SongFragment : Fragment() {
             }
             true
         }
+    }
+
+    private fun toggleShimmer(isShimmer: Boolean) {
+        binding.shimmerViewContainerSongFragment.isVisible = isShimmer
+        binding.contentContainerSongFragment.isVisible = !isShimmer
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

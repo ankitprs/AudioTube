@@ -31,3 +31,21 @@ fun YTAudioDataModel.toMetaData(): MediaMetadataCompat {
             .build()
     }
 }
+
+fun List<YTAudioDataModel>.toMetaData(): List<MediaMetadataCompat> {
+    var list = emptyList<MediaMetadataCompat>()
+    forEach {
+        list = list + it.toMetaData()
+    }
+    return list
+}
+
+fun List<MediaMetadataCompat>.toSong(): List<YTAudioDataModel> {
+    var list = emptyList<YTAudioDataModel>()
+    forEach {
+        if (it.toSong() != null) {
+            list = list + listOf(it.toSong()!!)
+        }
+    }
+    return list
+}

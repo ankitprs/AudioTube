@@ -17,12 +17,6 @@ object YTVideoExtractor {
         callback: (ytAudioDataModel: YTAudioDataModel?) -> Unit
     ) {
 
-        val cacheSong = SongsMap[ytLink]
-        val currentTiming = System.currentTimeMillis()
-        if (cacheSong != null && currentTiming - cacheSong.time < 18000000L) {
-            callback(cacheSong.ytAudioDataModel)
-            return
-        }
         val obj =
             @SuppressLint("StaticFieldLeak")
             object : YouTubeExtractor(context) {
@@ -36,7 +30,14 @@ object YTVideoExtractor {
                         return
                     }
                     val iTag = 251
-                    val audioLink: String = ytFiles[iTag].url ?: ytFiles[iTag - 1].url
+                    val audioLinkNullable: String? = ytFiles[iTag].url ?: ytFiles[iTag - 1].url
+
+                    if ( audioLinkNullable == null){
+                        callback(null)
+                        return
+                    }
+
+                    val audioLink: String = audioLinkNullable
 
                     if (vMeta != null) {
                         val song = YTAudioDataModel(
@@ -48,19 +49,9 @@ object YTVideoExtractor {
                             vMeta.videoLength
                         )
                         callback(song)
-                        val songCache = SongsCacheModel(System.currentTimeMillis(), song)
-                        if (cacheSong == null) {
-                            SongsMap[ytLink] = songCache
-                        } else {
-                            songCache.ytAudioDataModel = songCache.ytAudioDataModel
-                            songCache.time = songCache.time
-                        }
                     }
                 }
             }
         obj.extract(ytLink)
-    }
-    fun clearCache(){
-        SongsMap.clear()
     }
 }

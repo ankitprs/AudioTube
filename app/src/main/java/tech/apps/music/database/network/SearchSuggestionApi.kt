@@ -52,10 +52,10 @@ class SearchSuggestion {
             callback(ArrayList())
             return
         }
-        val keywordEncoded = URLEncoder.encode(keyword.trim(), "UTF-8")
 
         withContext(Dispatchers.IO) {
             try {
+                val keywordEncoded = URLEncoder.encode(keyword.trim(), "UTF-8")
 
                 SearchSuggestionApi.searchInstant.searchSuggestion(keyword = keywordEncoded)
                     .enqueue(object : retrofit2.Callback<ResponseBody> {

@@ -45,7 +45,8 @@ class SearchFragment : Fragment() {
 
     lateinit var searchSuggestionAdapter: SearchSuggestionAdapter
     private var keyboardNeeded = true
-    private lateinit var binding: SearchFragmentBinding
+    private var _binding: SearchFragmentBinding? = null
+    private val binding: SearchFragmentBinding get() = _binding!!
     private lateinit var mainViewModel: MainViewModel
 
     override fun onCreateView(
@@ -53,7 +54,7 @@ class SearchFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         viewModel = ViewModelProvider(this)[SearchViewModel::class.java]
-        binding = SearchFragmentBinding.inflate(layoutInflater,container,false)
+        _binding = SearchFragmentBinding.inflate(layoutInflater,container,false)
         return binding.root
     }
 
@@ -68,9 +69,9 @@ class SearchFragment : Fragment() {
         searchAdapter.isViewHorizontal = true
 
         searchAdapter.setItemClickListener {
-            val bundle = Bundle()
-            bundle.putString(Constants.SEARCH_FRAGMENT_VIDEO_ID, it.videoId)
-            findNavController().navigate(R.id.action_homeFragment2_to_songFragment2, bundle)
+            mainViewModel.changeIsYoutubeVideoCurSong(true)
+            mainViewModel.playOrToggleListOfSongs((listOf(it)).toYtAudioDataModel(),true,0)
+            findNavController().navigate(R.id.action_homeFragment2_to_songFragment2)
         }
 
         binding.floatingActionButtonPlayListSearchFrg.setOnClickListener {
@@ -125,6 +126,7 @@ class SearchFragment : Fragment() {
         if (keyword != null) {
             binding.searchButtonViewSearchFragment.setQuery(keyword, true)
             keyboardNeeded = false
+            arguments = null
         }
     }
 
@@ -193,10 +195,18 @@ class SearchFragment : Fragment() {
             binding.searchButtonViewSearchFragment.isIconified = false
             keyboardNeeded = false
         }
+        hideSearchSuggestion(false)
     }
 
     private fun hideSearchSuggestion(isSearch: Boolean) {
         binding.recyclerViewSearchSuggestion.isVisible = isSearch
         binding.recyclerViewSearchResult.isVisible = !isSearch
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.recyclerViewSearchResult.adapter = null
+        binding.recyclerViewSearchSuggestion.adapter = null
+        _binding = null
     }
 }

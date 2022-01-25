@@ -33,7 +33,8 @@ import javax.inject.Inject
 class SongDetailFragment : Fragment() {
 
     private lateinit var mainViewModel: MainViewModel
-    private lateinit var binding: SongDetailFragmentBinding
+    private var _binding: SongDetailFragmentBinding? = null
+    private val binding: SongDetailFragmentBinding get() = _binding!!
 
     @Inject
     lateinit var glide: RequestManager
@@ -45,8 +46,7 @@ class SongDetailFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = SongDetailFragmentBinding.inflate(layoutInflater, container, false)
-
+        _binding = SongDetailFragmentBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
 
@@ -59,7 +59,7 @@ class SongDetailFragment : Fragment() {
             (arguments?.getString(Constants.PASSING_EPISODES_MODEL_ID)
                 ?: return)
 
-        var episodesListModel: EpisodesListModel =
+        val episodesListModel: EpisodesListModel =
             mainViewModel.listOfAudioBooks.value?.find {
             it.id == episodesListModelId
         } ?: return
@@ -143,6 +143,11 @@ class SongDetailFragment : Fragment() {
                 )
             )
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 }

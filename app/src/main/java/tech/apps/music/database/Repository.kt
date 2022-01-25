@@ -2,9 +2,7 @@ package tech.apps.music.database
 
 import android.content.Context
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import tech.apps.music.database.network.FirestoreMetaDataList
-import tech.apps.music.database.network.SongsMap
 import tech.apps.music.database.network.YTVideoExtractor
 import tech.apps.music.database.offline.HistorySongModel
 import tech.apps.music.database.offline.OfflineDatabase
@@ -64,8 +62,6 @@ class Repository
 
 
 
-    val songsData: MutableLiveData<List<YTAudioDataModel>> = MutableLiveData<List<YTAudioDataModel>>()
-
 
 
     // networkCall
@@ -81,23 +77,11 @@ class Repository
     }
 
 
-    // youtube video cashing
-    fun getSongFromCache(ytLink: String): YTAudioDataModel?{
-        val cacheSong = SongsMap[ytLink]
-        val currentTiming = System.currentTimeMillis()
-        return if (cacheSong != null && currentTiming - cacheSong.time < 18000000L) {
-            (cacheSong.ytAudioDataModel)
-
-        }else{
-            null
-        }
-    }
-
 
 
     // get List Of AudioBook From Firestore
     suspend fun getListOfAudioBooks(callback: (list: List<EpisodesListModel>? ) -> Unit ){
-        FirestoreMetaDataList().getEpisodesListFromFirestore(){
+        FirestoreMetaDataList().getEpisodesListFromFirestore {
             callback(it)
         }
     }

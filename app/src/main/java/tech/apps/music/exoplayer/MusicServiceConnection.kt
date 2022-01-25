@@ -29,10 +29,11 @@ class MusicServiceConnection(
     val curPlayingSong: LiveData<MediaMetadataCompat?> = _curPlayingSong
 
 
-    lateinit var mediaController: MediaControllerCompat
+    val transportControls: MediaControllerCompat.TransportControls
+        get() = mediaController.transportControls
+
 
     private val mediaBrowserConnectionCallback = MediaBrowserConnectionCallback(context)
-
     private val mediaBrowser = MediaBrowserCompat(
         context,
         ComponentName(
@@ -45,8 +46,7 @@ class MusicServiceConnection(
         connect()
     }
 
-    val transportControls: MediaControllerCompat.TransportControls
-        get() = mediaController.transportControls
+    private lateinit var mediaController: MediaControllerCompat
 
     fun subscribe(parentId: String, callback: MediaBrowserCompat.SubscriptionCallback) {
         mediaBrowser.subscribe(parentId, callback)
@@ -89,11 +89,17 @@ class MusicServiceConnection(
 
     private inner class MediaControllerCallback : MediaControllerCompat.Callback() {
         override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
-            _playbackState.postValue(state)
+            _playbackState.postValue(state ?: EMPTY_PLAYBACK_STATE)
         }
 
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
-            _curPlayingSong.postValue(metadata)
+            _curPlayingSong.postValue(
+                if (metadata?.description?.mediaId == null) {
+                    NOTHING_PLAYING
+                } else {
+                    metadata
+                }
+            )
         }
 
         override fun onSessionEvent(event: String?, extras: Bundle?) {
@@ -115,6 +121,7 @@ class MusicServiceConnection(
         }
     }
 }
+
 @Suppress("PropertyName")
 val EMPTY_PLAYBACK_STATE: PlaybackStateCompat = PlaybackStateCompat.Builder()
     .setState(PlaybackStateCompat.STATE_NONE, 0, 0f)

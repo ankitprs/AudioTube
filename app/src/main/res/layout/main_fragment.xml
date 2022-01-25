@@ -51,6 +51,20 @@
             android:layout_marginBottom="150dp"
             android:orientation="vertical">
 
+            <com.google.android.gms.ads.nativead.NativeAdView
+                android:id="@+id/native_ad_template_MainFrg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <include
+                    android:id="@+id/native_ads_medium_template_view"
+                    layout="@layout/native_ads_medium_template_view" />
+
+
+            </com.google.android.gms.ads.nativead.NativeAdView>
+
+
+
             <TextView
                 android:id="@+id/recentTextTextView"
                 android:layout_width="wrap_content"
