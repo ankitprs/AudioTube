@@ -79,7 +79,8 @@
                 android:id="@+id/recyclerViewContinueWatchMFrag"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp" />
+                android:layout_marginTop="10dp"
+                tools:listitem="@layout/song_item_horizontal"/>
 
             <TextView
                 android:id="@+id/textViewAudioBookMainFr"
@@ -95,7 +96,8 @@
                 android:id="@+id/recyclerViewAudioBookMFrag"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp" />
+                android:layout_marginTop="10dp"
+                tools:listitem="@layout/premium_item_list"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -110,7 +112,9 @@
                 android:id="@+id/recyclerViewLatestMFrag"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp" />
+                android:layout_marginTop="10dp"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/explore_list_item"/>
 
         </LinearLayout>
 

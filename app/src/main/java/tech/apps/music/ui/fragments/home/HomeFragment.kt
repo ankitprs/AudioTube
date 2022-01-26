@@ -59,22 +59,6 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = MainFragmentBinding.inflate(layoutInflater, container, false)
-
-        binding.MaterialToolbarHome.inflateMenu(R.menu.home_menu)
-
-        binding.MaterialToolbarHome.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                R.id.app_bar_more -> {
-                    startActivity(Intent(activity, MoreActivity::class.java))
-                }
-                R.id.app_bar_search -> {
-                    findNavController().navigate(R.id.action_homeFragment_to_searchCatalogFragment)
-                }
-                else -> {}
-            }
-            true
-        }
-
         return binding.root
     }
 
@@ -82,6 +66,19 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
 
+        binding.MaterialToolbarHome.inflateMenu(R.menu.home_menu)
+        binding.MaterialToolbarHome.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.app_bar_more -> {
+                    startActivity(Intent(activity, MoreActivity::class.java))
+                }
+                R.id.app_bar_search -> {
+                    findNavController().navigate(R.id.action_homeFragment_to_searchFragment)
+                }
+                else -> {}
+            }
+            true
+        }
         setUpRecyclerView()
         addingSongIntoRecyclerView()
         adsHandling()
@@ -114,7 +111,8 @@ class HomeFragment : Fragment() {
 
     @SuppressLint("ResourceAsColor")
     private fun adsHandling() {
-        val adLoader = AdLoader.Builder(requireActivity(), "ca-app-pub-8154643218867307/2178194367")
+        val adUnitID = "ca-app-pub-8154643218867307/2178194367"
+        val adLoader = AdLoader.Builder(requireActivity(), adUnitID)
 
             .withNativeAdOptions(
                 NativeAdOptions.Builder()
@@ -123,12 +121,14 @@ class HomeFragment : Fragment() {
                     .build()
             )
             .forNativeAd { nativeAd ->
-                addingViewIntoNativeAds(nativeAd)
+
                 nativeAdGlobal = nativeAd
+                addingViewIntoNativeAds(nativeAd)
+
             }
             .withAdListener(object : AdListener() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
-                    binding.nativeAdTemplateMainFrg.visibility = View.GONE
+//                    binding.nativeAdTemplateMainFrg.visibility = View.GONE
                 }
             })
             .build()
@@ -137,6 +137,7 @@ class HomeFragment : Fragment() {
 
     @SuppressLint("ResourceAsColor")
     private fun addingViewIntoNativeAds(nativeAd: NativeAd) {
+        if(_binding == null)  return
 
         binding.nativeAdsMediumTemplateView.apply {
 
@@ -151,7 +152,7 @@ class HomeFragment : Fragment() {
             headline.text = nativeAd.headline
             description.text = nativeAd.body
             cta.text = nativeAd.callToAction
-            advertiserName.text  = nativeAd.advertiser
+            advertiserName.text = nativeAd.advertiser
         }
 //        binding.nativeAdTemplateMainFrg.removeAllViews()
         binding.nativeAdTemplateMainFrg.setNativeAd(nativeAd)
@@ -163,11 +164,7 @@ class HomeFragment : Fragment() {
 
         binding.recyclerViewContinueWatchMFrag.apply {
             adapter = recentAudioAdapter
-            layoutManager = LinearLayoutManager(
-                requireContext(),
-                LinearLayoutManager.HORIZONTAL,
-                false
-            )
+            layoutManager = LinearLayoutManager(requireContext())
         }
         binding.recyclerViewLatestMFrag.apply {
             adapter = exploreAdapter

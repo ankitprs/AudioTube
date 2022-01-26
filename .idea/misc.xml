@@ -80,7 +80,7 @@
         <entry key="app/src/main/res/layout/home_activity.xml" value="0.1" />
         <entry key="app/src/main/res/layout/library_fragment.xml" value="0.25" />
         <entry key="app/src/main/res/layout/list_item_title.xml" value="0.17828947368421053" />
-        <entry key="app/src/main/res/layout/main_fragment.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/main_fragment.xml" value="0.13346792283535217" />
         <entry key="app/src/main/res/layout/music_player_ui.xml" value="0.17828947368421053" />
         <entry key="app/src/main/res/layout/native_ads_medium_template_view.xml" value="0.165" />
         <entry key="app/src/main/res/layout/native_ads_small_temp_search_view.xml" value="0.25" />
@@ -98,7 +98,7 @@
         <entry key="app/src/main/res/layout/share.xml" value="0.13547000490184163" />
         <entry key="app/src/main/res/layout/song_card_view_item.xml" value="0.375" />
         <entry key="app/src/main/res/layout/song_detail_fragment.xml" value="0.17828947368421053" />
-        <entry key="app/src/main/res/layout/song_item_horizontal.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/song_item_horizontal.xml" value="0.4544179523141655" />
         <entry key="app/src/main/res/layout/song_item_vertical.xml" value="0.375" />
         <entry key="app/src/main/res/layout/swipe_item.xml" value="0.102880658436214" />
         <entry key="app/src/main/res/layout/switch_item.xml" value="0.25092592592592594" />

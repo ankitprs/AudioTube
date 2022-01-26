@@ -1,14 +1,12 @@
 package tech.apps.music.adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
-import kotlinx.android.synthetic.main.premium_item_list.view.*
-import tech.apps.music.R
+import tech.apps.music.databinding.PremiumItemListBinding
 import tech.apps.music.model.EpisodesListModel
 import javax.inject.Inject
 
@@ -37,16 +35,13 @@ class PremiumListAdapter @Inject constructor(
         get() = differ.currentList
         set(value) = differ.submitList(value)
 
-    class SongViewHolder(listItem: View) : RecyclerView.ViewHolder(listItem)
+    class SongViewHolder(val binding: PremiumItemListBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
         return SongViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.premium_item_list,
-                parent,
-                false
-            )
+            PremiumItemListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         )
+
     }
 
     private var onItemClickListener: ((EpisodesListModel) -> Unit)? = null
@@ -61,7 +56,7 @@ class PremiumListAdapter @Inject constructor(
 
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
         val song = songs[position]
-        holder.itemView.apply {
+        holder.binding.apply {
             titleAudioBook.text = song.title
             authorAudioBook.text = song.author
             durationAudioBook.text = song.duration
@@ -71,7 +66,7 @@ class PremiumListAdapter @Inject constructor(
                 .into(thumbnailImageAudioBook)
 
 
-            setOnClickListener {
+            root.setOnClickListener {
                 onItemClickListener?.let { click ->
                     click(song)
                 }

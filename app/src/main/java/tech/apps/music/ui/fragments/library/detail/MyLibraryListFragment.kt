@@ -43,8 +43,6 @@ class MyLibraryListFragment : Fragment() {
 
         val myLibraryType = arguments?.getString(Constants.PASSING_MY_LIBRARY_TYPE)
 
-        watchLaterAdapter.isViewHorizontal = true
-
         binding.backButtonMyLibrary.setOnClickListener {
             findNavController().navigateUp()
         }

@@ -6,12 +6,9 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewbinding.ViewBinding
 import com.bumptech.glide.RequestManager
-import kotlinx.android.synthetic.main.song_item_vertical.view.*
 import tech.apps.music.R
 import tech.apps.music.databinding.SongItemHorizontalBinding
-import tech.apps.music.databinding.SongItemVerticalBinding
 import tech.apps.music.model.SongModelForList
 import tech.apps.music.util.TimeFunction
 import tech.apps.music.util.VideoData
@@ -20,8 +17,6 @@ import javax.inject.Inject
 class SongAdapter @Inject constructor(
     private val glide: RequestManager
 ) : RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
-
-    var isViewHorizontal: Boolean = false
 
     private val diffCallback = object : DiffUtil.ItemCallback<SongModelForList>() {
         override fun areItemsTheSame(
@@ -44,26 +39,16 @@ class SongAdapter @Inject constructor(
         get() = differ.currentList
         set(value) = differ.submitList(value)
 
-    class SongViewHolder(binding: ViewBinding) : RecyclerView.ViewHolder(binding.root)
+    class SongViewHolder(val binding: SongItemHorizontalBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
-        return if (isViewHorizontal) {
-            SongViewHolder(
+        return SongViewHolder(
                 SongItemHorizontalBinding.inflate(
                     LayoutInflater.from(parent.context),
                     parent,
                     false
                 )
             )
-        } else {
-            SongViewHolder(
-                SongItemVerticalBinding.inflate(
-                    LayoutInflater.from(parent.context),
-                    parent,
-                    false
-                )
-            )
-        }
     }
 
     private var onItemClickListener: ((SongModelForList) -> Unit)? = null
@@ -82,15 +67,17 @@ class SongAdapter @Inject constructor(
 
         if (song.time == 0L) {
 
-            holder.itemView.thumbnailImageTYVideo.setImageResource(R.drawable.recently_added_null)
+            holder.binding.apply {
+                thumbnailImageTYVideo.setImageResource(R.drawable.recently_added_null)
 
-            holder.itemView.durationTYVideo.isVisible = false
-            holder.itemView.titleTYVideo.isVisible = false
-            holder.itemView.channelTYVideo.isVisible = false
+                durationTYVideo.isVisible = false
+                titleTYVideo.isVisible = false
+                channelTYVideo.isVisible = false
+            }
             return
         }
 
-        holder.itemView.apply {
+        holder.binding.apply {
             titleTYVideo.text = song.title
 
             glide.load(VideoData.getThumbnailLowQFromId(song.videoId))
@@ -114,8 +101,7 @@ class SongAdapter @Inject constructor(
 
             channelTYVideo.text = song.ChannelName
 
-
-            setOnClickListener {
+            root.setOnClickListener {
                 onItemClickListener?.let { click ->
                     click(song)
                 }

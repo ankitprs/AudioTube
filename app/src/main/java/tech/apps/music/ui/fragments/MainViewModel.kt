@@ -21,7 +21,6 @@ import tech.apps.music.model.EpisodesListModel
 import tech.apps.music.model.YTAudioDataModel
 import tech.apps.music.others.Constants
 import tech.apps.music.others.Constants.MEDIA_ROOT_ID
-import tech.apps.music.others.Resource
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,9 +30,6 @@ class MainViewModel @Inject constructor(
     private val repository: Repository,
     private val ytVideoMusicSource: YTVideoMusicSource
 ): AndroidViewModel(application) {
-
-    private val _mediaItems = MutableLiveData<Resource<List<YTAudioDataModel>>>()
-    val mediaItems: LiveData<Resource<List<YTAudioDataModel>>> = _mediaItems
 
     //    val getContinueWatchingList: LiveData<List<HistorySongModel>> = repository.getListOfContinue()
     val getRecentList: LiveData<List<HistorySongModel>> = repository.getAllSongsLiveData()
@@ -48,7 +44,6 @@ class MainViewModel @Inject constructor(
     var listOfAudioBooks: MutableLiveData<List<EpisodesListModel>> = MutableLiveData()
 
     init {
-        _mediaItems.postValue(Resource.loading(null))
         musicServiceConnection.subscribe(MEDIA_ROOT_ID,
             object : MediaBrowserCompat.SubscriptionCallback() {
                 override fun onChildrenLoaded(
@@ -56,17 +51,6 @@ class MainViewModel @Inject constructor(
                     children: MutableList<MediaBrowserCompat.MediaItem>
                 ) {
                     super.onChildrenLoaded(parentId, children)
-
-                    val item = children.map {
-                        YTAudioDataModel(
-                            it.mediaId!!,
-                            it.description.title.toString(),
-                            it.description.subtitle.toString(),
-                            it.description.mediaUri.toString(),
-                            it.description.iconUri.toString()
-                        )
-                    }
-                    _mediaItems.postValue(Resource.success(item))
                 }
             })
 
@@ -127,7 +111,9 @@ class MainViewModel @Inject constructor(
         } else {
             val bundle = Bundle()
             bundle.putLong(Constants.PASSING_SONG_LAST_WATCHED_POS, watchedPosition)
-            musicServiceConnection.transportControls.playFromMediaId(mediaItem.mediaId, bundle)
+            if(mediaItem.mediaId.isNotEmpty()){
+                musicServiceConnection.transportControls.playFromMediaId(mediaItem.mediaId, bundle)
+            }
         }
     }
 

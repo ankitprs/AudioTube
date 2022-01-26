@@ -9,13 +9,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.activity_more.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import tech.apps.music.BuildConfig
-import tech.apps.music.R
 import tech.apps.music.database.Repository
+import tech.apps.music.databinding.ActivityMoreBinding
 import tech.apps.music.others.Constants.ABOUT
 import tech.apps.music.others.Constants.ABOUT_SENDING_DATA
 import tech.apps.music.others.Constants.HOW_IT_WORKS
@@ -27,20 +26,23 @@ class MoreActivity : AppCompatActivity() {
 
     @Inject
     lateinit var repository: Repository
+    private var _binding: ActivityMoreBinding? = null
+    private val binding: ActivityMoreBinding get() = _binding!!
 
     @SuppressLint("UseCompatLoadingForDrawables", "ResourceAsColor")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_more)
+        _binding = ActivityMoreBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        backButtonMoreAct.setOnClickListener {
+        binding.backButtonMoreAct.setOnClickListener {
             finish()
         }
 
         val fragment = AboutFragment()
         val bundle = Bundle()
 
-        deleteRecentSongs.setOnClickListener {
+        binding.deleteRecentSongs.setOnClickListener {
 
             CoroutineScope(Dispatchers.IO).launch {
                 repository.deleteAllHistory()
@@ -48,30 +50,30 @@ class MoreActivity : AppCompatActivity() {
             Snackbar.make(it, "Deleted All the History", Snackbar.LENGTH_LONG).show()
         }
 
-        howToUse.setOnClickListener {
+        binding.howToUse.setOnClickListener {
             bundle.putString(ABOUT_SENDING_DATA, HOW_IT_WORKS)
             fragment.arguments = bundle
             fragment.show(supportFragmentManager, fragment.tag)
         }
 
-        notification.setOnClickListener {
+        binding.notification.setOnClickListener {
 
         }
 
-        rateUs.setOnClickListener {
+        binding.rateUs.setOnClickListener {
             Toast.makeText(this, "Thank You 😊 We Love Your Support", Toast.LENGTH_SHORT).show()
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data = Uri.parse("https://play.google.com/store/apps/details?id=tech.apps.music")
             startActivity(intent)
         }
 
-        checkUpdate.setOnClickListener {
+        binding.checkUpdate.setOnClickListener {
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data = Uri.parse("https://play.google.com/store/apps/details?id=tech.apps.music")
             startActivity(intent)
         }
 
-        inviteFriends.setOnClickListener {
+        binding.inviteFriends.setOnClickListener {
             val intent = Intent(Intent.ACTION_SEND)
             intent.type = "text/plain"
             intent.putExtra(Intent.EXTRA_SUBJECT, "AudioTube app")
@@ -82,20 +84,20 @@ class MoreActivity : AppCompatActivity() {
             startActivity(Intent.createChooser(intent, "Share URL"))
         }
 
-        PrivacyPolicy.setOnClickListener {
+        binding.PrivacyPolicy.setOnClickListener {
             bundle.putString(ABOUT_SENDING_DATA, PRIVACY_POLICY)
             fragment.arguments = bundle
 
             fragment.show(supportFragmentManager, fragment.tag)
         }
 
-        about.setOnClickListener {
+        binding.about.setOnClickListener {
             bundle.putString(ABOUT_SENDING_DATA, ABOUT)
             fragment.arguments = bundle
             fragment.show(supportFragmentManager, fragment.tag)
         }
 
-        feedback.setOnClickListener {
+        binding.feedback.setOnClickListener {
             Toast.makeText(this, "Thank You 😊 We Love Feedback", Toast.LENGTH_SHORT).show()
             val text =
                 "App Version - ${BuildConfig.VERSION_NAME}\n" +
@@ -103,10 +105,12 @@ class MoreActivity : AppCompatActivity() {
                         "\n Feedback -\n\n   "
             composeEmail(arrayOf("ankitpr2001@gmail.com"), "FeedBack - AudioTube", text)
         }
-        notification_switch.setOnClickListener {
+
+        binding.notificationSwitch.setOnClickListener {
             Toast.makeText(this, "Coming soon...", Toast.LENGTH_SHORT).show()
         }
-        adsReview.setOnClickListener {
+
+        binding.adsReview.setOnClickListener {
             Toast.makeText(this, "Thank You 😊 We Love Feedback", Toast.LENGTH_SHORT).show()
             val text =
                 "App Version - ${BuildConfig.VERSION_NAME}\n" +
@@ -124,5 +128,10 @@ class MoreActivity : AppCompatActivity() {
         intent.putExtra(Intent.EXTRA_SUBJECT, subject)
         intent.putExtra(Intent.EXTRA_TEXT, text)
         startActivity(intent)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }

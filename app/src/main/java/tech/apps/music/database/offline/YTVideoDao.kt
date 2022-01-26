@@ -37,7 +37,7 @@ interface YTVideoDao {
     @Query("SELECT * FROM WatchLater_Song_Model ORDER BY Timing DESC")
     fun getListOfWatchLater() : LiveData<List<WatchLaterSongModel>>
 
-    @Query("DELETE FROM WatchLater_Song_Model WHERE videoId <= :mediaId")
+    @Query("DELETE FROM WatchLater_Song_Model WHERE videoId = :mediaId")
     suspend fun deleteSongFromWatchLater(mediaId: String)
 
 

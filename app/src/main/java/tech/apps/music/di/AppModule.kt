@@ -44,8 +44,8 @@ object AppModule {
         @ApplicationContext context: Context
     ) = Glide.with(context).setDefaultRequestOptions(
         RequestOptions()
-            .placeholder(R.drawable.ic_baseline_image_24)
-            .error(R.drawable.ic_baseline_image_24)
+            .placeholder(R.color.one_level_up)
+            .error(R.color.one_level_up)
             .diskCacheStrategy(DiskCacheStrategy.DATA)
 
     )

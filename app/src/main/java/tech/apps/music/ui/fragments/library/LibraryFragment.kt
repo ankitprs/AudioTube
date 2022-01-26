@@ -46,7 +46,6 @@ class LibraryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
 
-        recentAudioAdapter.isViewHorizontal = true
         setUpRecyclerView()
 
         binding.MaterialToolbarHome.inflateMenu(R.menu.home_menu)

@@ -85,11 +85,11 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewSearchResult"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="200dp"
-                tools:listitem="@layout/song_item_vertical" />
+                tools:listitem="@layout/song_item_horizontal" />
 
         </LinearLayout>
 

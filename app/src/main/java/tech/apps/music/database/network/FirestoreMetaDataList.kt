@@ -1,5 +1,6 @@
 package tech.apps.music.database.network
 
+import androidx.annotation.Keep
 import com.google.firebase.firestore.Source
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
@@ -41,5 +42,6 @@ class FirestoreMetaDataList {
 
         }
 
+    @Keep
     data class ListOfEpisodes(var audiobooksample: ArrayList<EpisodesListModel> = ArrayList())
 }

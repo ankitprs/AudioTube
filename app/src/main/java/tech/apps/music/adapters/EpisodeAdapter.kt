@@ -1,15 +1,13 @@
 package tech.apps.music.adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
-import kotlinx.android.synthetic.main.episode_list_item.view.*
-import tech.apps.music.R
+import tech.apps.music.databinding.EpisodeListItemBinding
 import tech.apps.music.model.EpisodeModel
 import javax.inject.Inject
 
@@ -33,12 +31,13 @@ class EpisodeAdapter @Inject constructor(
         get() = differ.currentList
         set(value) = differ.submitList(value)
 
-    class EpisodeViewHolder(listItem: View) : RecyclerView.ViewHolder(listItem)
+    class EpisodeViewHolder(val binding: EpisodeListItemBinding) :
+        RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EpisodeViewHolder {
         return EpisodeViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.episode_list_item,
+            EpisodeListItemBinding.inflate(
+                LayoutInflater.from(parent.context),
                 parent,
                 false
             )
@@ -60,7 +59,7 @@ class EpisodeAdapter @Inject constructor(
     override fun onBindViewHolder(holder: EpisodeViewHolder, position: Int) {
 
         val song = songs[position]
-        holder.itemView.apply {
+        holder.binding.apply {
 
 //            if (currentlyPlayingSongId === song.songId) {
 //                val gradientDrawable = GradientDrawable(
@@ -88,7 +87,7 @@ class EpisodeAdapter @Inject constructor(
                     ((song.watchedPosition) / (song.duration * 10)).toInt()
             }
 
-            setOnClickListener {
+            root.setOnClickListener {
                 onItemClickListener?.let { click ->
                     click(song)
                 }

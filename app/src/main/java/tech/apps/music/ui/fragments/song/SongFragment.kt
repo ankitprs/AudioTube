@@ -26,7 +26,6 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.explore_list_item.view.*
 import tech.apps.music.R
 import tech.apps.music.database.offline.WatchLaterSongModel
 import tech.apps.music.databinding.FragmentSongBinding
@@ -34,10 +33,8 @@ import tech.apps.music.exoplayer.isPlaying
 import tech.apps.music.exoplayer.toSong
 import tech.apps.music.model.YTAudioDataModel
 import tech.apps.music.others.Constants
-import tech.apps.music.others.Status
 import tech.apps.music.ui.fragments.MainViewModel
 import tech.apps.music.util.TimeFunction
-import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -216,16 +213,6 @@ class SongFragment : Fragment() {
     }
 
     private fun updateSongImage(thumbnailUrl: String) {
-//        if (mainViewModel.isYoutubeVideoCurSong()) {
-//            glide.load(thumbnailUrl)
-//                .override(480, 270)
-//                .centerCrop()
-//                .into(binding.songThumbnailSongFragment)
-//        } else {
-//            glide.load(thumbnailUrl)
-//                .centerCrop()
-//                .into(binding.songThumbnailSongFragment)
-//        }
         glide.asBitmap()
             .load(thumbnailUrl)
             .centerCrop()
@@ -262,21 +249,7 @@ class SongFragment : Fragment() {
 
     @SuppressLint("SetTextI18n")
     private fun subscribeToObserver() {
-        mainViewModel.mediaItems.observe(viewLifecycleOwner) {
-            it?.let { result ->
-                when (result.status) {
-                    Status.SUCCESS -> {
-                        result.data?.let { songs ->
-                            if (curPlayingSong == null && songs.isNotEmpty()) {
-                                curPlayingSong = songs[0]
-                                updateTitleAndSongImage(songs[0])
-                            }
-                        }
-                    }
-                    else -> Unit
-                }
-            }
-        }
+
         mainViewModel.curPlayingSong.observe(viewLifecycleOwner) {
             if (it == null) return@observe
 

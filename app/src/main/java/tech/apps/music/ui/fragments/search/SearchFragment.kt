@@ -66,7 +66,6 @@ class SearchFragment : Fragment() {
         }
 
         settingUpRecyclerView()
-        searchAdapter.isViewHorizontal = true
 
         searchAdapter.setItemClickListener {
             mainViewModel.changeIsYoutubeVideoCurSong(true)

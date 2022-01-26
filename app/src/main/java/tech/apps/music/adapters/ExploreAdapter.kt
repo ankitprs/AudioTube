@@ -3,13 +3,11 @@ package tech.apps.music.adapters
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.explore_list_item.view.*
-import tech.apps.music.R
+import tech.apps.music.databinding.ExploreListItemBinding
 import tech.apps.music.model.ExploreModel
 
 class ExploreAdapter : RecyclerView.Adapter<ExploreAdapter.ExploreViewHolder>() {
@@ -29,12 +27,13 @@ class ExploreAdapter : RecyclerView.Adapter<ExploreAdapter.ExploreViewHolder>() 
         get() = differ.currentList
         set(value) = differ.submitList(value)
 
-    class ExploreViewHolder(listItem: View) : RecyclerView.ViewHolder(listItem)
+    class ExploreViewHolder(val binding: ExploreListItemBinding) :
+        RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExploreViewHolder {
         return ExploreViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.explore_list_item,
+            ExploreListItemBinding.inflate(
+                LayoutInflater.from(parent.context),
                 parent,
                 false
             )
@@ -55,11 +54,13 @@ class ExploreAdapter : RecyclerView.Adapter<ExploreAdapter.ExploreViewHolder>() 
         val song = songs[position]
 
 
-        holder.itemView.apply {
+        holder.binding.apply {
             val gradientDrawable = GradientDrawable(
                 GradientDrawable.Orientation.BL_TR,
-                intArrayOf(Color.parseColor(song.color1),
-                    Color.parseColor(song.color2))
+                intArrayOf(
+                    Color.parseColor(song.color1),
+                    Color.parseColor(song.color2)
+                )
             )
             gradientDrawable.cornerRadius = 0f
 
@@ -69,7 +70,7 @@ class ExploreAdapter : RecyclerView.Adapter<ExploreAdapter.ExploreViewHolder>() 
             iconForExploreTopicTextView.text = song.text
             iconForExploreTopic.setImageResource(song.icon)
 
-            setOnClickListener {
+            root.setOnClickListener {
                 onItemClickListener?.let { click ->
                     click(song)
                 }

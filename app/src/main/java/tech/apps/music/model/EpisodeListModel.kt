@@ -1,7 +1,9 @@
 package tech.apps.music.model
 
 import android.support.v4.media.MediaMetadataCompat
+import androidx.annotation.Keep
 
+@Keep
 data class EpisodesListModel(
     var id: String = "",
     var title: String = "",
@@ -13,6 +15,7 @@ data class EpisodesListModel(
     var EpisodesModel: ArrayList<EpisodeModel> = ArrayList()
 )
 
+@Keep
 data class EpisodeModel(
     var songId: String = "",
     var songUrl: String = "",

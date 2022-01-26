@@ -1,13 +1,11 @@
 package tech.apps.music.adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.search_result_recom_list_item.view.*
-import tech.apps.music.R
+import tech.apps.music.databinding.SearchResultRecomListItemBinding
 
 class SearchSuggestionAdapter :
     RecyclerView.Adapter<SearchSuggestionAdapter.SongSearchViewHolder>() {
@@ -27,14 +25,15 @@ class SearchSuggestionAdapter :
         get() = differ.currentList
         set(value) = differ.submitList(value)
 
-    class SongSearchViewHolder(listItem: View) : RecyclerView.ViewHolder(listItem)
+    class SongSearchViewHolder(val binding: SearchResultRecomListItemBinding) :
+        RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongSearchViewHolder {
         return SongSearchViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.search_result_recom_list_item,
-                parent,
-                false
+            SearchResultRecomListItemBinding.inflate(
+                LayoutInflater.from(
+                    parent.context
+                ), parent, false
             )
         )
     }
@@ -56,10 +55,10 @@ class SearchSuggestionAdapter :
             return
         }
 
-        holder.itemView.apply {
+        holder.binding.apply {
             textViewSearchSuggest.text = song
 
-            setOnClickListener {
+            root.setOnClickListener {
                 onItemClickListener?.let { click ->
                     click(song)
                 }
