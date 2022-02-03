@@ -2,12 +2,10 @@ package tech.apps.music.database
 
 import android.content.Context
 import androidx.lifecycle.LiveData
-import tech.apps.music.database.network.FirestoreMetaDataList
 import tech.apps.music.database.network.YTVideoExtractor
 import tech.apps.music.database.offline.HistorySongModel
 import tech.apps.music.database.offline.OfflineDatabase
 import tech.apps.music.database.offline.WatchLaterSongModel
-import tech.apps.music.model.EpisodesListModel
 import tech.apps.music.model.YTAudioDataModel
 import javax.inject.Inject
 
@@ -73,16 +71,6 @@ class Repository
             } else {
                 callback(null)
             }
-        }
-    }
-
-
-
-
-    // get List Of AudioBook From Firestore
-    suspend fun getListOfAudioBooks(callback: (list: List<EpisodesListModel>? ) -> Unit ){
-        FirestoreMetaDataList().getEpisodesListFromFirestore {
-            callback(it)
         }
     }
 

@@ -7,14 +7,20 @@ import retrofit2.Retrofit
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-const val BASE_URL = "https://www.youtube.com"
+const val BASE_URL_YOUTUBE_SEARCH = "https://www.googleapis.com"
+const val API_KEY = "AIzaSyAa1_rnr-wBbiF_gm2RTDzmZ6rk0JGjoyM"
+const val MAX_LIST_SIZE = "25"
 
 interface RetrofitSearch {
-    @GET("/results")
-    fun ytSearchResult(@Query("search_query") keyword: String): Call<ResponseBody>
-
-    @GET("/watch")
-    fun ytGetVideo(@Query("v") videoId: String) : Call<ResponseBody>
+    @GET("/youtube/v3/search")
+    fun ytSearchResult(
+        @Query("part") part: String = "snippet",
+        @Query("q") keyword: String,
+        @Query("eventType") eventType: String = "completed",
+        @Query("type") type: String = "video",
+        @Query("maxResults") maxResults: String = MAX_LIST_SIZE,
+        @Query("key") key: String = API_KEY
+    ): Call<ResponseBody>
 }
 
 object YoutubeRetrofitInstance {
@@ -27,7 +33,7 @@ object YoutubeRetrofitInstance {
             .build()
 
         val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(BASE_URL_YOUTUBE_SEARCH)
             .client(okHttpClient)
             .build()
 

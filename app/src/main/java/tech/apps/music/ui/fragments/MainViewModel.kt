@@ -4,6 +4,7 @@ import android.app.Application
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat.METADATA_KEY_MEDIA_ID
+import android.support.v4.media.session.PlaybackStateCompat.REPEAT_MODE_ALL
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -54,11 +55,6 @@ class MainViewModel @Inject constructor(
                 }
             })
 
-        viewModelScope.launch {
-            repository.getListOfAudioBooks {
-                listOfAudioBooks.postValue(it)
-            }
-        }
     }
 
     fun skipToNextSong() {
@@ -75,6 +71,9 @@ class MainViewModel @Inject constructor(
 
     fun setPlaybackSpeed(speed: Float) {
         musicServiceConnection.transportControls.setPlaybackSpeed(speed)
+    }
+    fun repeat(){
+        musicServiceConnection.transportControls.setRepeatMode(REPEAT_MODE_ALL)
     }
 
     fun fastForwardSong() {

@@ -60,10 +60,7 @@
                     android:id="@+id/native_ads_medium_template_view"
                     layout="@layout/native_ads_medium_template_view" />
 
-
             </com.google.android.gms.ads.nativead.NativeAdView>
-
-
 
             <TextView
                 android:id="@+id/recentTextTextView"
@@ -80,24 +77,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                tools:listitem="@layout/song_item_horizontal"/>
+                tools:listitem="@layout/song_item_horizontal" />
 
-            <TextView
-                android:id="@+id/textViewAudioBookMainFr"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="20dp"
-                android:text="AudioBook"
-                android:textColor="@color/white"
-                android:textSize="18sp" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewAudioBookMFrag"
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                tools:listitem="@layout/premium_item_list"/>
+                android:layout_height="5dp"
+                android:background="@color/one_level_up" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -114,7 +99,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:nestedScrollingEnabled="false"
-                tools:listitem="@layout/explore_list_item"/>
+                tools:listitem="@layout/explore_list_item" />
 
         </LinearLayout>
 

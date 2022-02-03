@@ -95,6 +95,9 @@ class SongFragment : Fragment() {
             mainViewModel.skipToNextSong()
 
         }
+        binding.imageViewRepeatButton.setOnClickListener {
+            mainViewModel.repeat()
+        }
         binding.ivPreviousReplaySongFragment.setOnClickListener {
             mainViewModel.replayBackSong()
 

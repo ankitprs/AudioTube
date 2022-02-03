@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -23,7 +22,6 @@ import com.google.android.gms.ads.nativead.NativeAdOptions.NATIVE_MEDIA_ASPECT_R
 import dagger.hilt.android.AndroidEntryPoint
 import tech.apps.music.R
 import tech.apps.music.adapters.ExploreAdapter
-import tech.apps.music.adapters.PremiumListAdapter
 import tech.apps.music.adapters.SongAdapter
 import tech.apps.music.databinding.MainFragmentBinding
 import tech.apps.music.model.SongModelForList
@@ -47,10 +45,6 @@ class HomeFragment : Fragment() {
     private lateinit var exploreAdapter: ExploreAdapter
     private var _binding: MainFragmentBinding? = null
     private val binding: MainFragmentBinding get() = _binding!!
-
-    @Inject
-    lateinit var audioBookAdapter: PremiumListAdapter
-
     private var nativeAdGlobal: NativeAd? = null
 
     override fun onCreateView(
@@ -99,18 +93,11 @@ class HomeFragment : Fragment() {
             bundle.putString(Constants.PASS_EXPLORE_KEYWORDS, it.keyword)
             findNavController().navigate(R.id.action_homeFragment_to_searchFragment, bundle)
         }
-        audioBookAdapter.setItemClickListener {
-            val bundle = Bundle()
-            bundle.putString(Constants.PASSING_EPISODES_MODEL_ID, it.id)
-            findNavController().navigate(
-                R.id.action_homeFragment_to_songDetailFragment,
-                bundle
-            )
-        }
     }
 
     @SuppressLint("ResourceAsColor")
     private fun adsHandling() {
+        val testAd = "ca-app-pub-3940256099942544/1044960115"
         val adUnitID = "ca-app-pub-8154643218867307/2178194367"
         val adLoader = AdLoader.Builder(requireActivity(), adUnitID)
 
@@ -173,15 +160,6 @@ class HomeFragment : Fragment() {
                 2
             )
         }
-        binding.recyclerViewAudioBookMFrag.apply {
-
-            adapter = audioBookAdapter
-            layoutManager = LinearLayoutManager(
-                requireContext(),
-                LinearLayoutManager.HORIZONTAL,
-                false
-            )
-        }
     }
 
     private fun addingSongIntoRecyclerView() {
@@ -195,21 +173,11 @@ class HomeFragment : Fragment() {
             }
         }
         exploreAdapter.songs = VideoData.creatingListOfExplores()
-
-        viewModel.listOfAudioBooks.observe(viewLifecycleOwner) {
-            if (!it.isNullOrEmpty()) {
-                audioBookAdapter.songs = it
-            } else {
-                binding.textViewAudioBookMainFr.isVisible = false
-                binding.recyclerViewAudioBookMFrag.isVisible = false
-            }
-        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         nativeAdGlobal?.destroy()
-        binding.recyclerViewAudioBookMFrag.adapter = null
         binding.recyclerViewContinueWatchMFrag.adapter = null
         binding.recyclerViewLatestMFrag.adapter = null
         _binding = null
