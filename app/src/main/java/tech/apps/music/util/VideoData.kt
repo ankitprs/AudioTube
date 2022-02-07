@@ -81,14 +81,8 @@ object VideoData {
         )
         list.add(
             ExploreModel(
-                "Sleep Music", "Sleep Music", "#626262", "#afafaf",
+                "Sleep Music", "Sleep Music", "#b3541e", "#ffe200",
                 R.drawable.ic_sleep_icon
-            )
-        )
-        list.add(
-            ExploreModel(
-                "News audio", "News", "#b3541e", "#ffe200",
-                R.drawable.ic_baseline_newspaper_24
             )
         )
         return list

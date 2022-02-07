@@ -123,8 +123,8 @@ class SearchFragment : Fragment() {
         val keyword = arguments?.getString(Constants.PASS_EXPLORE_KEYWORDS)
 
         if (keyword != null) {
-            binding.searchButtonViewSearchFragment.setQuery(keyword, true)
-            keyboardNeeded = false
+            binding.searchButtonViewSearchFragment.setQuery(keyword, false)
+//            keyboardNeeded = false
             arguments = null
         }
     }
