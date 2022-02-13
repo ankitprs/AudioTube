@@ -1,49 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/home"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/dark_background"
-    android:orientation="vertical"
     tools:context=".ui.fragments.home.HomeFragment">
 
-    <com.google.android.material.appbar.AppBarLayout
-        style="@style/themeWithActionBar"
+    <LinearLayout
+        android:id="@+id/home"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/dark_background">
+        android:layout_height="match_parent"
+        android:background="@color/dark_background"
+        android:orientation="vertical">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/MaterialToolbarHome"
+        <com.google.android.material.appbar.AppBarLayout
+            style="@style/themeWithActionBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/MyActionBar">
+            android:background="@color/dark_background">
 
-            <ImageView
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_marginStart="20dp"
-                android:src="@drawable/ic_audio_tube_logo" />
-
-            <TextView
-                android:layout_width="wrap_content"
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/MaterialToolbarHome"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="5dp"
-                android:fontFamily="sans-serif-black"
-                android:text="Home"
-                android:textColor="@color/white"
-                android:textSize="22sp" />
+                android:theme="@style/MyActionBar">
 
-        </com.google.android.material.appbar.MaterialToolbar>
+                <ImageView
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginStart="20dp"
+                    android:src="@drawable/ic_audio_tube_logo" />
 
-    </com.google.android.material.appbar.AppBarLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:fontFamily="sans-serif-black"
+                    android:text="Home"
+                    android:textColor="@color/white"
+                    android:textSize="22sp" />
 
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+            </com.google.android.material.appbar.MaterialToolbar>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -51,16 +52,6 @@
             android:layout_marginBottom="150dp"
             android:orientation="vertical">
 
-            <com.google.android.gms.ads.nativead.NativeAdView
-                android:id="@+id/native_ad_template_MainFrg"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <include
-                    android:id="@+id/native_ads_medium_template_view"
-                    layout="@layout/native_ads_medium_template_view" />
-
-            </com.google.android.gms.ads.nativead.NativeAdView>
 
             <TextView
                 android:id="@+id/recentTextTextView"
@@ -103,6 +94,6 @@
 
         </LinearLayout>
 
-    </androidx.core.widget.NestedScrollView>
 
-</LinearLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

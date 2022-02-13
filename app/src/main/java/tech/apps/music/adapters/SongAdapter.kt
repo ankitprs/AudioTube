@@ -39,16 +39,17 @@ class SongAdapter @Inject constructor(
         get() = differ.currentList
         set(value) = differ.submitList(value)
 
-    class SongViewHolder(val binding: SongItemHorizontalBinding) : RecyclerView.ViewHolder(binding.root)
+    class SongViewHolder(val binding: SongItemHorizontalBinding) :
+        RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
         return SongViewHolder(
-                SongItemHorizontalBinding.inflate(
-                    LayoutInflater.from(parent.context),
-                    parent,
-                    false
-                )
+            SongItemHorizontalBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
             )
+        )
     }
 
     private var onItemClickListener: ((SongModelForList) -> Unit)? = null
@@ -86,17 +87,18 @@ class SongAdapter @Inject constructor(
                 .centerCrop()
                 .into(thumbnailImageTYVideo)
 
-            if(song.duration != 0L){
+            if (song.duration != 0L) {
                 durationTYVideo.text = TimeFunction.songDuration(song.duration / 1000L)
-            }else{
+            } else {
                 durationTYVideo.text = song.durationText
 
             }
             if (song.watchedPosition == 0L) {
                 determinateBar.isVisible = false
             } else {
-                determinateBar.progress =
-                    ((song.watchedPosition)*100 / ((song.duration))).toInt()
+                if (song.duration != 0L)
+                    determinateBar.progress =
+                        ((song.watchedPosition) * 100 / (song.duration)).toInt()
             }
 
             channelTYVideo.text = song.ChannelName

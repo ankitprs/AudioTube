@@ -2,7 +2,6 @@ package tech.apps.music.database
 
 import android.content.Context
 import androidx.lifecycle.LiveData
-import tech.apps.music.database.network.YTVideoExtractor
 import tech.apps.music.database.offline.HistorySongModel
 import tech.apps.music.database.offline.OfflineDatabase
 import tech.apps.music.database.offline.WatchLaterSongModel
@@ -64,14 +63,16 @@ class Repository
 
     // networkCall
     fun getSongModelWithLink(ytUrl: String, callback: (ytModel: YTAudioDataModel?) -> Unit) {
-
-        YTVideoExtractor.getObject(context, ytUrl) { audioModel ->
-            if (audioModel != null) {
-                callback(audioModel)
-            } else {
-                callback(null)
-            }
-        }
+        callback(null)
     }
 
+    //Search History
+    suspend fun insertSearchQuery(queryText: String){
+//        database.getYTVideoDao().insertSearchQuery(SearchHistory(
+//            queryText,
+//            System.currentTimeMillis()
+//        ))
+//        database.getYTVideoDao().deleteSearchHistoryMoreThan20()
+    }
+//    suspend fun getListSearchHistory(): List<SearchHistory> = database.getYTVideoDao().getListSearchHistory()
 }

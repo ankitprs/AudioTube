@@ -5,13 +5,6 @@
     android:background="@color/dark_background"
     android:orientation="vertical">
 
-    <com.google.android.gms.ads.nativead.MediaView
-        android:id="@+id/media_view"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_margin="5dp"
-        android:background="@color/background" />
-
     <LinearLayout
         android:id="@+id/middle"
         android:layout_width="match_parent"

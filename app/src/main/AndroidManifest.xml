@@ -5,8 +5,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
         android:name=".PlayAudioApplication"
@@ -21,7 +21,7 @@
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-8154643218867307~1200839407"/>
+            android:value="ca-app-pub-8154643218867307~1200839407" />
 
         <activity
             android:name=".ui.more.MoreActivity"
@@ -31,15 +31,7 @@
                 android:value=".ui.HomeActivity" />
         </activity>
 
-        <service
-            android:name=".exoplayer.MusicService"
-            android:enabled="true"
-            android:exported="true"
-            tools:ignore="ExportedService">
-            <intent-filter>
-                <action android:name="android.media.browse.MediaBrowserService" />
-            </intent-filter>
-        </service>
+        <service android:name=".floatingWindow.ForegroundService" />
 
         <activity
             android:name=".ui.HomeActivity"

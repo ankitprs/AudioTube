@@ -50,5 +50,6 @@ If you have any questions or suggestions about my Privacy Policy, do not hesitat
                 - Unavailable in your country\n
                 - RTMPE urls (very rare)\n
     </string>
+    <string name="notification_channel_general">youtube_custom_notifications</string>
 
 </resources>

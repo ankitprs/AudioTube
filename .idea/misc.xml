@@ -29,6 +29,7 @@
         <entry key="app/src/main/res/drawable/ic_baseline_keyboard_arrow_down_24.xml" value="0.18848684210526315" />
         <entry key="app/src/main/res/drawable/ic_baseline_more_vert_24.xml" value="0.18848684210526315" />
         <entry key="app/src/main/res/drawable/ic_baseline_policy_24.xml" value="0.19358108108108107" />
+        <entry key="app/src/main/res/drawable/ic_baseline_repeat_off_24.xml" value="0.213" />
         <entry key="app/src/main/res/drawable/ic_baseline_replay_10_24.xml" value="0.18848684210526315" />
         <entry key="app/src/main/res/drawable/ic_baseline_share_24.xml" value="0.18664495114006516" />
         <entry key="app/src/main/res/drawable/ic_baseline_star_rate_24.xml" value="0.11458333333333333" />
@@ -40,6 +41,7 @@
         <entry key="app/src/main/res/drawable/ic_play_audio.xml" value="0.18664495114006516" />
         <entry key="app/src/main/res/drawable/ic_round_bookmark_24.xml" value="0.18848684210526315" />
         <entry key="app/src/main/res/drawable/ic_round_bookmark_border_24.xml" value="0.18848684210526315" />
+        <entry key="app/src/main/res/drawable/ic_round_clear_24.xml" value="0.213" />
         <entry key="app/src/main/res/drawable/ic_round_diamond_24.xml" value="0.18848684210526315" />
         <entry key="app/src/main/res/drawable/ic_round_download_24.xml" value="0.20592105263157895" />
         <entry key="app/src/main/res/drawable/ic_round_download_done_24.xml" value="0.20592105263157895" />
@@ -51,6 +53,8 @@
         <entry key="app/src/main/res/drawable/ic_round_replay_10_24.xml" value="0.18848684210526315" />
         <entry key="app/src/main/res/drawable/ic_round_replay_5_24.xml" value="0.18664495114006516" />
         <entry key="app/src/main/res/drawable/ic_round_settings_24.xml" value="0.18848684210526315" />
+        <entry key="app/src/main/res/drawable/ic_round_skip_next_24.xml" value="0.213" />
+        <entry key="app/src/main/res/drawable/ic_round_skip_previous_24.xml" value="0.213" />
         <entry key="app/src/main/res/drawable/ic_search_black_24dp.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_workout_icon.xml" value="0.20592105263157895" />
         <entry key="app/src/main/res/drawable/icon_repeat_all_selected.xml" value="0.223828125" />
@@ -76,7 +80,8 @@
         <entry key="app/src/main/res/layout/fragment_educate_third.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_episodes_list.xml" value="0.18944280992469803" />
         <entry key="app/src/main/res/layout/fragment_my_library_list.xml" value="0.39351851851851855" />
-        <entry key="app/src/main/res/layout/fragment_song.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/fragment_song.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/fragment_youtube_floating_window.xml" value="0.15163934426229508" />
         <entry key="app/src/main/res/layout/home_activity.xml" value="0.1" />
         <entry key="app/src/main/res/layout/library_fragment.xml" value="0.25" />
         <entry key="app/src/main/res/layout/list_item_title.xml" value="0.17828947368421053" />
@@ -103,6 +108,8 @@
         <entry key="app/src/main/res/layout/swipe_item.xml" value="0.102880658436214" />
         <entry key="app/src/main/res/layout/switch_item.xml" value="0.25092592592592594" />
         <entry key="app/src/main/res/layout/text_item.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/youtube_floating_ui.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/youtube_popup_window.xml" value="0.15163934426229508" />
         <entry key="app/src/main/res/layout/yt_video_card_item.xml" value="0.1" />
         <entry key="app/src/main/res/layout/yt_video_card_view_full.xml" value="0.19900727896021903" />
         <entry key="app/src/main/res/menu/episodes_fragment_menu.xml" value="0.17828947368421053" />

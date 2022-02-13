@@ -1,5 +1,7 @@
 package tech.apps.music.others
 
+import tech.apps.music.BuildConfig
+
 object Constants {
     const val NOTIFICATION_ID = 12
     const val NOTIFICATION_CHANNEL_ID = "SONG"
@@ -38,4 +40,7 @@ object Constants {
 
     //passing Position
     const val PASSING_SONG_LAST_WATCHED_POS = "passingSongLastWatchedPos"
+
+    const val  ACTION_STOP = "${BuildConfig.APPLICATION_ID}.stop"
+    const val ACTION_PLAY_PAUSE_TOGGLE = "actionPlayPauseToggle"
 }

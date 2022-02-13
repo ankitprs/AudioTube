@@ -55,7 +55,7 @@ class LibraryFragment : Fragment() {
                     startActivity(Intent(activity, MoreActivity::class.java))
                 }
                 R.id.app_bar_search -> {
-                    findNavController().navigate(R.id.action_libraryFragment_to_searchCatalogFragment)
+                    findNavController().navigate(R.id.action_libraryFragment_to_searchFragment)
                 }
                 else -> {}
             }
@@ -63,7 +63,6 @@ class LibraryFragment : Fragment() {
         }
 
         recentAudioAdapter.setItemClickListener {
-            viewModel.changeIsYoutubeVideoCurSong(true)
             viewModel.playOrToggleListOfSongs((listOf(it)).toYtAudioDataModel(),true,0,it.watchedPosition)
             findNavController().navigate(R.id.action_homeFragment2_to_songFragment2)
         }

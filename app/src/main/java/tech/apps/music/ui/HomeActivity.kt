@@ -3,14 +3,15 @@ package tech.apps.music.ui
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
+import android.app.ActivityManager
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
-import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import android.view.View
 import android.view.Window
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -18,20 +19,23 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.bumptech.glide.RequestManager
-import com.google.android.gms.ads.MobileAds
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import tech.apps.music.ConnectionLiveData
 import tech.apps.music.R
+import tech.apps.music.database.network.YoutubeVideoData
 import tech.apps.music.databinding.HomeActivityBinding
-import tech.apps.music.exoplayer.isPlaying
-import tech.apps.music.exoplayer.toSong
+import tech.apps.music.floatingWindow.ForegroundService
+import tech.apps.music.floatingWindow.YoutubeFloatingUI
 import tech.apps.music.model.YTAudioDataModel
-import tech.apps.music.others.Status
 import tech.apps.music.ui.fragments.MainViewModel
 import tech.apps.music.util.BasicStorage
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
@@ -41,7 +45,6 @@ class HomeActivity : AppCompatActivity() {
     @Inject
     lateinit var glide: RequestManager
     private var curPlaying: YTAudioDataModel? = null
-    private var playbackState: PlaybackStateCompat? = null
     private val firebaseAnalytics = FirebaseAnalytics.getInstance(this)
     private var _binding: HomeActivityBinding? = null
     private val binding: HomeActivityBinding get() = _binding!!
@@ -54,7 +57,7 @@ class HomeActivity : AppCompatActivity() {
         _binding = HomeActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        MobileAds.initialize(this) {}
+        startFloatingService()
 
         val connection = ConnectionLiveData(this)
 
@@ -62,21 +65,20 @@ class HomeActivity : AppCompatActivity() {
         connection.observe(this) {
             binding.noInternetConnectionView.isVisible = it != true
         }
-        subscribeToObserver()
 
-        viewModel.curPlayingSong.observe(this) {
-            curPlaying = it?.toSong()
+        viewModel.getCurrentlyPlayingYTAudioModel.observe(this) {
+            curPlaying = it
             glide.load(curPlaying?.thumbnailUrl).into(binding.ivCurSongImage)
             binding.vpSong.text = curPlaying?.title ?: ""
         }
 
         binding.ivPlayPause.setOnClickListener {
             curPlaying?.let {
-                viewModel.playOrToggleSong(it, true)
+                viewModel.playPauseToggleSong(it.mediaId)
             }
         }
 
-        curPlaying?.let { viewModel.playOrToggleSong(it) }
+        curPlaying?.let { viewModel.playPauseToggleSong(it.mediaId) }
 
         navController = findNavController(R.id.navHostFragmentContainerHAct)
         NavigationUI.setupWithNavController(binding.bottomNavigation, navController)
@@ -91,12 +93,8 @@ class HomeActivity : AppCompatActivity() {
                         isNotSong = false
                     )
                     else -> {
-                        if (viewModel.curPlayingSong.value != null) {
+                        if (viewModel.getCurrentlyPlayingYTAudioModel.value != null) {
                             showOrHideBottomBar(true)
-                            Log.i(
-                                "checking",
-                                "curPlayingSong value -> " + viewModel.curPlayingSong.value
-                            )
                         } else {
                             binding.materialCardViewHome.isVisible = false
                         }
@@ -122,6 +120,12 @@ class HomeActivity : AppCompatActivity() {
             )
         }
 
+        YoutubeFloatingUI.isPlaying.observe(this){
+            isPlayingIconToggle(it)
+        }
+        binding.ivPlayPause.setOnClickListener {
+            curPlaying?.mediaId?.let { it1 -> viewModel.playPauseToggleSong(it1) }
+        }
     }
 
     private fun showOrHideBottomBar(boolean: Boolean, isNotSong: Boolean = true) {
@@ -183,44 +187,6 @@ class HomeActivity : AppCompatActivity() {
 //        bottom_navigation.isVisible = isNotSong
     }
 
-
-    private fun subscribeToObserver() {
-
-        viewModel.playbackState.observe(this) {
-            playbackState = it
-            binding.ivPlayPause.setImageResource(
-                if (playbackState?.isPlaying == true)
-                    R.drawable.ic_round_pause_circle_24
-                else
-                    R.drawable.ic_round_play_circle_24
-            )
-        }
-        viewModel.isConnected.observe(this) {
-            it?.getContentIfNotHandled()?.let { result ->
-                when (result.status) {
-                    Status.ERROR -> Snackbar.make(
-                        window.decorView.rootView,
-                        result.message ?: "An unKnown error occurred",
-                        Snackbar.LENGTH_LONG
-                    ).show()
-                    else -> Unit
-                }
-            }
-        }
-        viewModel.networkError.observe(this) {
-            it?.getContentIfNotHandled()?.let { result ->
-                when (result.status) {
-                    Status.ERROR -> Snackbar.make(
-                        window.decorView.rootView,
-                        result.message ?: "An unKnown error occurred",
-                        Snackbar.LENGTH_LONG
-                    ).show()
-                    else -> Unit
-                }
-            }
-        }
-    }
-
     private fun handleSendText(intent: Intent) {
         intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
 
@@ -236,15 +202,33 @@ class HomeActivity : AppCompatActivity() {
             dialog.setCanceledOnTouchOutside(false)
             dialog.show()
 
-            viewModel.addSongInRecent(it) { result ->
-                if (result) {
-                    navController.navigate(
-                        R.id.action_homeFragment2_to_songFragment2
-                    )
-                } else {
-                    Toast.makeText(this, "Enter YT Video link & Play 🥳", Toast.LENGTH_SHORT).show()
+            CoroutineScope(Dispatchers.IO).launch {
+                val youtubeVideoData = YoutubeVideoData()
+                youtubeVideoData.getVideoData(it) { pair ->
+                    if (pair != null) {
+                        viewModel.playOrToggleListOfSongs(
+                            listOf(
+                                YTAudioDataModel(
+                                    youtubeVideoData.getVideoIdFromUrl(it) ?: "",
+                                    pair.first,
+                                    pair.second
+                                )
+                            )
+                        )
+                        navController.navigate(
+                            R.id.action_homeFragment2_to_songFragment2
+                        )
+                    } else {
+                        Snackbar.make(
+                            binding.root,
+                            "Only Works with Youtube video Url",
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
+                    dialog.dismiss()
                 }
-                dialog.dismiss()
+
+
             }
         }
     }
@@ -263,5 +247,49 @@ class HomeActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    private fun isPlayingIconToggle(isPlaying: Boolean) {
+        Log.i("HomeActivity", "isPlaying$isPlaying")
+        binding.ivPlayPause.setImageResource(
+            if (isPlaying)
+                R.drawable.ic_round_pause_circle_24
+            else
+                R.drawable.ic_round_play_circle_24
+        )
+    }
+
+    private fun startFloatingService(command: String = "") {
+
+        if (isMyServiceRunning(ForegroundService::class.java))
+            return
+
+        val intent = Intent(this, ForegroundService::class.java)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            this.startForegroundService(intent)
+        } else {
+            this.startService(intent)
+        }
+
+    }
+
+
+    private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
+
+        try {
+            val manager =
+                getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+            for (service in manager.getRunningServices(
+                Int.MAX_VALUE
+            )) {
+                if (serviceClass.name == service.service.className) {
+                    return true
+                }
+            }
+        } catch (e: Exception) {
+            return false
+        }
+        return false
     }
 }

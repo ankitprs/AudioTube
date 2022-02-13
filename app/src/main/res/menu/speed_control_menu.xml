@@ -7,30 +7,18 @@
 
     <item
         android:id="@+id/speedControlMenu05"
-        android:title="0.5x" />
-
-    <item
-        android:id="@+id/speedControlMenu075"
-        android:title="0.75x" />
+        android:title="0.50x" />
 
     <item
         android:id="@+id/speedControlMenu10"
         android:title="Normal" />
 
     <item
-        android:id="@+id/speedControlMenu125"
-        android:title="1.25x" />
-
-    <item
         android:id="@+id/speedControlMenu15"
-        android:title="1.5x" />
-
-    <item
-        android:id="@+id/speedControlMenu175"
-        android:title="1.75x" />
+        android:title="1.50x" />
 
     <item
         android:id="@+id/speedControlMenu20"
-        android:title="2x" />
+        android:title="2.00x" />
 
 </menu>

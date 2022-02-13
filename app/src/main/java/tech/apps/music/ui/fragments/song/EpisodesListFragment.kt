@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import tech.apps.music.adapters.EpisodeAdapter
 import tech.apps.music.databinding.FragmentEpisodesListBinding
-import tech.apps.music.model.toEpisodes
 import tech.apps.music.ui.fragments.MainViewModel
 import javax.inject.Inject
 
@@ -47,22 +46,18 @@ class EpisodesListFragment : Fragment() {
                 requireContext()
             )
         }
-        episodeAdapter.songs = mainViewModel.currentlyPlayingPlaylist().toEpisodes()
-
-        episodeAdapter.currentlyPlayingSongId =
-            mainViewModel.curPlayingSong.value?.description?.mediaId
+//        episodeAdapter.songs = mainViewModel.currentlyPlayingPlaylist.toEpisodes()?:return
 
 
-        episodeAdapter.setItemClickListener {
-            mainViewModel.gotoIndex(
-                mainViewModel.currentlyPlayingPlaylist().indexOf(
-                    mainViewModel.currentlyPlayingPlaylist().find { song ->
-                        song.description.mediaId == it.songId
-                    }
-                ).toLong()
-            )
-            findNavController().navigateUp()
-        }
+//        episodeAdapter.setItemClickListener {
+//            mainViewModel.gotoIndex(
+//                mainViewModel.currentlyPlayingPlaylist.indexOf(
+//                    mainViewModel.currentlyPlayingPlaylist.find { song ->
+//                        song.description.mediaId == it.songId
+//                    }
+//                ).toLong()
+//            )
+//        findNavController().navigateUp()
     }
 
     override fun onDestroyView() {

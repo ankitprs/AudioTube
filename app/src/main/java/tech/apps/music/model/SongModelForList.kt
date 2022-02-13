@@ -19,7 +19,6 @@ fun  List<SongModelForList>.toYtAudioDataModel(): List<YTAudioDataModel> {
             it.videoId,
             it.title,
             it.ChannelName,
-            "",
             VideoData.getThumbnailFromId(it.videoId),
             it.duration
         ))

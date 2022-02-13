@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
-import org.json.JSONArray
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.HttpException
@@ -14,8 +13,11 @@ import tech.apps.music.util.BasicStorage
 import java.io.IOException
 import java.net.URLEncoder
 
-
 class YoutubeSearch {
+
+    companion object{
+        const val MAX_LIST_SIZE = 20
+    }
 
     suspend fun searchWithKeywords(
         keyword: String,
@@ -29,25 +31,21 @@ class YoutubeSearch {
             try {
                 val keywordEncoded = URLEncoder.encode(keyword.trim(), "UTF-8")
 
-                YoutubeRetrofitInstance.ytSearchInstant.ytSearchResult(keyword = keywordEncoded)
+                YoutubeRetrofitInstance.ytSearchInstant.ytSearchResult(keywordEncoded)
                     .enqueue(object : retrofit2.Callback<ResponseBody> {
                         override fun onResponse(
                             call: Call<ResponseBody>,
                             response: Response<ResponseBody>
                         ) {
 
-                            if (response.isSuccessful) {
-                                val responseString: String? = response.body()?.string()
-                                val responseItemJsonArray: JSONArray? =
-                                    JSONObject(responseString ?: "{}").optJSONArray("items")
+                            if (!response.isSuccessful) {
+                                callback(ArrayList())
+                            }
+                            val resp = response.body()?.string()
 
-                                if (responseItemJsonArray != null) {
-                                    val list = parseHtml(responseItemJsonArray)
-                                    callback(list)
-                                } else {
-                                    callback(ArrayList())
-                                }
-
+                            if (resp != null) {
+                                val list = parseHtml(resp)
+                                callback(list)
                             } else {
                                 callback(ArrayList())
                             }
@@ -71,24 +69,50 @@ class YoutubeSearch {
     }
 
     @SuppressLint("SimpleDateFormat")
-    private fun parseHtml(responseArray: JSONArray): ArrayList<SongModelForList> {
+    private fun parseHtml(response: String): ArrayList<SongModelForList> {
 
         val results: ArrayList<SongModelForList> = ArrayList()
 
-        for (i in 0 until responseArray.length()) {
-            val videoData = responseArray.getJSONObject(i)
-            val snippets = videoData.getJSONObject("snippet")
+        val start = response.indexOf("ytInitialData") + ("ytInitialData").length + 3
+        val end = response.indexOf("};", start) + 1
 
+        val jsonStr = response.substring(start, end)
 
+        val data = JSONObject(jsonStr)
+
+        val videos = data.getJSONObject("contents")
+            .getJSONObject("twoColumnSearchResultsRenderer")
+            .getJSONObject("primaryContents")
+            .getJSONObject("sectionListRenderer")
+            .getJSONArray("contents")
+            .getJSONObject(0)
+            .getJSONObject("itemSectionRenderer")
+            .getJSONArray("contents")
+
+        val size = videos.length()
+
+        for (i in 0 until (size - 1)) {
+            val video = videos.getJSONObject(i)
             val res = SongModelForList()
-            res.videoId = videoData.getJSONObject("id").getString("videoId")
-            res.title = snippets.getString("title")
-            res.ChannelName = snippets.getString("channelTitle")
 
-//          res.durationText = snippets.getString("duration")
-            res.time = 1L
-            results.add(res)
+            if (video.optJSONObject("videoRenderer") != null) {
+                val video_data = video.getJSONObject("videoRenderer")
+                res.videoId = video_data.getString("videoId")
+                res.title = video_data.getJSONObject("title").getJSONArray("runs").getJSONObject(0)
+                    .getString("text")
+                res.ChannelName =
+                    video_data.getJSONObject("longBylineText").getJSONArray("runs").getJSONObject(0)
+                        .getString("text")
 
+                if (video_data.optJSONObject("lengthText") != null) {
+                    res.durationText = video_data.getJSONObject("lengthText").getString("simpleText")
+                    results.add(res)
+                }
+                res.time = 1L
+                if (results.size >= MAX_LIST_SIZE) {
+                    return results
+                }
+            }
         }
         return results
     }

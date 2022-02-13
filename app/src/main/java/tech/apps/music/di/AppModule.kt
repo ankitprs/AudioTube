@@ -12,7 +12,7 @@ import dagger.hilt.components.SingletonComponent
 import tech.apps.music.R
 import tech.apps.music.database.Repository
 import tech.apps.music.database.offline.OfflineDatabase
-import tech.apps.music.exoplayer.MusicServiceConnection
+import tech.apps.music.floatingWindow.MusicServiceConnection
 import javax.inject.Singleton
 
 

@@ -50,7 +50,7 @@ object VideoData {
         )
         list.add(
             ExploreModel(
-                "audio Stories", "Stories", "#bb5115", "#ff9100",
+                "audio Stories", "Stories", "#b3541e", "#ffe200",
                 R.drawable.ic_baseline_headphones_24
             )
         )
@@ -77,12 +77,6 @@ object VideoData {
             ExploreModel(
                 "Meditation Music", "Meditation", "#781d42", "#ff0075",
                 R.drawable.ic_meditation_icon
-            )
-        )
-        list.add(
-            ExploreModel(
-                "Sleep Music", "Sleep Music", "#b3541e", "#ffe200",
-                R.drawable.ic_sleep_icon
             )
         )
         return list

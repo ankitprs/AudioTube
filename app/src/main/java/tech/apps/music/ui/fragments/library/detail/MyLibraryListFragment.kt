@@ -63,7 +63,6 @@ class MyLibraryListFragment : Fragment() {
             bookmark()
         }
         watchLaterAdapter.setItemClickListener {
-            mainViewModel.changeIsYoutubeVideoCurSong(true)
             mainViewModel.playOrToggleListOfSongs((listOf(it)).toYtAudioDataModel(),true,0)
             findNavController().navigate(R.id.action_homeFragment2_to_songFragment2)
         }

@@ -131,8 +131,7 @@
                 android:layout_marginEnd="32dp"
                 android:background="@drawable/ripple_effect_circle"
                 android:padding="10dp"
-                android:visibility="invisible"
-                android:src="@drawable/ic_baseline_repeat_24"
+                android:src="@drawable/ic_baseline_repeat_off_24"
                 app:layout_constraintEnd_toStartOf="@+id/imageViewBookMarkButton"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -142,7 +141,6 @@
                 android:layout_height="wrap_content"
                 android:text="Repeat"
                 android:textColor="@color/grey"
-                android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/imageViewRepeatButton"
                 app:layout_constraintStart_toStartOf="@+id/imageViewRepeatButton"
@@ -248,7 +246,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/ivPlayPauseSongFragmentImageView"
             app:layout_constraintStart_toEndOf="@+id/ivForwardSongFragment"
             app:layout_constraintTop_toTopOf="@+id/ivPlayPauseSongFragmentImageView"
-            app:srcCompat="@drawable/exo_controls_next" />
+            app:srcCompat="@drawable/ic_round_skip_next_24" />
 
         <ImageButton
             android:id="@+id/ivSkipPreviousSongFragment"
@@ -260,7 +258,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/ivPlayPauseSongFragmentImageView"
             app:layout_constraintEnd_toStartOf="@+id/ivPreviousReplaySongFragment"
             app:layout_constraintTop_toTopOf="@+id/ivPlayPauseSongFragmentImageView"
-            app:srcCompat="@drawable/exo_controls_previous" />
+            app:srcCompat="@drawable/ic_round_skip_previous_24" />
 
         <ImageView
             android:id="@+id/ivPlayPauseSongFragmentImageView"

@@ -68,7 +68,6 @@ class SearchFragment : Fragment() {
         settingUpRecyclerView()
 
         searchAdapter.setItemClickListener {
-            mainViewModel.changeIsYoutubeVideoCurSong(true)
             mainViewModel.playOrToggleListOfSongs((listOf(it)).toYtAudioDataModel(),true,0)
             findNavController().navigate(R.id.action_homeFragment2_to_songFragment2)
         }
@@ -78,7 +77,6 @@ class SearchFragment : Fragment() {
                 Snackbar.make(it,"Nothing To Play... Search Something For Play",Snackbar.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            mainViewModel.changeIsYoutubeVideoCurSong(true)
             mainViewModel.playOrToggleListOfSongs(searchAdapter.songs.toYtAudioDataModel(),true,0)
             findNavController().navigate(R.id.action_homeFragment2_to_songFragment2)
         }
@@ -100,6 +98,7 @@ class SearchFragment : Fragment() {
                         binding.searchButtonViewSearchFragment.clearFocus()
                         hideSearchSuggestion(false)
 
+                        mainViewModel.insertSearchQuery(it)
                         val firebaseAnalytics = Firebase.analytics
                         firebaseAnalytics.logEvent("Search_Box_Event") {
                             param("Searched_Query", it)
@@ -142,6 +141,9 @@ class SearchFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireContext())
         }
 
+        mainViewModel.getListSearchHistory{
+            searchSuggestionAdapter.songs = it
+        }
     }
 
     private fun searchQuery(query: String) {
@@ -204,6 +206,7 @@ class SearchFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+
         binding.recyclerViewSearchResult.adapter = null
         binding.recyclerViewSearchSuggestion.adapter = null
         _binding = null
