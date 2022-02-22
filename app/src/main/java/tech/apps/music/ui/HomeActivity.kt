@@ -56,8 +56,6 @@ class HomeActivity : AppCompatActivity() {
         _binding = HomeActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        startActivity(Intent(this,TestingActivity::class.java))
-
         startFloatingService()
 
         val connection = ConnectionLiveData(this)

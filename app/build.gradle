@@ -17,8 +17,8 @@ android {
         applicationId "tech.apps.music"
         minSdk 23
         targetSdk 31
-        versionCode 17
-        versionName '1.2.2'
+        versionCode 18
+        versionName '1.2.3'
         multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -62,8 +62,8 @@ dependencies {
     //webBased youtube player
     implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:11.0.1'
 
-//     google ads
-    implementation 'com.google.android.gms:play-services-ads:20.5.0'
+////     google ads
+//    implementation 'com.google.android.gms:play-services-ads:20.5.0'
 
     // for image background
     //noinspection GradleCompatible
