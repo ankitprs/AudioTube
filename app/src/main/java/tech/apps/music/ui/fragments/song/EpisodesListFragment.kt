@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import tech.apps.music.adapters.EpisodeAdapter
 import tech.apps.music.databinding.FragmentEpisodesListBinding
+import tech.apps.music.floatingWindow.YoutubeFloatingUI
 import tech.apps.music.ui.fragments.MainViewModel
 import javax.inject.Inject
 
@@ -46,18 +47,21 @@ class EpisodesListFragment : Fragment() {
                 requireContext()
             )
         }
-//        episodeAdapter.songs = mainViewModel.currentlyPlayingPlaylist.toEpisodes()?:return
+        episodeAdapter.songs = YoutubeFloatingUI.playlistSongs
+//        episodeAdapter.currentlyPlayingSongId =
+//            YoutubeFloatingUI.currentlyPlayingSong.value?.mediaId
 
 
-//        episodeAdapter.setItemClickListener {
-//            mainViewModel.gotoIndex(
-//                mainViewModel.currentlyPlayingPlaylist.indexOf(
-//                    mainViewModel.currentlyPlayingPlaylist.find { song ->
-//                        song.description.mediaId == it.songId
-//                    }
-//                ).toLong()
-//            )
-//        findNavController().navigateUp()
+        episodeAdapter.setItemClickListener {
+            mainViewModel.gotoIndex(
+                YoutubeFloatingUI.playlistSongs.indexOf(
+                    YoutubeFloatingUI.playlistSongs.find { song ->
+                        song.mediaId == it.mediaId
+                    }
+                )
+            )
+            findNavController().navigateUp()
+        }
     }
 
     override fun onDestroyView() {
@@ -65,5 +69,4 @@ class EpisodesListFragment : Fragment() {
         binding.recyclerViewEpisodesList.adapter = null
         _binding = null
     }
-
 }

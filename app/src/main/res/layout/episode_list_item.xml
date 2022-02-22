@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/episodesListCardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardBackgroundColor="@color/background"
     android:layout_marginTop="2dp"
     android:layout_marginBottom="2dp"
-    android:id="@+id/episodesListCardView"
+    app:cardBackgroundColor="@color/background"
     app:cardCornerRadius="0dp">
 
     <LinearLayout
@@ -17,27 +17,27 @@
             android:id="@+id/imageViewEpisodeThumbnail"
             android:layout_width="89dp"
             android:layout_height="50dp"
-            android:gravity="center"
-            android:src="@drawable/ic_baseline_menu_book_24"
-            android:layout_margin="5dp"/>
+            android:layout_margin="5dp"
+            android:contentDescription="@string/action_for_play"
+            android:gravity="center" />
 
         <TextView
             android:id="@+id/textViewEpisodeText"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginStart="10dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:text="1. Intro"
             android:lines="3"
-            android:textColor="@color/white"
-            android:layout_marginStart="10dp"
-            android:layout_gravity="center"/>
+            android:textColor="@color/white" />
 
         <ImageView
             android:id="@+id/imageViewEpisodesGoTo"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="center"
+            android:contentDescription="@string/action_for_play"
             android:padding="15dp"
             android:src="@drawable/ic_baseline_arrow_forward_ios_24" />
 
@@ -48,9 +48,9 @@
         style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="2dp"
+        android:layout_gravity="bottom"
         android:progress="25"
-        android:progressTint="@color/button_color"
-        android:layout_gravity="bottom"/>
+        android:progressTint="@color/button_color" />
 
 </com.google.android.material.card.MaterialCardView>
 

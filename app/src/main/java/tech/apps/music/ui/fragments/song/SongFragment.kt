@@ -45,9 +45,9 @@ class SongFragment : Fragment() {
     private var _binding: FragmentSongBinding? = null
     private val binding: FragmentSongBinding get() = _binding!!
 
+    private var shouldUpdateSeekbar: Boolean = true
     private var curPlayingSong: YTAudioDataModel? = null
     private var isWatchLater = false
-    private var isRepeatModelOn = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -77,9 +77,6 @@ class SongFragment : Fragment() {
             startActivity(Intent.createChooser(intent, "Share URL"))
         }
 
-        YoutubeFloatingUI.isPlaying.observe(viewLifecycleOwner) {
-            isPlayingIconToggle(it)
-        }
         binding.ivPlayPauseSongFragmentImageView.setOnClickListener {
             curPlayingSong?.let { it1 -> mainViewModel.playPauseToggleSong(it1.mediaId) }
         }
@@ -111,21 +108,18 @@ class SongFragment : Fragment() {
                     binding.tvCurTime.text = TimeFunction.songDuration(progress.toLong())
                 }
             }
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                shouldUpdateSeekbar = false
+            }
+
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 seekBar?.let {
                     YoutubeFloatingUI.youtubePlayer?.seekTo(it.progress.toFloat())
                 }
+                shouldUpdateSeekbar = true
             }
         })
-        YoutubeFloatingUI.currentTime.observe(viewLifecycleOwner) {
-            if (it != null)
-                binding.tvCurTime.text = TimeFunction.secondInFloatToTimeString(it)
-        }
-        YoutubeFloatingUI.curSongDuration.observe(viewLifecycleOwner) {
-            if (it != null)
-                binding.tvSongDuration.text = TimeFunction.secondInFloatToTimeString(it)
-        }
 
         binding.exitButtonSongFragment.setOnClickListener {
             findNavController().navigateUp()
@@ -136,21 +130,18 @@ class SongFragment : Fragment() {
             handleSpeedController(it)
         }
         binding.imageViewEpisodesListButton.setOnClickListener {
-            Snackbar.make(it, "Under Development. Coming Soon...", Snackbar.LENGTH_SHORT).show()
-//            findNavController().navigate(R.id.action_songFragment_to_episodesListFragment)
+//            Snackbar.make(it, "Under Development. Coming Soon...", Snackbar.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.action_songFragment_to_episodesListFragment)
         }
         bookMarkToggle()
-        bookMarkToggleSetOnClickListener()
         toggleRepeatMode()
     }
 
     private fun setPlaybackSpeed(playSpeed: Float = 1f, playSpeedString: String = "1.00x") {
-
         val sharedPref = requireActivity().getSharedPreferences(
             Constants.SHARED_PREF_PLAYBACK_SPEED,
             AppCompatActivity.MODE_PRIVATE
         )
-
         val sharedPrefEditor = sharedPref.edit()
         sharedPrefEditor.putFloat(Constants.SAVE_PLAYBACK_SPEED, playSpeed)
         sharedPrefEditor.apply()
@@ -159,12 +150,10 @@ class SongFragment : Fragment() {
     }
 
     private fun checkPlaybackSpeed() {
-
         val sharedPref = requireActivity().getSharedPreferences(
             Constants.SHARED_PREF_PLAYBACK_SPEED,
             AppCompatActivity.MODE_PRIVATE
         )
-
         val str: String = when (sharedPref.getFloat(Constants.SAVE_PLAYBACK_SPEED, 1f)) {
             0.25f -> "0.25x"
             0.5f -> "0.50x"
@@ -173,7 +162,6 @@ class SongFragment : Fragment() {
             2f -> "2.00x"
             else -> "1.00x"
         }
-
         binding.materialCardViewDisVisible.text = str
     }
 
@@ -220,39 +208,44 @@ class SongFragment : Fragment() {
     }
 
     private fun subscribeToObserver() {
-
+        YoutubeFloatingUI.isPlaying.observe(viewLifecycleOwner) {
+            isPlayingIconToggle(it)
+        }
         mainViewModel.getCurrentlyPlayingYTAudioModel.observe(viewLifecycleOwner) {
             if (it != null) {
                 updateTitleAndSongImage(it)
             }
             curPlayingSong = it
         }
-
         mainViewModel.bufferingTime.observe(viewLifecycleOwner) {
             binding.progressBarForBuffering.isVisible = it
+        }
+        YoutubeFloatingUI.curSongDuration.observe(viewLifecycleOwner) {
+            if (it != null)
+                binding.tvSongDuration.text = TimeFunction.secondInFloatToTimeString(it)
+            binding.seekBar.max = it?.toInt() ?: 0
+        }
+        YoutubeFloatingUI.currentTime.observe(viewLifecycleOwner) {
+            if (it != null && shouldUpdateSeekbar) {
+                binding.tvCurTime.text = TimeFunction.secondInFloatToTimeString(it)
+                binding.seekBar.progress = it.toInt()
+            }
         }
     }
 
     private fun bookMarkToggle() {
-
-        val list = mainViewModel.getWatchLaterList.value
-
-        isWatchLater = list?.find {
-            it.videoId == curPlayingSong?.mediaId
-        } != null
-        watchLaterIconToggle()
-    }
-
-    private fun bookMarkToggleSetOnClickListener() {
+        mainViewModel.getWatchLaterList.observe(viewLifecycleOwner) { list ->
+            isWatchLater = list?.find {
+                it.videoId == curPlayingSong?.mediaId
+            } != null
+            watchLaterIconToggle()
+        }
         binding.imageViewBookMarkButton.setOnClickListener {
-
             if (isWatchLater) {
-                isWatchLater = false
                 curPlayingSong?.let { it1 ->
                     mainViewModel.removeSongListenLater(it1.mediaId)
                 }
             } else {
-                isWatchLater = true
                 curPlayingSong?.let { it1 ->
 
                     if (it1.title == "null")
@@ -269,9 +262,9 @@ class SongFragment : Fragment() {
                     )
                 }
             }
+            isWatchLater = !isWatchLater
             watchLaterIconToggle()
         }
-
     }
 
     private fun watchLaterIconToggle() {
@@ -325,27 +318,20 @@ class SongFragment : Fragment() {
     }
 
     private fun toggleRepeatMode() {
-
-//        isRepeatModelOn = mainViewModel.getRepeatState()
-
         binding.imageViewRepeatButton.setOnClickListener {
-
-            Snackbar.make(it, "Under Development. Coming Soon...", Snackbar.LENGTH_SHORT).show()
-
-            isRepeatModelOn = !isRepeatModelOn
-//            mainViewModel.setRepeatMode(isRepeatModelOn)
-//            toggleRepeatIcon()
+            YoutubeFloatingUI.repeatMode = !YoutubeFloatingUI.repeatMode
+            toggleRepeatIcon()
         }
-//        toggleRepeatIcon()
+        toggleRepeatIcon()
     }
 
-//    private fun toggleRepeatIcon() {
-//        if (isRepeatModelOn) {
-//            binding.imageViewRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_24)
-//        } else {
-//            binding.imageViewRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_off_24)
-//        }
-//    }
+    private fun toggleRepeatIcon() {
+        if (YoutubeFloatingUI.repeatMode) {
+            binding.imageViewRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_24)
+        } else {
+            binding.imageViewRepeatButton.setImageResource(R.drawable.ic_baseline_repeat_off_24)
+        }
+    }
 
     private fun isPlayingIconToggle(isPlaying: Boolean) {
         binding.ivPlayPauseSongFragmentImageView.setImageResource(

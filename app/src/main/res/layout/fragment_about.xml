@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="sans-serif-black"
-            android:text="Privacy Policy"
+            android:text="@string/privacy_policy_text"
             android:textColor="@color/white"
             android:textSize="20sp" />
 

@@ -15,7 +15,7 @@ class MusicServiceConnection constructor(
         title: String = "",
         channel: String = ""
     ) {
-        while (YoutubeFloatingUI.youtubePlayer==null){
+        while (YoutubeFloatingUI.youtubePlayer == null) {
             delay(500)
         }
 
@@ -31,11 +31,50 @@ class MusicServiceConnection constructor(
         YoutubeFloatingUI.youtubePlayer?.loadVideo(mediaId, watchedPosition)
     }
 
+
     fun skipToNext() {
+        val windowId =
+            YoutubeFloatingUI.playlistSongs.indexOf(YoutubeFloatingUI.currentlyPlayingSong.value) + 1
+
+        if (YoutubeFloatingUI.playlistSongs.size - 1 >= windowId) {
+            YoutubeFloatingUI.currentlyPlayingSong.postValue(YoutubeFloatingUI.playlistSongs[windowId])
+            YoutubeFloatingUI.youtubePlayer?.loadVideo(
+                YoutubeFloatingUI.playlistSongs[windowId].mediaId,
+                0F
+            )
+        }
     }
 
     fun skipToPrevious() {
-        YoutubeFloatingUI.youtubePlayer?.seekTo(0F)
+        if (YoutubeFloatingUI.currentTime.value ?: 2F > 1F) {
+            YoutubeFloatingUI.youtubePlayer?.seekTo(0F)
+            return
+        }
+
+        val windowId =
+            YoutubeFloatingUI.playlistSongs.indexOf(YoutubeFloatingUI.currentlyPlayingSong.value) - 1
+
+        if (windowId >= 0) {
+            YoutubeFloatingUI.currentlyPlayingSong.postValue(YoutubeFloatingUI.playlistSongs[windowId])
+            YoutubeFloatingUI.youtubePlayer?.loadVideo(
+                YoutubeFloatingUI.playlistSongs[windowId].mediaId,
+                0F
+            )
+        }
+    }
+
+    fun gotoIndex(index: Int) {
+        val windowId =
+            YoutubeFloatingUI.playlistSongs.indexOf(YoutubeFloatingUI.currentlyPlayingSong.value)
+        if (index == windowId)
+            return
+        if (YoutubeFloatingUI.playlistSongs.size - 1 >= index) {
+            YoutubeFloatingUI.currentlyPlayingSong.postValue(YoutubeFloatingUI.playlistSongs[index])
+            YoutubeFloatingUI.youtubePlayer?.loadVideo(
+                YoutubeFloatingUI.playlistSongs[index].mediaId,
+                0F
+            )
+        }
     }
 
 //    fun fastForwardSong() {

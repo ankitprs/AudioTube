@@ -1,5 +1,7 @@
 package tech.apps.music.adapters
 
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -8,7 +10,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
 import tech.apps.music.databinding.EpisodeListItemBinding
-import tech.apps.music.model.EpisodeModel
+import tech.apps.music.model.YTAudioDataModel
 import javax.inject.Inject
 
 class EpisodeAdapter @Inject constructor(
@@ -16,18 +18,24 @@ class EpisodeAdapter @Inject constructor(
 ) :
     RecyclerView.Adapter<EpisodeAdapter.EpisodeViewHolder>() {
 
-    private val diffCallback = object : DiffUtil.ItemCallback<EpisodeModel>() {
-        override fun areItemsTheSame(oldItem: EpisodeModel, newItem: EpisodeModel): Boolean {
+    private val diffCallback = object : DiffUtil.ItemCallback<YTAudioDataModel>() {
+        override fun areItemsTheSame(
+            oldItem: YTAudioDataModel,
+            newItem: YTAudioDataModel
+        ): Boolean {
             return oldItem == newItem
         }
 
-        override fun areContentsTheSame(oldItem: EpisodeModel, newItem: EpisodeModel): Boolean {
+        override fun areContentsTheSame(
+            oldItem: YTAudioDataModel,
+            newItem: YTAudioDataModel
+        ): Boolean {
             return oldItem.hashCode() == newItem.hashCode()
         }
     }
-    private val differ: AsyncListDiffer<EpisodeModel> = AsyncListDiffer(this, diffCallback)
+    private val differ: AsyncListDiffer<YTAudioDataModel> = AsyncListDiffer(this, diffCallback)
 
-    var songs: List<EpisodeModel>
+    var songs: List<YTAudioDataModel>
         get() = differ.currentList
         set(value) = differ.submitList(value)
 
@@ -46,9 +54,9 @@ class EpisodeAdapter @Inject constructor(
 
     var currentlyPlayingSongId: String? = null
 
-    private var onItemClickListener: ((EpisodeModel) -> Unit)? = null
+    private var onItemClickListener: ((YTAudioDataModel) -> Unit)? = null
 
-    fun setItemClickListener(listener: (EpisodeModel) -> Unit) {
+    fun setItemClickListener(listener: (YTAudioDataModel) -> Unit) {
         onItemClickListener = listener
     }
 
@@ -61,31 +69,26 @@ class EpisodeAdapter @Inject constructor(
         val song = songs[position]
         holder.binding.apply {
 
-//            if (currentlyPlayingSongId === song.songId) {
-//                val gradientDrawable = GradientDrawable(
-//                    GradientDrawable.Orientation.BL_TR,
-//                    intArrayOf(
-//                        Color.parseColor("#00dbff"),
-//                        Color.parseColor("#0800ff")
-//                    )
-//                )
-//                gradientDrawable.cornerRadius = 0f
-//
-//                //Set Gradient
-//                episodesListCardView.background = gradientDrawable
-//                imageViewEpisodesGoTo
-//            }
+            if (currentlyPlayingSongId === song.mediaId) {
+                val gradientDrawable = GradientDrawable(
+                    GradientDrawable.Orientation.BL_TR,
+                    intArrayOf(
+                        Color.parseColor("#00dbff"),
+                        Color.parseColor("#0800ff")
+                    )
+                )
+                gradientDrawable.cornerRadius = 0f
 
-            glide.load(song.songThumbnailUrl).centerCrop().into(imageViewEpisodeThumbnail)
+                //Set Gradient
+                episodesListCardView.background = gradientDrawable
+                imageViewEpisodesGoTo
+            }
+
+            glide.load(song.thumbnailUrl).centerCrop().into(imageViewEpisodeThumbnail)
 
             textViewEpisodeText.text = song.title
 
-            if (song.watchedPosition == 0L) {
-                determinateBarEpisodesIt.isVisible = false
-            } else {
-                determinateBarEpisodesIt.progress =
-                    ((song.watchedPosition) / (song.duration * 10)).toInt()
-            }
+            determinateBarEpisodesIt.isVisible = false
 
             root.setOnClickListener {
                 onItemClickListener?.let { click ->

@@ -10,6 +10,7 @@
         <entry key="../../../.gradle/caches/transforms-3/f93c71473255be934f5f8d39dc63d9bc/transformed/jetified-exoplayer-ui-2.16.0/res/drawable-anydpi-v21/exo_icon_previous.xml" value="0.20592105263157895" />
         <entry key="../../../Library/Android/sdk/platforms/android-31/data/res/drawable/progress_horizontal.xml" value="0.18848684210526315" />
         <entry key="../../../Library/Android/sdk/platforms/android-31/data/res/layout/two_line_list_item.xml" value="0.17828947368421053" />
+        <entry key="ads/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/bottom_curved_background.xml" value="0.19358108108108107" />
         <entry key="app/src/main/res/drawable/bottom_sheet_background.xml" value="0.2652777777777778" />
         <entry key="app/src/main/res/drawable/explore_list_item.xml" value="0.321025641025641" />
@@ -67,6 +68,7 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_more.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_premium.xml" value="0.17828947368421053" />
+        <entry key="app/src/main/res/layout/activity_testing.xml" value="0.1" />
         <entry key="app/src/main/res/layout/audio_fragment.xml" value="0.165" />
         <entry key="app/src/main/res/layout/boom_sheet_background.xml" value="0.25092592592592594" />
         <entry key="app/src/main/res/layout/dialog_card_item.xml" value="0.25" />
@@ -80,6 +82,7 @@
         <entry key="app/src/main/res/layout/fragment_educate_third.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_episodes_list.xml" value="0.18944280992469803" />
         <entry key="app/src/main/res/layout/fragment_my_library_list.xml" value="0.39351851851851855" />
+        <entry key="app/src/main/res/layout/fragment_second.xml" value="0.12329234972677595" />
         <entry key="app/src/main/res/layout/fragment_song.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_youtube_floating_window.xml" value="0.15163934426229508" />
         <entry key="app/src/main/res/layout/home_activity.xml" value="0.1" />

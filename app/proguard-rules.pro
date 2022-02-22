@@ -19,7 +19,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
--keep class com.github.HaarigerHarald.**{*;}
+-keep class com.pierfrancescosoffritti.androidyoutubeplayer.**{*;}
 -keep class tech.apps.music.database.offline.WatchLaterSongModel.*{*;}
 -keep class tech.apps.music.database.offline.HistorySongModel.*{*;}
 -keepnames @dagger.hilt.android.lifecycle.HiltViewModel class * extends androidx.lifecycle.ViewModel

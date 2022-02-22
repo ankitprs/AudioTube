@@ -26,9 +26,9 @@ data class WatchLaterSongModel(
     @ColumnInfo(name = "Timing") val time: Long = 0L,
     @ColumnInfo(name = "WatchedPosition") val watchedPosition: Long = 0
 )
-//@Keep
-//@Entity(tableName = "Search_History")
-//data class SearchHistory(
-//    @PrimaryKey val queryText: String = "",
-//    @ColumnInfo(name = "Timing") val time: Long = 0L,
-//)
+@Keep
+@Entity(tableName = "Search_History")
+data class SearchHistory(
+    @PrimaryKey val queryText: String = "",
+    @ColumnInfo(name = "Timing") val time: Long = 0L,
+)

@@ -48,6 +48,7 @@ class SearchFragment : Fragment() {
     private var _binding: SearchFragmentBinding? = null
     private val binding: SearchFragmentBinding get() = _binding!!
     private lateinit var mainViewModel: MainViewModel
+    private var suggestionList: List<String> = listOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -77,6 +78,7 @@ class SearchFragment : Fragment() {
                 Snackbar.make(it,"Nothing To Play... Search Something For Play",Snackbar.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+            mainViewModel
             mainViewModel.playOrToggleListOfSongs(searchAdapter.songs.toYtAudioDataModel(),true,0)
             findNavController().navigate(R.id.action_homeFragment2_to_songFragment2)
         }
@@ -110,6 +112,11 @@ class SearchFragment : Fragment() {
                 override fun onQueryTextChange(newText: String?): Boolean {
                     binding.recyclerViewSearchSuggestion.visibility = View.VISIBLE
                     newText?.let {
+                        if(it.isBlank()){
+                            searchSuggestionAdapter.songs = suggestionList
+                            return@let
+                        }
+
                         hideSearchSuggestion(true)
                         viewModel.searchSuggestionText(it) { list ->
                             searchSuggestionAdapter.songs = list
@@ -141,8 +148,13 @@ class SearchFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireContext())
         }
 
-        mainViewModel.getListSearchHistory{
-            searchSuggestionAdapter.songs = it
+        mainViewModel.getListSearchHistory().observe(viewLifecycleOwner){
+            val list: ArrayList<String> = ArrayList()
+                it.forEach {
+                    list.add(it.queryText)
+                }
+            suggestionList = list
+            searchSuggestionAdapter.songs = list
         }
     }
 
@@ -196,12 +208,13 @@ class SearchFragment : Fragment() {
             binding.searchButtonViewSearchFragment.isIconified = false
             keyboardNeeded = false
         }
-        hideSearchSuggestion(false)
+        hideSearchSuggestion(true)
     }
 
     private fun hideSearchSuggestion(isSearch: Boolean) {
         binding.recyclerViewSearchSuggestion.isVisible = isSearch
         binding.recyclerViewSearchResult.isVisible = !isSearch
+        binding.floatingActionButtonPlayListSearchFrg.isVisible = !isSearch
     }
 
     override fun onDestroyView() {

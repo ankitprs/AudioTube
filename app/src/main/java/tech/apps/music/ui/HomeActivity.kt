@@ -9,7 +9,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.Window
 import androidx.activity.viewModels
@@ -57,6 +56,8 @@ class HomeActivity : AppCompatActivity() {
         _binding = HomeActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        startActivity(Intent(this,TestingActivity::class.java))
+
         startFloatingService()
 
         val connection = ConnectionLiveData(this)
@@ -92,6 +93,9 @@ class HomeActivity : AppCompatActivity() {
                         boolean = false,
                         isNotSong = false
                     )
+                    R.id.searchFragment -> {
+                        showOrHideBottomBar(false, isNotSong = false)
+                    }
                     else -> {
                         if (viewModel.getCurrentlyPlayingYTAudioModel.value != null) {
                             showOrHideBottomBar(true)
@@ -120,7 +124,7 @@ class HomeActivity : AppCompatActivity() {
             )
         }
 
-        YoutubeFloatingUI.isPlaying.observe(this){
+        YoutubeFloatingUI.isPlaying.observe(this) {
             isPlayingIconToggle(it)
         }
         binding.ivPlayPause.setOnClickListener {
@@ -250,7 +254,6 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun isPlayingIconToggle(isPlaying: Boolean) {
-        Log.i("HomeActivity", "isPlaying$isPlaying")
         binding.ivPlayPause.setImageResource(
             if (isPlaying)
                 R.drawable.ic_round_pause_circle_24
@@ -259,7 +262,7 @@ class HomeActivity : AppCompatActivity() {
         )
     }
 
-    private fun startFloatingService(command: String = "") {
+    private fun startFloatingService() {
 
         if (isMyServiceRunning(ForegroundService::class.java))
             return
@@ -267,28 +270,20 @@ class HomeActivity : AppCompatActivity() {
         val intent = Intent(this, ForegroundService::class.java)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            this.startForegroundService(intent)
+            applicationContext.startForegroundService(intent)
         } else {
-            this.startService(intent)
+            applicationContext.startService(intent)
         }
-
     }
 
 
     private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
 
-        try {
-            val manager =
-                getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-            for (service in manager.getRunningServices(
-                Int.MAX_VALUE
-            )) {
-                if (serviceClass.name == service.service.className) {
-                    return true
-                }
+        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        for (service in manager.runningAppProcesses) {
+            if (serviceClass.name == service.processName) {
+                return true
             }
-        } catch (e: Exception) {
-            return false
         }
         return false
     }

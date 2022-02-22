@@ -4,13 +4,11 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.analytics.ktx.logEvent
-import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import tech.apps.music.database.Repository
 import tech.apps.music.database.offline.HistorySongModel
+import tech.apps.music.database.offline.SearchHistory
 import tech.apps.music.database.offline.WatchLaterSongModel
 import tech.apps.music.floatingWindow.MusicServiceConnection
 import tech.apps.music.floatingWindow.YoutubeFloatingUI
@@ -42,25 +40,13 @@ class MainViewModel @Inject constructor(
         musicServiceConnection.skipToPrevious()
     }
 
-//    fun setRepeatMode(isRepeat: Boolean) {
-//        if (isRepeat) {
-//            musicServiceConnection.setRepeatMode(REPEAT_MODE_ALL)
-//        } else {
-//            musicServiceConnection.setRepeatMode(REPEAT_MODE_NONE)
-//        }
-//    }
+    fun previousSong() {
+        musicServiceConnection
+    }
 
-//    fun getRepeatState(): Boolean {
-//        return musicServiceConnection.repeatMode()
-//    }
-//
-//    fun fastForwardSong() {
-//        musicServiceConnection.fastForward()
-//    }
-//
-//    fun replayBackSong() {
-//        musicServiceConnection.rewind()
-//    }
+    fun nextSong() {
+        musicServiceConnection
+    }
 
     fun playPauseToggleSong(
         mediaId: String
@@ -85,30 +71,13 @@ class MainViewModel @Inject constructor(
         watchedPosition: Long = 0L
     ) {
         viewModelScope.launch {
+            YoutubeFloatingUI.playlistSongs = mediaItem.toMutableList()
             musicServiceConnection.playFromVideoId(
                 mediaItem[position].mediaId,
                 (watchedPosition / 1000).toFloat(),
                 mediaItem[position].title,
                 mediaItem[position].author
             )
-        }
-    }
-
-    fun addSongInRecent(ytLink: String, callback: (status: Boolean) -> Unit) {
-
-        repository.getSongModelWithLink(ytLink) { audioModel ->
-
-            Firebase.analytics.logEvent("Video_Played") {
-                param("Video_ID", audioModel?.mediaId.toString())
-                param("Video_Title", audioModel?.title.toString())
-                param("Video_Channel_Name", audioModel?.author.toString())
-            }
-            if (audioModel != null) {
-                playOrToggleListOfSongs(listOf(audioModel), true)
-                callback(true)
-            } else {
-                callback(false)
-            }
         }
     }
 
@@ -126,9 +95,9 @@ class MainViewModel @Inject constructor(
         }
     }
 
-//    fun gotoIndex(index: Long) {
-//        musicServiceConnection.skipToQueueItem(index)
-//    }
+    fun gotoIndex(index: Int) {
+        musicServiceConnection.gotoIndex(index)
+    }
 
     fun insertSearchQuery(queryText: String) {
         viewModelScope.launch {
@@ -136,14 +105,9 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun getListSearchHistory(callback: (list: List<String>) -> Unit) {
-        val list: ArrayList<String> = ArrayList()
-        viewModelScope.launch {
-//            repository.getListSearchHistory().forEach {
-//                list.add(it.queryText)
-//            }
-            callback(list)
-        }
+    fun getListSearchHistory(): LiveData<List<SearchHistory>> {
+        return repository.getListSearchHistory()
+
     }
 
     val getCurrentlyPlayingYTAudioModel: LiveData<YTAudioDataModel?> =

@@ -52,14 +52,14 @@ interface YTVideoDao {
     @Query("UPDATE History_Song_Model SET WatchedPosition = :watchedPosition, Timing = :timing  WHERE videoId = :videoID ")
     suspend fun updatingSongPosTime(watchedPosition: Long,timing: Long, videoID: String)
 
-//
-//    //Search History Table
-//    @Insert(onConflict = OnConflictStrategy.REPLACE)
-//    suspend fun insertSearchQuery(searchHistory: SearchHistory)
-//
-//    @Query("SELECT * FROM Search_History ORDER BY Timing DESC")
-//    suspend fun getListSearchHistory() : List<SearchHistory>
-//
-//    @Query("DELETE FROM Search_History where queryText NOT IN (SELECT queryText from Search_History ORDER BY timing DESC LIMIT 20)")
-//    suspend fun deleteSearchHistoryMoreThan20()
+
+    //Search History Table
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSearchQuery(searchHistory: SearchHistory)
+
+    @Query("SELECT * FROM Search_History ORDER BY Timing DESC")
+    fun getListSearchHistory() : LiveData<List<SearchHistory>>
+
+    @Query("DELETE FROM Search_History where queryText NOT IN (SELECT queryText from Search_History ORDER BY timing DESC LIMIT 20)")
+    suspend fun deleteSearchHistoryMoreThan20()
 }

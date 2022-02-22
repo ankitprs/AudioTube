@@ -15,5 +15,10 @@ object RoomDbMigration {
             database.execSQL("CREATE TABLE IF NOT EXISTS WatchLater_Song_Model (videoId TEXT NOT NULL, Title TEXT NOT NULL, Channel TEXT NOT NULL, Duration INTEGER NOT NULL, Timing INTEGER NOT NULL, WatchedPosition INTEGER NOT NULL, PRIMARY KEY(videoId))")
         }
     }
+    val migration_2_3 = object : Migration(2,3){
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS Search_History (queryText TEXT NOT NULL, Timing INTEGER NOT NULL, PRIMARY KEY(queryText))")
+        }
+    }
 
 }

@@ -1,6 +1,5 @@
 package tech.apps.music.floatingWindow
 
-import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -15,8 +14,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.MutableLiveData
+import com.bumptech.glide.RequestManager
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.ktx.Firebase
@@ -41,7 +42,8 @@ import androidx.media.app.NotificationCompat as MediaNotificationCompat
 class YoutubeFloatingUI(
     private val context: Context,
     private val foregroundService: ForegroundService,
-    private val repository: Repository
+    private val repository: Repository,
+    private val glide: RequestManager
 ) {
 
     private val youTubePlayerView: YouTubePlayerView
@@ -57,13 +59,15 @@ class YoutubeFloatingUI(
 
     companion object {
         var youtubePlayer: YouTubePlayer? = null
+        val currentlyPlayingSong: MutableLiveData<YTAudioDataModel?> = MutableLiveData(null)
+        var playlistSongs: MutableList<YTAudioDataModel> = arrayListOf()
+
         var curSongDuration: MutableLiveData<Float> = MutableLiveData(0F)
             private set
         val bufferingTime: MutableLiveData<Boolean> = MutableLiveData(false)
-
-        val currentlyPlayingSong: MutableLiveData<YTAudioDataModel?> = MutableLiveData(null)
         val isPlaying: MutableLiveData<Boolean> = MutableLiveData(true)
         val currentTime: MutableLiveData<Float> = MutableLiveData(0F)
+        var repeatMode: Boolean = false
     }
 
 
@@ -102,17 +106,15 @@ class YoutubeFloatingUI(
     }
 
     init {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // set the layout parameters of the window
-            mParams = WindowManager.LayoutParams( // Shrink the window to wrap the content rather
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,  // Display it on top of other application windows
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,  // Don't let it grab the input focus
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,  // Make the underlying application window visible
-                // through any transparent parts
-                PixelFormat.TRANSLUCENT
-            )
-        }
+        // set the layout parameters of the window
+        mParams = WindowManager.LayoutParams( // Shrink the window to wrap the content rather
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT,  // Display it on top of other application windows
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,  // Don't let it grab the input focus
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,  // Make the underlying application window visible
+            // through any transparent parts
+            PixelFormat.TRANSLUCENT
+        )
         // getting a LayoutInflater
         layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         // inflating the view with the custom layout we created
@@ -137,14 +139,19 @@ class YoutubeFloatingUI(
             .ccLoadPolicy(0)
             .build()
 
+        startMyOwnForeground()
+
         youTubePlayerView.initialize(object : AbstractYouTubePlayerListener() {
+            override fun onError(youTubePlayer: YouTubePlayer, error: PlayerConstants.PlayerError) {
+                super.onError(youTubePlayer, error)
+                Toast.makeText(context,"Oops... Youtube doesn't allow us to play this video",Toast.LENGTH_LONG).show()
+            }
+
             override fun onReady(youTubePlayer: YouTubePlayer) {
 
                 youtubePlayer = youTubePlayer
                 youTubePlayerView.enableBackgroundPlayback(true)
                 youtubePlayer?.addListener(tracker)
-                startMyOwnForeground()
-
             }
 
             override fun onPlaybackQualityChange(
@@ -158,7 +165,6 @@ class YoutubeFloatingUI(
             override fun onCurrentSecond(youTubePlayer: YouTubePlayer, second: Float) {
                 super.onCurrentSecond(youTubePlayer, second)
                 currentTime.postValue(second)
-                Log.i("YoutubeUIPLAYER", second.toString())
             }
 
             override fun onStateChange(
@@ -166,7 +172,6 @@ class YoutubeFloatingUI(
                 state: PlayerConstants.PlayerState
             ) {
                 super.onStateChange(youTubePlayer, state)
-
                 when (state) {
                     PlayerConstants.PlayerState.BUFFERING -> {
                         bufferingTime.postValue(true)
@@ -175,6 +180,13 @@ class YoutubeFloatingUI(
                     PlayerConstants.PlayerState.PLAYING -> {
                         bufferingTime.postValue(false)
                         isPlaying.postValue(true)
+                    }
+                    PlayerConstants.PlayerState.ENDED -> {
+                        if (repeatMode) {
+                            youTubePlayer.play()
+                        } else {
+                            playNextSong()
+                        }
                     }
                     else -> {
                         isPlaying.postValue(false)
@@ -194,7 +206,6 @@ class YoutubeFloatingUI(
     }
 
     private fun startMyOwnForeground() {
-
         foregroundService.apply {
             val channelName = "Background Service"
 
@@ -206,7 +217,6 @@ class YoutubeFloatingUI(
                 )
                 manager.createNotificationChannel(channel)
             }
-
             val pendingIntent = PendingIntent.getActivity(
                 this, 0,
                 Intent(this, HomeActivity::class.java).apply {
@@ -215,7 +225,6 @@ class YoutubeFloatingUI(
                 },
                 PendingIntent.FLAG_IMMUTABLE
             )
-
             notification.setOngoing(true)
                 .setSmallIcon(R.drawable.ic_play_audio)
                 .setStyle(
@@ -238,11 +247,17 @@ class YoutubeFloatingUI(
                 notification.setContentTitle(it?.title)
                 notification.setContentText(it?.author)
                 manager.notify(Constants.NOTIFICATION_ID, notification.build())
+//
+//                if (it != null) {
+//                    playlistSongs.remove(playlistSongs.find { list ->
+//                        list.mediaId == it.mediaId
+//                    })
+//                    playlistSongs.addAll(0, listOf(it))
+//                }
             }
         }
     }
 
-    @SuppressLint("RestrictedApi")
     fun togglePlayPause() {
         if (isPlaying.value == true) {
             youtubePlayer?.pause()
@@ -251,7 +266,6 @@ class YoutubeFloatingUI(
         }
     }
 
-    @SuppressLint("RestrictedApi")
     private fun funAddingActionsInNotification() {
         foregroundService.apply {
             val stopIntent: PendingIntent = PendingIntent.getService(
@@ -263,47 +277,30 @@ class YoutubeFloatingUI(
                 PendingIntent.FLAG_IMMUTABLE
             )
 
-            val playPendingIntent: PendingIntent = PendingIntent.getService(
-                this,
-                2,
-                Intent(this, ForegroundService::class.java).apply {
-                    action = Constants.ACTION_PLAY_PAUSE_TOGGLE
-                },
-                PendingIntent.FLAG_IMMUTABLE
-            )
+            val playPendingIntent: PendingIntent = PendingIntent
+                .getService(
+                    this, 2,
+                    Intent(this, ForegroundService::class.java).apply {
+                        action = Constants.ACTION_PLAY_PAUSE_TOGGLE
+                    },
+                    PendingIntent.FLAG_IMMUTABLE
+                )
 
-            notification.addAction(
-                R.drawable.ic_round_pause_24,
-                null,
-                playPendingIntent
-            ).addAction(
-                R.drawable.ic_round_clear_24,
-                null,
-                stopIntent
-            )
+            notification.addAction(R.drawable.ic_round_pause_24, null, playPendingIntent)
+                .addAction(R.drawable.ic_round_clear_24, null, stopIntent)
+
             isPlaying.observeForever {
-                notification.mActions.clear()
+                notification.clearActions()
                 if (it) {
-                    notification.addAction(
-                        R.drawable.ic_round_pause_24,
-                        null,
-                        playPendingIntent
-                    ).addAction(
-                        R.drawable.ic_round_clear_24,
-                        null,
-                        stopIntent
-                    )
+                    notification.addAction(R.drawable.ic_round_pause_24, null, playPendingIntent)
+                        .addAction(R.drawable.ic_round_clear_24, null, stopIntent)
                 } else {
                     notification.addAction(
                         R.drawable.ic_round_play_arrow_24,
                         null,
                         playPendingIntent
-                    ).addAction(
-                        R.drawable.ic_round_clear_24,
-                        null,
-                        stopIntent
                     )
-
+                        .addAction(R.drawable.ic_round_clear_24, null, stopIntent)
                 }
                 manager.notify(Constants.NOTIFICATION_ID, notification.build())
             }
@@ -332,6 +329,15 @@ class YoutubeFloatingUI(
                     param("Video_Channel_Name", it.author)
                 }
             }
+        }
+    }
+
+    private fun playNextSong() {
+        val windowId = playlistSongs.indexOf(currentlyPlayingSong.value) + 1
+
+        if (playlistSongs.size - 1 >= windowId) {
+            currentlyPlayingSong.postValue(playlistSongs[windowId])
+            youtubePlayer?.loadVideo(playlistSongs[windowId].mediaId, 0F)
         }
     }
 }

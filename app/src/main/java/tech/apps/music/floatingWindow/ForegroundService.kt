@@ -3,6 +3,7 @@ package tech.apps.music.floatingWindow
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import com.bumptech.glide.RequestManager
 import dagger.hilt.android.AndroidEntryPoint
 import tech.apps.music.database.Repository
 import tech.apps.music.others.Constants
@@ -13,6 +14,9 @@ class ForegroundService : Service() {
 
     @Inject
     lateinit var repository: Repository
+
+    @Inject
+    lateinit var glide: RequestManager
     private lateinit var youtubeFloatingUI: YoutubeFloatingUI
 
     override fun onBind(intent: Intent): IBinder? {
@@ -22,23 +26,28 @@ class ForegroundService : Service() {
     override fun onCreate() {
         super.onCreate()
 
-        youtubeFloatingUI = YoutubeFloatingUI(this,this,repository)
+        youtubeFloatingUI = YoutubeFloatingUI(this, this, repository, glide)
         youtubeFloatingUI.open()
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
 
         if (intent.action != null && intent.action.equals(
-                Constants.ACTION_STOP, ignoreCase = true)) {
+                Constants.ACTION_STOP, ignoreCase = true
+            )
+        ) {
             stopForeground(true)
             stopSelf()
             youtubeFloatingUI.close()
             android.os.Process.killProcess(android.os.Process.myPid())
-        }else if(intent.action!=null && intent.action.equals(Constants.ACTION_PLAY_PAUSE_TOGGLE,true)){
+        } else if (intent.action != null && intent.action.equals(
+                Constants.ACTION_PLAY_PAUSE_TOGGLE,
+                true
+            )
+        ) {
             youtubeFloatingUI.togglePlayPause()
         }
-
-        return START_STICKY_COMPATIBILITY
+        return START_STICKY
     }
 
 

@@ -10,9 +10,6 @@ object VideoData {
     fun getThumbnailLowQFromId(videoId: String): String =
         "https://i.ytimg.com/vi/$videoId/mqdefault.jpg"
 
-    fun getYoutubeLinkFromId(videoId: String): String =
-        "https://www.youtube.com/watch?v=$videoId"
-
 
     fun creatingListOfExplores(): ArrayList<ExploreModel> {
 

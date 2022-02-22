@@ -119,8 +119,7 @@
         android:src="@drawable/ic_round_play_arrow_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:borderWidth="0dp"
-        android:visibility="gone"/>
+        app:borderWidth="0dp"/>
 
     <TextView
         android:id="@+id/textViewNotFoundSearch"
