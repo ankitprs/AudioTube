@@ -12,12 +12,10 @@ import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.MutableLiveData
-import com.bumptech.glide.RequestManager
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.ktx.Firebase
@@ -43,7 +41,7 @@ class YoutubeFloatingUI(
     private val context: Context,
     private val foregroundService: ForegroundService,
     private val repository: Repository,
-    private val glide: RequestManager
+//    private val glide: RequestManager
 ) {
 
     private val youTubePlayerView: YouTubePlayerView
@@ -65,7 +63,7 @@ class YoutubeFloatingUI(
         var curSongDuration: MutableLiveData<Float> = MutableLiveData(0F)
             private set
         val bufferingTime: MutableLiveData<Boolean> = MutableLiveData(false)
-        val isPlaying: MutableLiveData<Boolean> = MutableLiveData(true)
+        val isPlaying: MutableLiveData<Boolean> = MutableLiveData(false)
         val currentTime: MutableLiveData<Float> = MutableLiveData(0F)
         var repeatMode: Boolean = false
     }
@@ -88,21 +86,22 @@ class YoutubeFloatingUI(
     fun close() {
         youTubePlayerView.release()
 
-        try {
-            // remove the view from the window
-            (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).removeView(mView)
-            // invalidate the view
-            mView.invalidate()
-            // remove all views
-            (mView.parent as ViewGroup).removeAllViews()
-            context.apply {
-                stopService(null)
-            }
-            // the above steps are necessary when you are adding and removing
-            // the view simultaneously, it might give some exceptions
-        } catch (e: Exception) {
-            Log.d("Error2", e.toString())
-        }
+        currentlyPlayingSong.removeObserver{}
+        playlistSongs.removeAll { true }
+        curSongDuration.removeObserver{}
+        bufferingTime.removeObserver{}
+        isPlaying.removeObserver{}
+        currentTime.removeObserver{}
+
+        // remove the view from the window
+        (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).removeView(mView)
+        // invalidate the view
+        mView.invalidate()
+        // remove all views
+//        (mView.parent as ViewGroup).removeAllViews()
+//        context.apply {
+//            stopService(null)
+//        }
     }
 
     init {
@@ -151,6 +150,7 @@ class YoutubeFloatingUI(
 
                 youtubePlayer = youTubePlayer
                 youTubePlayerView.enableBackgroundPlayback(true)
+                youtubePlayer?.setVolume(100)
                 youtubePlayer?.addListener(tracker)
             }
 
@@ -335,9 +335,12 @@ class YoutubeFloatingUI(
     private fun playNextSong() {
         val windowId = playlistSongs.indexOf(currentlyPlayingSong.value) + 1
 
-        if (playlistSongs.size - 1 >= windowId) {
+        if (playlistSongs.size - 1 > windowId) {
             currentlyPlayingSong.postValue(playlistSongs[windowId])
             youtubePlayer?.loadVideo(playlistSongs[windowId].mediaId, 0F)
+        }else{
+            isPlaying.postValue(false)
+            togglePlayPause()
         }
     }
 }

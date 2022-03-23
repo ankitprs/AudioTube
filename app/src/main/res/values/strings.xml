@@ -65,5 +65,6 @@ If you have any questions or suggestions about my Privacy Policy, do not hesitat
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
     <string name="interstitial_ad_unit_id">ca-app-pub-8154643218867307/8704265189</string>
+    <string name="admob_id">ca-app-pub-8154643218867307~1200839407</string>
 
 </resources>

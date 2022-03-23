@@ -18,6 +18,7 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.bumptech.glide.RequestManager
+import com.facebook.ads.AudienceNetworkAds
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,7 +35,6 @@ import tech.apps.music.model.YTAudioDataModel
 import tech.apps.music.ui.fragments.MainViewModel
 import tech.apps.music.util.BasicStorage
 import javax.inject.Inject
-
 
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
@@ -56,6 +56,7 @@ class HomeActivity : AppCompatActivity() {
         _binding = HomeActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        AudienceNetworkAds.initialize(this)
         startFloatingService()
 
         val connection = ConnectionLiveData(this)
@@ -108,12 +109,10 @@ class HomeActivity : AppCompatActivity() {
         when (intent?.action) {
             Intent.ACTION_SEND -> {
                 if ("text/plain" == intent.type) {
-                    handleSendText(intent) // Handle text being sent
+                    handleSendText(intent)
                 }
             }
-            else -> {
-                // Handle other intents, such as being started from the home screen
-            }
+            else -> {}
         }
 
         binding.materialCardViewHome.setOnClickListener {
@@ -229,8 +228,6 @@ class HomeActivity : AppCompatActivity() {
                     }
                     dialog.dismiss()
                 }
-
-
             }
         }
     }

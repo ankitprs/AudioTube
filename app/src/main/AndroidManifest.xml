@@ -17,14 +17,6 @@
         android:theme="@style/SplashScreen"
         android:usesCleartextTraffic="true">
 
-<!--        <meta-data-->
-<!--            android:name="com.google.android.gms.ads.APPLICATION_ID"-->
-<!--            android:value="ca-app-pub-8154643218867307~1200839407"/>-->
-
-<!--        <activity-->
-<!--            android:name=".ui.TestingActivity"-->
-<!--            android:exported="true" />-->
-
         <activity
             android:name=".ui.more.MoreActivity"
             android:exported="false">
@@ -39,25 +31,15 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
-
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <data android:mimeType="text/plain" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!-- Include the AdActivity configChanges and theme. -->
-<!--        <activity-->
-<!--            android:name="com.google.android.gms.ads.AdActivity"-->
-<!--            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"-->
-<!--            android:exported="false"-->
-<!--            android:theme="@android:style/Theme.Translucent" />-->
 
         <service android:name=".floatingWindow.ForegroundService" />
     </application>
-
 </manifest>

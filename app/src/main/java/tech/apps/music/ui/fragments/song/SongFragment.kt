@@ -6,6 +6,8 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +23,10 @@ import androidx.palette.graphics.Palette
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.facebook.ads.Ad
+import com.facebook.ads.AdError
+import com.facebook.ads.InterstitialAd
+import com.facebook.ads.InterstitialAdListener
 import com.google.android.material.snackbar.Snackbar
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import dagger.hilt.android.AndroidEntryPoint
@@ -65,6 +71,7 @@ class SongFragment : Fragment() {
         toggleShimmer(true)
 
         subscribeToObserver()
+        setUpNewAdsAndShow()
 
         binding.shareButtonSongFragment.setOnClickListener {
             val intent = Intent(Intent.ACTION_SEND)
@@ -345,5 +352,68 @@ class SongFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+    private val PLACEMENT_ID = "672729120837013_672748497501742"
+    private lateinit var interstitialAd: InterstitialAd
+    private val handler = Handler()
+    private val TAG = "HomeActivityAds"
+
+    private fun setUpNewAdsAndShow() {
+        interstitialAd = InterstitialAd(activity, PLACEMENT_ID)
+        val interstitialAdListener: InterstitialAdListener = object : InterstitialAdListener {
+            override fun onInterstitialDisplayed(ad: Ad) {
+                // Interstitial ad displayed callback
+                Log.e(TAG, "Interstitial ad displayed.")
+            }
+
+            override fun onInterstitialDismissed(ad: Ad) {
+                // Interstitial dismissed callback
+                Log.e(TAG, "Interstitial ad dismissed.")
+            }
+
+            override fun onError(ad: Ad?, adError: AdError) {
+                // Ad error callback
+                Log.e(TAG, "Interstitial ad failed to load: " + adError.errorMessage)
+            }
+
+            override fun onAdLoaded(ad: Ad) {
+                // Interstitial ad is loaded and ready to be displayed
+                Log.d(TAG, "Interstitial ad is loaded and ready to be displayed!")
+                // Show the ad
+                interstitialAd.show()
+            }
+
+            override fun onAdClicked(ad: Ad) {
+                // Ad clicked callback
+                Log.d(TAG, "Interstitial ad clicked!")
+            }
+
+            override fun onLoggingImpression(ad: Ad) {
+                // Ad impression logged callback
+                Log.d(TAG, "Interstitial ad impression logged!")
+            }
+        }
+
+        interstitialAd.loadAd(
+            interstitialAd.buildLoadAdConfig()
+                .withAdListener(interstitialAdListener)
+                .build()
+        )
+        showAdWithDelay()
+    }
+
+    private fun showAdWithDelay() {
+
+        handler.postDelayed(java.lang.Runnable { // Check if interstitialAd has been loaded successfully
+            if (!interstitialAd.isAdLoaded) {
+                return@Runnable
+            }
+            // Check if ad is already expired or invalidated, and do not show ad if that is the case. You will not get paid to show an invalidated ad.
+            if (interstitialAd.isAdInvalidated) {
+                return@Runnable
+            }
+            // Show the ad
+            interstitialAd.show()
+        }, 1000 * 60 * 5) // Show the ad after 1 minutes
     }
 }
