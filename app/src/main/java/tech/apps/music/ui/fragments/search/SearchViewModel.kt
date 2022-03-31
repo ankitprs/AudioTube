@@ -8,10 +8,12 @@ import tech.apps.music.database.network.SearchSuggestion
 
 class SearchViewModel : ViewModel() {
 
+    private val searchSuggestion = SearchSuggestion()
+
     fun searchSuggestionText(text: String, callback: (textArray: ArrayList<String>) -> Unit) {
 
         viewModelScope.launch(Dispatchers.IO) {
-            SearchSuggestion().searchWithKeywords(text) {
+            searchSuggestion.searchWithKeywords(text) {
                 callback(it)
             }
         }

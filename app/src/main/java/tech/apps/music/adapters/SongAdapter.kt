@@ -10,8 +10,8 @@ import com.bumptech.glide.RequestManager
 import tech.apps.music.R
 import tech.apps.music.databinding.SongItemHorizontalBinding
 import tech.apps.music.model.SongModelForList
-import tech.apps.music.util.TimeFunction
-import tech.apps.music.util.VideoData
+import tech.apps.music.util.getThumbnailFromId
+import tech.apps.music.util.songDuration
 import javax.inject.Inject
 
 class SongAdapter @Inject constructor(
@@ -81,14 +81,14 @@ class SongAdapter @Inject constructor(
         holder.binding.apply {
             titleTYVideo.text = song.title
 
-            glide.load(VideoData.getThumbnailLowQFromId(song.videoId))
+            glide.load(getThumbnailFromId(song.videoId))
                 .fitCenter()
                 .override(480, 270)
                 .centerCrop()
                 .into(thumbnailImageTYVideo)
 
             if (song.duration != 0L) {
-                durationTYVideo.text = TimeFunction.songDuration(song.duration / 1000L)
+                durationTYVideo.text = songDuration(song.duration / 1000L)
             } else {
                 durationTYVideo.text = song.durationText
 

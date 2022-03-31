@@ -63,7 +63,6 @@ class SearchSuggestion {
                             call: Call<ResponseBody>,
                             response: Response<ResponseBody>
                         ) {
-
                             if (!response.isSuccessful) {
                                 callback(ArrayList())
                                 return
@@ -78,14 +77,11 @@ class SearchSuggestion {
                                 }
                                     callback(returnList)
                             }
-
                         }
-
                         override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                             callback(ArrayList())
                             throw t
                         }
-
                     })
 
             } catch (error: IOException) {
@@ -100,5 +96,4 @@ class SearchSuggestion {
 
     private fun isInternetExist(): Boolean =
         BasicStorage.isNetworkConnected.value == true
-
 }

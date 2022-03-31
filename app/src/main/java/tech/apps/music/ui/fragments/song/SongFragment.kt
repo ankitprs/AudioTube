@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -37,7 +36,9 @@ import tech.apps.music.floatingWindow.YoutubeFloatingUI
 import tech.apps.music.model.YTAudioDataModel
 import tech.apps.music.others.Constants
 import tech.apps.music.ui.fragments.MainViewModel
-import tech.apps.music.util.TimeFunction
+import tech.apps.music.util.BasicStorage
+import tech.apps.music.util.secondInFloatToTimeString
+import tech.apps.music.util.songDuration
 import javax.inject.Inject
 
 
@@ -112,7 +113,7 @@ class SongFragment : Fragment() {
         binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
-                    binding.tvCurTime.text = TimeFunction.songDuration(progress.toLong())
+                    binding.tvCurTime.text = songDuration(progress.toLong())
                 }
             }
 
@@ -229,12 +230,12 @@ class SongFragment : Fragment() {
         }
         YoutubeFloatingUI.curSongDuration.observe(viewLifecycleOwner) {
             if (it != null)
-                binding.tvSongDuration.text = TimeFunction.secondInFloatToTimeString(it)
+                binding.tvSongDuration.text = secondInFloatToTimeString(it)
             binding.seekBar.max = it?.toInt() ?: 0
         }
         YoutubeFloatingUI.currentTime.observe(viewLifecycleOwner) {
             if (it != null && shouldUpdateSeekbar) {
-                binding.tvCurTime.text = TimeFunction.secondInFloatToTimeString(it)
+                binding.tvCurTime.text = secondInFloatToTimeString(it)
                 binding.seekBar.progress = it.toInt()
             }
         }
@@ -353,12 +354,16 @@ class SongFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-    private val PLACEMENT_ID = "672729120837013_672748497501742"
+
+    private val PLACEMENT_ID = "672729120837013_692869968822928"
     private lateinit var interstitialAd: InterstitialAd
-    private val handler = Handler()
     private val TAG = "HomeActivityAds"
 
     private fun setUpNewAdsAndShow() {
+
+        if ((BasicStorage.lastTimeForShowingAds + 300000L) > System.currentTimeMillis())
+            return
+
         interstitialAd = InterstitialAd(activity, PLACEMENT_ID)
         val interstitialAdListener: InterstitialAdListener = object : InterstitialAdListener {
             override fun onInterstitialDisplayed(ad: Ad) {
@@ -380,7 +385,7 @@ class SongFragment : Fragment() {
                 // Interstitial ad is loaded and ready to be displayed
                 Log.d(TAG, "Interstitial ad is loaded and ready to be displayed!")
                 // Show the ad
-                interstitialAd.show()
+                showAdWithDelay()
             }
 
             override fun onAdClicked(ad: Ad) {
@@ -399,21 +404,20 @@ class SongFragment : Fragment() {
                 .withAdListener(interstitialAdListener)
                 .build()
         )
-        showAdWithDelay()
     }
 
     private fun showAdWithDelay() {
+        if (!interstitialAd.isAdLoaded) {
+            Log.d(TAG, "interstitialAd.isAdLoaded")
+            return
+        }
+        if (interstitialAd.isAdInvalidated) {
+            Log.d(TAG, "interstitialAd.isAdInvalidated")
+            return
+        }
+        Log.d(TAG, "interstitialAd.show()")
 
-        handler.postDelayed(java.lang.Runnable { // Check if interstitialAd has been loaded successfully
-            if (!interstitialAd.isAdLoaded) {
-                return@Runnable
-            }
-            // Check if ad is already expired or invalidated, and do not show ad if that is the case. You will not get paid to show an invalidated ad.
-            if (interstitialAd.isAdInvalidated) {
-                return@Runnable
-            }
-            // Show the ad
-            interstitialAd.show()
-        }, 1000 * 60 * 5) // Show the ad after 1 minutes
+        BasicStorage.lastTimeForShowingAds = System.currentTimeMillis()
+        interstitialAd.show()
     }
 }

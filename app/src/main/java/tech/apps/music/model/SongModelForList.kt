@@ -1,6 +1,7 @@
 package tech.apps.music.model
 
-import tech.apps.music.util.VideoData
+import tech.apps.music.util.getThumbnailFromId
+
 
 data class SongModelForList(
     var videoId: String = "",
@@ -19,7 +20,7 @@ fun  List<SongModelForList>.toYtAudioDataModel(): List<YTAudioDataModel> {
             it.videoId,
             it.title,
             it.ChannelName,
-            VideoData.getThumbnailFromId(it.videoId),
+            getThumbnailFromId(it.videoId),
             it.duration
         ))
     }

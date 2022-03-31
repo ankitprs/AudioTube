@@ -205,7 +205,7 @@ class HomeActivity : AppCompatActivity() {
 
             CoroutineScope(Dispatchers.IO).launch {
                 val youtubeVideoData = YoutubeVideoData()
-                youtubeVideoData.getVideoData(it) { pair ->
+                youtubeVideoData.getVideoData(it,this@HomeActivity) { pair ->
                     if (pair != null) {
                         viewModel.playOrToggleListOfSongs(
                             listOf(

@@ -1,49 +1,47 @@
 package tech.apps.music.util
 
-object TimeFunction {
-    fun songDuration(second: Long): String {
-        var sec: Int = second.toInt()
-        val hours: Int = (sec / 3600)
-        sec -= hours * 3600
-        val min = sec / 60
-        sec -= min * 60
+fun songDuration(second: Long): String {
+    var sec: Int = second.toInt()
+    val hours: Int = (sec / 3600)
+    sec -= hours * 3600
+    val min = sec / 60
+    sec -= min * 60
 
-        var formattedTime = ""
+    var formattedTime = ""
 
-        if (hours > 0) {
-            if (hours < 10) formattedTime += "0"
-            formattedTime += "$hours:"
-        }
-
-        if (min < 10) formattedTime += "0"
-        formattedTime += "$min:"
-
-        if (sec < 10) formattedTime += "0"
-        formattedTime += sec
-
-        return formattedTime
+    if (hours > 0) {
+        if (hours < 10) formattedTime += "0"
+        formattedTime += "$hours:"
     }
 
-    fun secondInFloatToTimeString(second: Float): String{
-        var sec: Int = second.toInt()
-        val hours: Int = (sec / 3600)
-        sec -= hours * 3600
-        val min = sec / 60
-        sec -= min * 60
+    if (min < 10) formattedTime += "0"
+    formattedTime += "$min:"
 
-        var formattedTime = ""
+    if (sec < 10) formattedTime += "0"
+    formattedTime += sec
 
-        if (hours > 0) {
-            if (hours < 10) formattedTime += "0"
-            formattedTime += "$hours:"
-        }
+    return formattedTime
+}
 
-        if (min < 10) formattedTime += "0"
-        formattedTime += "$min:"
+fun secondInFloatToTimeString(second: Float): String {
+    var sec: Int = second.toInt()
+    val hours: Int = (sec / 3600)
+    sec -= hours * 3600
+    val min = sec / 60
+    sec -= min * 60
 
-        if (sec < 10) formattedTime += "0"
-        formattedTime += sec
+    var formattedTime = ""
 
-        return formattedTime
+    if (hours > 0) {
+        if (hours < 10) formattedTime += "0"
+        formattedTime += "$hours:"
     }
+
+    if (min < 10) formattedTime += "0"
+    formattedTime += "$min:"
+
+    if (sec < 10) formattedTime += "0"
+    formattedTime += sec
+
+    return formattedTime
 }

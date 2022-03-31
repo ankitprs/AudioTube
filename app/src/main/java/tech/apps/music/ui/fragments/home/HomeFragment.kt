@@ -21,7 +21,7 @@ import tech.apps.music.model.toYtAudioDataModel
 import tech.apps.music.others.Constants
 import tech.apps.music.ui.fragments.MainViewModel
 import tech.apps.music.ui.more.MoreActivity
-import tech.apps.music.util.VideoData
+import tech.apps.music.util.creatingListOfExplores
 import javax.inject.Inject
 
 
@@ -109,7 +109,7 @@ class HomeFragment : Fragment() {
                 )
             }
         }
-        exploreAdapter.songs = VideoData.creatingListOfExplores()
+        exploreAdapter.songs = creatingListOfExplores()
     }
 
     override fun onDestroyView() {

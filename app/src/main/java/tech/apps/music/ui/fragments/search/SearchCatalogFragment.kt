@@ -15,7 +15,7 @@ import tech.apps.music.R
 import tech.apps.music.adapters.ExploreAdapter
 import tech.apps.music.databinding.SearchCatalogFragmentBinding
 import tech.apps.music.others.Constants
-import tech.apps.music.util.VideoData
+import tech.apps.music.util.creatingListOfExplores
 
 @DelicateCoroutinesApi
 @AndroidEntryPoint
@@ -46,7 +46,7 @@ class SearchCatalogFragment : Fragment() {
                 2
             )
         }
-        exploreAdapter.songs = VideoData.creatingListOfExplores()
+        exploreAdapter.songs = creatingListOfExplores()
 
         exploreAdapter.setItemClickListener {
             val bundle = Bundle()

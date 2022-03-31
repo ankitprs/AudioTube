@@ -67,4 +67,8 @@ If you have any questions or suggestions about my Privacy Policy, do not hesitat
     <string name="interstitial_ad_unit_id">ca-app-pub-8154643218867307/8704265189</string>
     <string name="admob_id">ca-app-pub-8154643218867307~1200839407</string>
 
+    <string name="facebook_app_id">1234</string>
+    <string name="fb_login_protocol_scheme">fb1234</string>
+    <string name="facebook_client_token">56789</string>
+
 </resources>

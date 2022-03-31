@@ -1,5 +1,6 @@
 package tech.apps.music.database.network
 
+import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -7,10 +8,8 @@ import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
-import retrofit2.HttpException
 import retrofit2.Response
-import tech.apps.music.util.BasicStorage
-import java.io.IOException
+import tech.apps.music.NoConnectivityException
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -19,19 +18,15 @@ class YoutubeVideoData {
 
     suspend fun getVideoData(
         url: String,
+        context: Context,
         callback: (Pair<String, String>?) -> Unit
     ) {
-//        if (!isInternetExist()) {
-//            Log.i("YoutubeVideoData","Return From Network")
-//            callback(null)
-//            return
-//        }
-
         withContext(Dispatchers.IO) {
             try {
-
-                YoutubeRetrofitInstance.ytSearchInstant.ytGetVideo(url)
-                    .enqueue(object : Callback<ResponseBody> {
+                RetrofitApiClient().getRetrofitClient(context)
+                    ?.create(RetrofitSearch::class.java)
+                    ?.ytGetVideo(url)
+                    ?.enqueue(object : Callback<ResponseBody> {
                         override fun onResponse(
                             call: Call<ResponseBody>,
                             response: Response<ResponseBody>
@@ -59,17 +54,15 @@ class YoutubeVideoData {
 
                         override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                             callback(null)
-                            Log.i("YoutubeVideoData","Return From onFailure")
+                            if(t == NoConnectivityException()) {
+                                Log.i("YoutubeVideoData","Network issue")
+                            }
                             throw t
                         }
 
                     })
 
-            } catch (error: IOException) {
-                callback(null)
-                Log.i("YoutubeVideoData","Return From Exceptions")
-
-            } catch (err: HttpException) {
+            } catch (error: Exception) {
                 callback(null)
                 Log.i("YoutubeVideoData","Return From Exceptions")
             }
@@ -87,16 +80,12 @@ class YoutubeVideoData {
             videoID = mat.group(3)
         } else {
             mat = patYouTubeShortLink.matcher(ytUrl)
-            if (mat.find()) {
-                videoID = mat.group(3)
+            videoID = if (mat.find()) {
+                mat.group(3)
             } else {
-                videoID = ytUrl
+                ytUrl
             }
         }
         return videoID
     }
-
-    private fun isInternetExist(): Boolean =
-        BasicStorage.isNetworkConnected.value == true
-
 }

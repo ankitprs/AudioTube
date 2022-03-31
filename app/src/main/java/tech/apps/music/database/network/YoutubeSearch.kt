@@ -15,9 +15,7 @@ import java.net.URLEncoder
 
 class YoutubeSearch {
 
-    companion object{
-        const val MAX_LIST_SIZE = 20
-    }
+    private val MAX_LIST_SIZE = 20
 
     suspend fun searchWithKeywords(
         keyword: String,
@@ -105,7 +103,8 @@ class YoutubeSearch {
                         .getString("text")
 
                 if (video_data.optJSONObject("lengthText") != null) {
-                    res.durationText = video_data.getJSONObject("lengthText").getString("simpleText")
+                    res.durationText =
+                        video_data.getJSONObject("lengthText").getString("simpleText")
                     results.add(res)
                 }
                 res.time = 1L
