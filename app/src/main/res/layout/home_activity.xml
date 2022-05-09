@@ -96,13 +96,15 @@
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottom_navigation"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:layout_gravity="bottom"
             android:background="@color/background"
             app:itemIconTint="@color/bottom_nav_selected"
             app:itemRippleColor="@color/light_background"
             app:itemTextColor="@color/bottom_nav_selected"
-            app:menu="@menu/home_bottom_nav_menu" />
+            app:menu="@menu/home_bottom_nav_menu"
+            app:itemPaddingBottom="2dp"
+            app:itemPaddingTop="4dp" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

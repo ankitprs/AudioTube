@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -67,7 +68,25 @@ class LibraryFragment : Fragment() {
             findNavController().navigate(R.id.action_homeFragment2_to_songFragment2)
         }
 
-        viewModel.getWatchLaterList.observe(viewLifecycleOwner) {
+        recentAudioAdapter.setItemMenuClickListener { pair ->
+            val popupMenu = PopupMenu(requireActivity(),pair.second)
+            popupMenu.menuInflater.inflate(R.menu.song_detail_menu,popupMenu.menu)
+            popupMenu.show()
+            val songModel = pair.first
+            popupMenu.setOnMenuItemClickListener{
+                when(it.itemId){
+                    R.id.songPopupMenu_AddPlaylist ->{
+
+                    }
+                    R.id.songPopupMenu_Share ->{}
+                    R.id.songPopupMenu_Play -> {}
+                }
+                true
+            }
+
+        }
+
+        viewModel.getWatchLaterList {
             val watchLaterItemNumber: Int = it.size
             if (watchLaterItemNumber > 1) {
                 binding.bookmarkTextItemLabel.text = "$watchLaterItemNumber items"
@@ -99,7 +118,7 @@ class LibraryFragment : Fragment() {
 
     private fun addingSongIntoRecyclerView() {
 
-        viewModel.getRecentList.observe(viewLifecycleOwner) {
+        viewModel.getRecentList {
             recentAudioAdapter.songs = it.toSongModelForList()
             if (it.isNullOrEmpty()) {
                 recentAudioAdapter.songs = listOf(
@@ -113,6 +132,12 @@ class LibraryFragment : Fragment() {
         super.onDestroyView()
         binding.recyclerViewRecent.adapter = null
         _binding = null
+    }
+
+    private fun addingPlaylist(){
+
+
+
     }
 
 }

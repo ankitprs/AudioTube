@@ -48,8 +48,8 @@ class EpisodesListFragment : Fragment() {
             )
         }
         episodeAdapter.songs = YoutubeFloatingUI.playlistSongs
-//        episodeAdapter.currentlyPlayingSongId =
-//            YoutubeFloatingUI.currentlyPlayingSong.value?.mediaId
+        episodeAdapter.currentlyPlayingSongId =
+            YoutubeFloatingUI.currentlyPlayingSong.value?.mediaId
 
 
         episodeAdapter.setItemClickListener {

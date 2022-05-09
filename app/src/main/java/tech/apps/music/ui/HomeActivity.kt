@@ -19,21 +19,22 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.bumptech.glide.RequestManager
 import com.facebook.ads.AudienceNetworkAds
+import com.google.android.gms.ads.MobileAds
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import tech.apps.music.ConnectionLiveData
 import tech.apps.music.R
-import tech.apps.music.database.network.YoutubeVideoData
+import tech.apps.music.database.network.YoutubeRepository
 import tech.apps.music.databinding.HomeActivityBinding
 import tech.apps.music.floatingWindow.ForegroundService
 import tech.apps.music.floatingWindow.YoutubeFloatingUI
 import tech.apps.music.model.YTAudioDataModel
 import tech.apps.music.ui.fragments.MainViewModel
-import tech.apps.music.util.BasicStorage
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -57,11 +58,11 @@ class HomeActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         AudienceNetworkAds.initialize(this)
+        MobileAds.initialize(this)
         startFloatingService()
 
         val connection = ConnectionLiveData(this)
 
-        BasicStorage.isNetworkConnected = connection
         connection.observe(this) {
             binding.noInternetConnectionView.isVisible = it != true
         }
@@ -99,7 +100,7 @@ class HomeActivity : AppCompatActivity() {
                         if (viewModel.getCurrentlyPlayingYTAudioModel.value != null) {
                             showOrHideBottomBar(true)
                         } else {
-                            binding.materialCardViewHome.isVisible = false
+                            showOrHideBottomBar(false)
                         }
                     }
                 }
@@ -204,30 +205,31 @@ class HomeActivity : AppCompatActivity() {
             dialog.show()
 
             CoroutineScope(Dispatchers.IO).launch {
-                val youtubeVideoData = YoutubeVideoData()
-                youtubeVideoData.getVideoData(it,this@HomeActivity) { pair ->
-                    if (pair != null) {
-                        viewModel.playOrToggleListOfSongs(
-                            listOf(
-                                YTAudioDataModel(
-                                    youtubeVideoData.getVideoIdFromUrl(it) ?: "",
-                                    pair.first,
-                                    pair.second
-                                )
+                val youtubeVideoData = YoutubeRepository()
+                val pair = youtubeVideoData.getVideoData(it, this@HomeActivity)
+                if (pair != null) {
+                    viewModel.playOrToggleListOfSongs(
+                        listOf(
+                            YTAudioDataModel(
+                                youtubeVideoData.getVideoIdFromUrl(it) ?: "",
+                                pair.first,
+                                pair.second
                             )
                         )
+                    )
+                    withContext(Dispatchers.Main) {
                         navController.navigate(
                             R.id.action_homeFragment2_to_songFragment2
                         )
-                    } else {
-                        Snackbar.make(
-                            binding.root,
-                            "Only Works with Youtube video Url",
-                            Snackbar.LENGTH_SHORT
-                        ).show()
                     }
-                    dialog.dismiss()
+                } else {
+                    Snackbar.make(
+                        binding.root,
+                        "Only Works with Youtube video Url",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
                 }
+                dialog.dismiss()
             }
         }
     }

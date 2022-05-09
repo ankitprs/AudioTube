@@ -1,6 +1,10 @@
 package tech.apps.music.adapters
 
+import android.annotation.SuppressLint
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -53,15 +57,20 @@ class SongAdapter @Inject constructor(
     }
 
     private var onItemClickListener: ((SongModelForList) -> Unit)? = null
+    private var onItemMenuClickListener: ((Pair<SongModelForList,View>) -> Unit)? = null
 
     fun setItemClickListener(listener: (SongModelForList) -> Unit) {
         onItemClickListener = listener
+    }
+    fun setItemMenuClickListener(listener: (Pair<SongModelForList,View>) -> Unit) {
+        onItemMenuClickListener = listener
     }
 
     override fun getItemCount(): Int {
         return songs.size
     }
 
+    @SuppressLint("ResourceAsColor")
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
 
         val song = songs[position]
@@ -87,11 +96,17 @@ class SongAdapter @Inject constructor(
                 .centerCrop()
                 .into(thumbnailImageTYVideo)
 
-            if (song.duration != 0L) {
+            if (song.duration > 0L) {
                 durationTYVideo.text = songDuration(song.duration / 1000L)
             } else {
-                durationTYVideo.text = song.durationText
 
+                if (song.duration == -1L){
+                    durationTYVideo.text = "LIVE"
+                    durationTYVideo.background = ColorDrawable(Color.parseColor("#FF0000"))
+                }else{
+
+                    durationTYVideo.text = song.durationText
+                }
             }
             if (song.watchedPosition == 0L) {
                 determinateBar.isVisible = false

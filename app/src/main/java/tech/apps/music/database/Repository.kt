@@ -1,7 +1,6 @@
 package tech.apps.music.database
 
 import android.content.Context
-import androidx.lifecycle.LiveData
 import tech.apps.music.database.offline.HistorySongModel
 import tech.apps.music.database.offline.OfflineDatabase
 import tech.apps.music.database.offline.SearchHistory
@@ -28,10 +27,10 @@ class Repository
         database.getYTVideoDao().deleteAllSongsFromHistory()
     }
 
-    fun getAllSongsLiveData(): LiveData<List<HistorySongModel>> =
+    suspend fun getAllSongsLiveData(): List<HistorySongModel> =
         database.getYTVideoDao().getListOfHistory()
 
-    fun getLast5RecentList(): LiveData<List<HistorySongModel>> =
+    suspend fun getLast5RecentList(): List<HistorySongModel> =
         database.getYTVideoDao().getLast5RecentList()
 
 
@@ -48,20 +47,17 @@ class Repository
         database.getYTVideoDao().deleteSongFromWatchLater(mediaId)
     }
 
-    fun getListOfWatchLater(): LiveData<List<WatchLaterSongModel>> =
+    suspend fun getListOfWatchLater(): List<WatchLaterSongModel> =
         database.getYTVideoDao().getListOfWatchLater()
 
-
     // list for continue song Repo
-    fun getListOfContinue(): LiveData<List<HistorySongModel>> =
+    suspend fun getListOfContinue(): List<HistorySongModel> =
         database.getYTVideoDao().getListOfContinue()
-
 
     //updating watch time
     suspend fun updatingSongPosTime(watchedPosition: Long, timing: Long, videoID: String) {
         database.getYTVideoDao().updatingSongPosTime(watchedPosition, timing, videoID)
     }
-
 
     //Search History
     suspend fun insertSearchQuery(queryText: String) {
@@ -74,6 +70,6 @@ class Repository
         database.getYTVideoDao().deleteSearchHistoryMoreThan20()
     }
 
-    fun getListSearchHistory(): LiveData<List<SearchHistory>> =
+    suspend fun getListSearchHistory(): List<SearchHistory> =
         database.getYTVideoDao().getListSearchHistory()
 }

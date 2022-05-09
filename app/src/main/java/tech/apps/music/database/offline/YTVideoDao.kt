@@ -1,6 +1,5 @@
 package tech.apps.music.database.offline
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -20,11 +19,10 @@ interface YTVideoDao {
     suspend fun deleteFromHistory20More()
 
     @Query("SELECT * FROM History_Song_Model ORDER BY Timing DESC")
-    fun getListOfHistory(): LiveData<List<HistorySongModel>>
+    suspend fun getListOfHistory(): List<HistorySongModel>
 
     @Query("SELECT * FROM History_Song_Model ORDER BY timing DESC  LIMIT 5")
-    fun getLast5RecentList(): LiveData<List<HistorySongModel>>
-
+    suspend fun getLast5RecentList(): List<HistorySongModel>
 
 
     //Watch Later Table Dao
@@ -35,17 +33,15 @@ interface YTVideoDao {
     suspend fun deleteAllSongsFromWatchLater()
 
     @Query("SELECT * FROM WatchLater_Song_Model ORDER BY Timing DESC")
-    fun getListOfWatchLater() : LiveData<List<WatchLaterSongModel>>
+    suspend fun getListOfWatchLater(): List<WatchLaterSongModel>
 
     @Query("DELETE FROM WatchLater_Song_Model WHERE videoId = :mediaId")
     suspend fun deleteSongFromWatchLater(mediaId: String)
 
 
-
     // list for continue song
     @Query("SELECT * FROM History_Song_Model WHERE WatchedPosition != 0 ORDER BY Timing DESC ")
-    fun getListOfContinue(): LiveData<List<HistorySongModel>>
-
+    suspend fun getListOfContinue(): List<HistorySongModel>
 
 
     // updating the position
@@ -58,7 +54,7 @@ interface YTVideoDao {
     suspend fun insertSearchQuery(searchHistory: SearchHistory)
 
     @Query("SELECT * FROM Search_History ORDER BY Timing DESC")
-    fun getListSearchHistory() : LiveData<List<SearchHistory>>
+    suspend fun getListSearchHistory(): List<SearchHistory>
 
     @Query("DELETE FROM Search_History where queryText NOT IN (SELECT queryText from Search_History ORDER BY timing DESC LIMIT 20)")
     suspend fun deleteSearchHistoryMoreThan20()

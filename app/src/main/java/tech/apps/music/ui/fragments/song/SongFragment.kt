@@ -26,6 +26,12 @@ import com.facebook.ads.Ad
 import com.facebook.ads.AdError
 import com.facebook.ads.InterstitialAd
 import com.facebook.ads.InterstitialAdListener
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.OnUserEarnedRewardListener
+import com.google.android.gms.ads.rewarded.RewardItem
+import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd
+import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback
 import com.google.android.material.snackbar.Snackbar
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import dagger.hilt.android.AndroidEntryPoint
@@ -138,7 +144,6 @@ class SongFragment : Fragment() {
             handleSpeedController(it)
         }
         binding.imageViewEpisodesListButton.setOnClickListener {
-//            Snackbar.make(it, "Under Development. Coming Soon...", Snackbar.LENGTH_SHORT).show()
             findNavController().navigate(R.id.action_songFragment_to_episodesListFragment)
         }
         bookMarkToggle()
@@ -242,8 +247,8 @@ class SongFragment : Fragment() {
     }
 
     private fun bookMarkToggle() {
-        mainViewModel.getWatchLaterList.observe(viewLifecycleOwner) { list ->
-            isWatchLater = list?.find {
+        mainViewModel.getWatchLaterList { list ->
+            isWatchLater = list.find {
                 it.videoId == curPlayingSong?.mediaId
             } != null
             watchLaterIconToggle()
@@ -360,9 +365,12 @@ class SongFragment : Fragment() {
     private val TAG = "HomeActivityAds"
 
     private fun setUpNewAdsAndShow() {
+        loadAd()
 
         if ((BasicStorage.lastTimeForShowingAds + 300000L) > System.currentTimeMillis())
             return
+
+        BasicStorage.lastTimeForShowingAds = System.currentTimeMillis()
 
         interstitialAd = InterstitialAd(activity, PLACEMENT_ID)
         val interstitialAdListener: InterstitialAdListener = object : InterstitialAdListener {
@@ -379,6 +387,7 @@ class SongFragment : Fragment() {
             override fun onError(ad: Ad?, adError: AdError) {
                 // Ad error callback
                 Log.e(TAG, "Interstitial ad failed to load: " + adError.errorMessage)
+                BasicStorage.lastTimeForShowingAds = 0L
             }
 
             override fun onAdLoaded(ad: Ad) {
@@ -419,5 +428,36 @@ class SongFragment : Fragment() {
 
         BasicStorage.lastTimeForShowingAds = System.currentTimeMillis()
         interstitialAd.show()
+    }
+
+    private var rewardedInterstitialAd: RewardedInterstitialAd? = null
+    private val idApp = "ca-app-pub-8154643218867307/4993051585"
+    private val idAppTest = "ca-app-pub-3940256099942544/5354046379"
+    val TAG_GOOGLE = "HomeActivityAds_google"
+
+    private fun loadAd() {
+        if ((BasicStorage.lastTimeForShowingAds + 300000L) > System.currentTimeMillis())
+            return
+
+        RewardedInterstitialAd.load(requireContext(), idApp,
+            AdRequest.Builder().build(), object : RewardedInterstitialAdLoadCallback() {
+                override fun onAdLoaded(ad: RewardedInterstitialAd) {
+                    rewardedInterstitialAd = ad
+                    Log.e(TAG_GOOGLE, "onAdLoaded")
+                    rewardedInterstitialAd?.show(requireActivity(), OnUserEarnedRewardListener() {
+                        BasicStorage.lastTimeForShowingAds = System.currentTimeMillis()
+                        fun onUserEarnedReward(rewardItem: RewardItem) {
+                            Log.d(TAG_GOOGLE, "User earned the reward.")
+                        }
+                    })
+                }
+
+                override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+                    Log.e(TAG_GOOGLE, "onAdFailedToLoad")
+                    Log.d(TAG_GOOGLE, loadAdError.message)
+
+                    BasicStorage.lastTimeForShowingAds = 0L
+                }
+            })
     }
 }

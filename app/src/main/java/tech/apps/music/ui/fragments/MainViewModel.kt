@@ -1,8 +1,7 @@
 package tech.apps.music.ui.fragments
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -17,18 +16,28 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    application: Application,
     private val musicServiceConnection: MusicServiceConnection,
     private val repository: Repository,
-) : AndroidViewModel(application) {
+) : ViewModel() {
 
-    //    val getContinueWatchingList: LiveData<List<HistorySongModel>> = repository.getListOfContinue()
-    val getRecentList: LiveData<List<HistorySongModel>> = repository.getAllSongsLiveData()
-    val getWatchLaterList: LiveData<List<WatchLaterSongModel>> = repository.getListOfWatchLater()
-    val getLast5RecentList: LiveData<List<HistorySongModel>> = repository.getLast5RecentList()
+    fun getRecentList(callback: (list: List<HistorySongModel>) -> Unit) {
+        viewModelScope.launch {
+            callback(repository.getAllSongsLiveData())
+        }
+    }
 
-    //    val currentlyPlayingPlaylist: List<YTAudioDataModel>? =
-//        musicServiceConnection.currentlyPlayingPlaylist()
+    fun getWatchLaterList(callback: (list: List<WatchLaterSongModel>) -> Unit) {
+        viewModelScope.launch {
+            callback(repository.getListOfWatchLater())
+        }
+    }
+
+    fun getLast5RecentList(callback: (list: List<HistorySongModel>) -> Unit) {
+        viewModelScope.launch {
+            callback(repository.getLast5RecentList())
+        }
+    }
+
     val bufferingTime: LiveData<Boolean> = YoutubeFloatingUI.bufferingTime
 
 
@@ -38,14 +47,6 @@ class MainViewModel @Inject constructor(
 
     fun skipToPreviousSong() {
         musicServiceConnection.skipToPrevious()
-    }
-
-    fun previousSong() {
-        musicServiceConnection
-    }
-
-    fun nextSong() {
-        musicServiceConnection
     }
 
     fun playPauseToggleSong(
@@ -105,9 +106,10 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun getListSearchHistory(): LiveData<List<SearchHistory>> {
-        return repository.getListSearchHistory()
-
+    fun getListSearchHistory(callback: (list: List<SearchHistory>) -> Unit) {
+        viewModelScope.launch {
+            callback(repository.getListSearchHistory())
+        }
     }
 
     val getCurrentlyPlayingYTAudioModel: LiveData<YTAudioDataModel?> =

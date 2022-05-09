@@ -43,4 +43,6 @@ object Constants {
 
     const val  ACTION_STOP = "${BuildConfig.APPLICATION_ID}.stop"
     const val ACTION_PLAY_PAUSE_TOGGLE = "actionPlayPauseToggle"
+
+    const val LIVE_VIDEO_DURATION = -1L
 }

@@ -13,6 +13,7 @@
         <entry key="ads/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/bottom_curved_background.xml" value="0.19358108108108107" />
         <entry key="app/src/main/res/drawable/bottom_sheet_background.xml" value="0.2652777777777778" />
+        <entry key="app/src/main/res/drawable/delete_icon.xml" value="0.176" />
         <entry key="app/src/main/res/drawable/explore_list_item.xml" value="0.321025641025641" />
         <entry key="app/src/main/res/drawable/gnt_outline_shape.xml" value="0.20592105263157895" />
         <entry key="app/src/main/res/drawable/gnt_rounded_corners_shape.xml" value="0.20592105263157895" />
@@ -21,6 +22,7 @@
         <entry key="app/src/main/res/drawable/ic_baseline_arrow_back_24.xml" value="0.20592105263157895" />
         <entry key="app/src/main/res/drawable/ic_baseline_arrow_forward_ios_24.xml" value="0.20592105263157895" />
         <entry key="app/src/main/res/drawable/ic_baseline_book_24.xml" value="0.20592105263157895" />
+        <entry key="app/src/main/res/drawable/ic_baseline_delete_24.xml" value="0.211" />
         <entry key="app/src/main/res/drawable/ic_baseline_download_for_offline_24.xml" value="0.18848684210526315" />
         <entry key="app/src/main/res/drawable/ic_baseline_favorite_24.xml" value="0.20592105263157895" />
         <entry key="app/src/main/res/drawable/ic_baseline_favorite_border_24.xml" value="0.18848684210526315" />
@@ -28,6 +30,7 @@
         <entry key="app/src/main/res/drawable/ic_baseline_headphones_24.xml" value="0.20592105263157895" />
         <entry key="app/src/main/res/drawable/ic_baseline_image_24.xml" value="0.26164383561643834" />
         <entry key="app/src/main/res/drawable/ic_baseline_keyboard_arrow_down_24.xml" value="0.18848684210526315" />
+        <entry key="app/src/main/res/drawable/ic_baseline_keyboard_voice_24.xml" value="0.2865" />
         <entry key="app/src/main/res/drawable/ic_baseline_more_vert_24.xml" value="0.18848684210526315" />
         <entry key="app/src/main/res/drawable/ic_baseline_policy_24.xml" value="0.19358108108108107" />
         <entry key="app/src/main/res/drawable/ic_baseline_repeat_off_24.xml" value="0.213" />
@@ -48,6 +51,7 @@
         <entry key="app/src/main/res/drawable/ic_round_download_done_24.xml" value="0.20592105263157895" />
         <entry key="app/src/main/res/drawable/ic_round_format_list_bulleted_24.xml" value="0.18848684210526315" />
         <entry key="app/src/main/res/drawable/ic_round_forward_10_24.xml" value="0.18848684210526315" />
+        <entry key="app/src/main/res/drawable/ic_round_keyboard_arrow_down_24.xml" value="0.2865" />
         <entry key="app/src/main/res/drawable/ic_round_pause_circle_24.xml" value="0.18848684210526315" />
         <entry key="app/src/main/res/drawable/ic_round_play_arrow_24.xml" value="0.18848684210526315" />
         <entry key="app/src/main/res/drawable/ic_round_play_circle_24.xml" value="0.18848684210526315" />
@@ -66,7 +70,7 @@
         <entry key="app/src/main/res/drawable/splash_screen_image.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_direct_link.xml" value="0.14617486338797814" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
-        <entry key="app/src/main/res/layout/activity_more.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_more.xml" value="0.20555555555555555" />
         <entry key="app/src/main/res/layout/activity_premium.xml" value="0.17828947368421053" />
         <entry key="app/src/main/res/layout/activity_testing.xml" value="0.1" />
         <entry key="app/src/main/res/layout/audio_fragment.xml" value="0.165" />
@@ -81,14 +85,14 @@
         <entry key="app/src/main/res/layout/fragment_educate_second.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_educate_third.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_episodes_list.xml" value="0.18944280992469803" />
-        <entry key="app/src/main/res/layout/fragment_my_library_list.xml" value="0.39351851851851855" />
+        <entry key="app/src/main/res/layout/fragment_my_library_list.xml" value="0.2597173144876325" />
         <entry key="app/src/main/res/layout/fragment_second.xml" value="0.12329234972677595" />
         <entry key="app/src/main/res/layout/fragment_song.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_youtube_floating_window.xml" value="0.15163934426229508" />
         <entry key="app/src/main/res/layout/home_activity.xml" value="0.1" />
         <entry key="app/src/main/res/layout/library_fragment.xml" value="0.25" />
         <entry key="app/src/main/res/layout/list_item_title.xml" value="0.17828947368421053" />
-        <entry key="app/src/main/res/layout/main_fragment.xml" value="0.13346792283535217" />
+        <entry key="app/src/main/res/layout/main_fragment.xml" value="0.25" />
         <entry key="app/src/main/res/layout/music_player_ui.xml" value="0.17828947368421053" />
         <entry key="app/src/main/res/layout/native_ads_medium_template_view.xml" value="0.165" />
         <entry key="app/src/main/res/layout/native_ads_small_temp_search_view.xml" value="0.25" />
@@ -98,7 +102,7 @@
         <entry key="app/src/main/res/layout/premium_song_detail_fragment.xml" value="0.25" />
         <entry key="app/src/main/res/layout/premium_song_fragment.xml" value="0.1448087431693989" />
         <entry key="app/src/main/res/layout/search_catalog_fragment.xml" value="0.16666666666666666" />
-        <entry key="app/src/main/res/layout/search_fragment.xml" value="0.16145367887995235" />
+        <entry key="app/src/main/res/layout/search_fragment.xml" value="0.3571075439453125" />
         <entry key="app/src/main/res/layout/search_result_fragment.xml" value="0.17828947368421053" />
         <entry key="app/src/main/res/layout/search_result_recom_list_item.xml" value="0.24166666666666667" />
         <entry key="app/src/main/res/layout/searchable.xml" value="0.1" />
@@ -106,7 +110,8 @@
         <entry key="app/src/main/res/layout/share.xml" value="0.13547000490184163" />
         <entry key="app/src/main/res/layout/song_card_view_item.xml" value="0.375" />
         <entry key="app/src/main/res/layout/song_detail_fragment.xml" value="0.17828947368421053" />
-        <entry key="app/src/main/res/layout/song_item_horizontal.xml" value="0.4544179523141655" />
+        <entry key="app/src/main/res/layout/song_detail_popup_menu.xml" value="0.21169537624660018" />
+        <entry key="app/src/main/res/layout/song_item_horizontal.xml" value="0.326727294921875" />
         <entry key="app/src/main/res/layout/song_item_vertical.xml" value="0.375" />
         <entry key="app/src/main/res/layout/swipe_item.xml" value="0.102880658436214" />
         <entry key="app/src/main/res/layout/switch_item.xml" value="0.25092592592592594" />
@@ -118,6 +123,7 @@
         <entry key="app/src/main/res/menu/episodes_fragment_menu.xml" value="0.17828947368421053" />
         <entry key="app/src/main/res/menu/home_bottom_nav_menu.xml" value="0.17828947368421053" />
         <entry key="app/src/main/res/menu/home_menu.xml" value="0.375" />
+        <entry key="app/src/main/res/menu/song_detail_menu.xml" value="0.2543822146216332" />
         <entry key="app/src/main/res/menu/speed_control_menu.xml" value="0.17828947368421053" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.28584474885844746" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.1" />

@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.PlayAudio" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.PlayAudio" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/dark_background</item>
         <item name="colorPrimaryVariant">@color/dark_background</item>
@@ -18,7 +18,8 @@
 
         <item name="android:editTextColor">@android:color/white</item>
         <item name="android:textColorHint">@color/grey</item>
-
+        <item name="colorOnSecondaryContainer">@color/button_color</item>
+        <item name="colorSecondaryContainer">@color/button_color</item>
     </style>
 
     <style name="SplashScreen" parent="Theme.PlayAudio">

@@ -50,8 +50,20 @@ class MyLibraryListFragment : Fragment() {
                 requireContext()
             )
         }
+        updateList()
 
-        mainViewModel.getWatchLaterList.observe(viewLifecycleOwner) {
+        watchLaterAdapter.setItemClickListener {
+            mainViewModel.playOrToggleListOfSongs((listOf(it)).toYtAudioDataModel(),true,0)
+            findNavController().navigate(R.id.action_homeFragment2_to_songFragment2)
+        }
+
+        binding.myLibraryListFragmentRefresh.setOnRefreshListener {
+            updateList()
+        }
+
+    }
+    private fun updateList(){
+        mainViewModel.getWatchLaterList {
             if (it.isNullOrEmpty()) {
                 watchLaterAdapter.songs = listOf(
                     SongModelForList()
@@ -60,15 +72,11 @@ class MyLibraryListFragment : Fragment() {
                 watchLaterAdapter.songs = it.toSongForList()
             }
         }
-
-        watchLaterAdapter.setItemClickListener {
-            mainViewModel.playOrToggleListOfSongs((listOf(it)).toYtAudioDataModel(),true,0)
-            findNavController().navigate(R.id.action_homeFragment2_to_songFragment2)
-        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        binding.recyclerViewWatchLater.adapter = null
         _binding = null
     }
 }

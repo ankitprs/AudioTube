@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/songPopupMenu_Play"
+        android:title="Play" />
+
+    <item android:id="@+id/songPopupMenu_AddPlaylist"
+        android:title="Add to playlist" />
+
+    <item android:id="@+id/songPopupMenu_Share"
+        android:title="Share"/>
+
+</menu>

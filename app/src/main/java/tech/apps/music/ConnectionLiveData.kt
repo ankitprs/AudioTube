@@ -18,7 +18,6 @@ const val TAG = "C-Manager"
 
 class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
 
-
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
     private val cm = context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
     private val validNetworks: MutableSet<Network> = HashSet()
@@ -41,10 +40,6 @@ class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
 
     private fun createNetworkCallback() = object : ConnectivityManager.NetworkCallback() {
 
-        /*
-          Called when a network is detected. If that network has internet, save it in the Set.
-          Source: https://developer.android.com/reference/android/net/ConnectivityManager.NetworkCallback#onAvailable(android.net.Network)
-         */
         override fun onAvailable(network: Network) {
             Log.d(TAG, "onAvailable: $network")
             val networkCapabilities = cm.getNetworkCapabilities(network)
@@ -64,11 +59,6 @@ class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
                 }
             }
         }
-
-        /*
-          If the callback was registered with registerNetworkCallback() it will be called for each network which no longer satisfies the criteria of the callback.
-          Source: https://developer.android.com/reference/android/net/ConnectivityManager.NetworkCallback#onLost(android.net.Network)
-         */
         override fun onLost(network: Network) {
             Log.d(TAG, "onLost: $network")
             validNetworks.remove(network)
@@ -81,18 +71,4 @@ class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
 
 object DoesNetworkHaveInternet {
     fun execute(): Boolean = true
-    
-//    fun execute(): Boolean{
-//        return try{
-//            Log.d(TAG,"PINGING google.")
-//            val socket = Socket()
-//            socket.connect(InetSocketAddress("8.8.8.8",53),1500)
-//            socket.close()
-//            true
-//        }catch (e: IOException){
-//            Log.e(TAG,"No internet Connection. $e")
-//            false
-//        }
-//
-//    }
 }

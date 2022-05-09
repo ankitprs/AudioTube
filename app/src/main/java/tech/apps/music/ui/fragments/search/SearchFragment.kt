@@ -20,14 +20,11 @@ import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import tech.apps.music.R
 import tech.apps.music.adapters.SearchSuggestionAdapter
 import tech.apps.music.adapters.SongAdapter
-import tech.apps.music.database.network.YoutubeSearch
+import tech.apps.music.database.network.YoutubeRepository
 import tech.apps.music.databinding.SearchFragmentBinding
 import tech.apps.music.model.toYtAudioDataModel
 import tech.apps.music.others.Constants
@@ -118,7 +115,7 @@ class SearchFragment : Fragment() {
                         }
 
                         hideSearchSuggestion(true)
-                        viewModel.searchSuggestionText(it) { list ->
+                        viewModel.searchSuggestionText(it, requireActivity()) { list ->
                             searchSuggestionAdapter.songs = list
                         }
                     }
@@ -148,7 +145,7 @@ class SearchFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireContext())
         }
 
-        mainViewModel.getListSearchHistory().observe(viewLifecycleOwner){
+        mainViewModel.getListSearchHistory {
             val list: ArrayList<String> = ArrayList()
                 it.forEach {
                     list.add(it.queryText)
@@ -162,13 +159,13 @@ class SearchFragment : Fragment() {
         binding.progressBarSearchFragment.isVisible = true
 
         GlobalScope.launch(Dispatchers.IO) {
-            YoutubeSearch().searchWithKeywords(query) {
+            val it = YoutubeRepository().searchWithKeywords(query, requireActivity())
 
+            withContext(Dispatchers.Main){
                 view?.findViewById<TextView>(R.id.textViewNotFoundSearch)?.isVisible = it.size == 0
 
                 searchAdapter.songs = it
                 view?.findViewById<ProgressBar>(R.id.progressBarSearchFragment)?.isVisible = false
-
             }
         }
     }

@@ -5,16 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/dark_background"
-    tools:context=".ui.fragments.song.EpisodesListFragment"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".ui.fragments.song.EpisodesListFragment">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <ImageView
             android:id="@+id/imageViewBackButtonList"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
             android:layout_margin="8dp"
             android:background="@drawable/ripple_effect_circle"
             android:src="@drawable/ic_round_keyboard_arrow_down_24"
@@ -25,13 +26,13 @@
             android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:gravity="center_horizontal"
             android:text="Playlist"
             android:textColor="@color/white"
-            android:textSize="18sp"
-            android:layout_gravity="center"/>
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+            android:textSize="18sp" />
 
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewEpisodesList"

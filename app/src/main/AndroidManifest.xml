@@ -41,5 +41,10 @@
         </activity>
 
         <service android:name=".floatingWindow.ForegroundService" />
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-8154643218867307~1200839407" />
+
     </application>
 </manifest>

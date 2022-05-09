@@ -1,5 +1,6 @@
 package tech.apps.music.floatingWindow
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -7,7 +8,6 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.PixelFormat
 import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
@@ -37,6 +37,7 @@ import tech.apps.music.ui.HomeActivity
 import androidx.media.app.NotificationCompat as MediaNotificationCompat
 
 
+@SuppressLint("InflateParams")
 class YoutubeFloatingUI(
     private val context: Context,
     private val foregroundService: ForegroundService,
@@ -47,13 +48,15 @@ class YoutubeFloatingUI(
     private val youTubePlayerView: YouTubePlayerView
     private val mView: View
     private var mParams: WindowManager.LayoutParams? = null
-    private val mWindowManager: WindowManager
-    private val layoutInflater: LayoutInflater
+    private val mWindowManager: WindowManager =
+        context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    private val layoutInflater: LayoutInflater =
+        context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
     private var notification: NotificationCompat.Builder =
         NotificationCompat.Builder(context, Constants.NOTIFICATION_CHANNEL_ID)
     private val tracker = YouTubePlayerTracker()
     private val manager =
-        (context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager)
+        context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
 
     companion object {
         var youtubePlayer: YouTubePlayer? = null
@@ -86,12 +89,12 @@ class YoutubeFloatingUI(
     fun close() {
         youTubePlayerView.release()
 
-        currentlyPlayingSong.removeObserver{}
+        currentlyPlayingSong.removeObserver {}
         playlistSongs.removeAll { true }
-        curSongDuration.removeObserver{}
-        bufferingTime.removeObserver{}
-        isPlaying.removeObserver{}
-        currentTime.removeObserver{}
+        curSongDuration.removeObserver {}
+        bufferingTime.removeObserver {}
+        isPlaying.removeObserver {}
+        currentTime.removeObserver {}
 
         // remove the view from the window
         (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).removeView(mView)
@@ -99,31 +102,15 @@ class YoutubeFloatingUI(
         mView.invalidate()
         // remove all views
 //        (mView.parent as ViewGroup).removeAllViews()
-//        context.apply {
-//            stopService(null)
-//        }
     }
 
     init {
-        // set the layout parameters of the window
-        mParams = WindowManager.LayoutParams( // Shrink the window to wrap the content rather
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,  // Display it on top of other application windows
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,  // Don't let it grab the input focus
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,  // Make the underlying application window visible
-            // through any transparent parts
-            PixelFormat.TRANSLUCENT
-        )
-        // getting a LayoutInflater
-        layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        // inflating the view with the custom layout we created
         mView = layoutInflater.inflate(R.layout.youtube_floating_ui, null, false)
-        // set onClickListener on the remove button, which removes
-        // the view from the window
 
-        // Define the position of the
-        // window within the screen
-        mWindowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        mParams = WindowManager.LayoutParams(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT,
+        )
 
         youTubePlayerView = mView.findViewById(R.id.youtube_player_view)
         initializingYoutubePlayer()
@@ -143,7 +130,11 @@ class YoutubeFloatingUI(
         youTubePlayerView.initialize(object : AbstractYouTubePlayerListener() {
             override fun onError(youTubePlayer: YouTubePlayer, error: PlayerConstants.PlayerError) {
                 super.onError(youTubePlayer, error)
-                Toast.makeText(context,"Oops... Youtube doesn't allow us to play this video",Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    context,
+                    "Oops... Youtube doesn't allow us to play this video",
+                    Toast.LENGTH_LONG
+                ).show()
             }
 
             override fun onReady(youTubePlayer: YouTubePlayer) {
@@ -338,10 +329,9 @@ class YoutubeFloatingUI(
         if (playlistSongs.size - 1 > windowId) {
             currentlyPlayingSong.postValue(playlistSongs[windowId])
             youtubePlayer?.loadVideo(playlistSongs[windowId].mediaId, 0F)
-        }else{
+        } else {
             isPlaying.postValue(false)
             togglePlayPause()
         }
     }
 }
-

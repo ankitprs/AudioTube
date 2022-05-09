@@ -2,17 +2,21 @@ package tech.apps.music.ui.more
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import tech.apps.music.BuildConfig
+import tech.apps.music.R
 import tech.apps.music.database.Repository
 import tech.apps.music.databinding.ActivityMoreBinding
 import tech.apps.music.others.Constants.ABOUT
@@ -44,10 +48,23 @@ class MoreActivity : AppCompatActivity() {
 
         binding.deleteRecentSongs.setOnClickListener {
 
-            CoroutineScope(Dispatchers.IO).launch {
-                repository.deleteAllHistory()
-            }
-            Snackbar.make(it, "Deleted All the History", Snackbar.LENGTH_LONG).show()
+            MaterialAlertDialogBuilder(this)
+                .setTitle("Delete")
+                .setMessage("Are you sure you want to delete all the history songs")
+                .setIcon(R.drawable.ic_baseline_delete_24)
+                .setBackground(ColorDrawable(Color.parseColor("#FFFFFF")))
+                .setNegativeButton("Cancel") { dialog, _ ->
+                    dialog.cancel()
+                }
+                .setPositiveButton("Delete") { dialog, _ ->
+                    CoroutineScope(Dispatchers.IO).launch {
+                        repository.deleteAllHistory()
+                    }
+                    Snackbar.make(it, "Deleted All the History", Snackbar.LENGTH_LONG).show()
+                    dialog.cancel()
+                }
+                .show()
+
         }
 
         binding.howToUse.setOnClickListener {
@@ -108,15 +125,6 @@ class MoreActivity : AppCompatActivity() {
 
         binding.notificationSwitch.setOnClickListener {
             Toast.makeText(this, "Coming soon...", Toast.LENGTH_SHORT).show()
-        }
-
-        binding.adsReview.setOnClickListener {
-            Toast.makeText(this, "Thank You 😊 We Love Feedback", Toast.LENGTH_SHORT).show()
-            val text =
-                "App Version - ${BuildConfig.VERSION_NAME}\n" +
-                        "SDK Version - ${Build.VERSION.SDK_INT}\n" +
-                        "\n Feedback -\n\n   "
-            composeEmail(arrayOf("ankitpr2001@gmail.com"), "FeedBack - AudioTube For Ads", text)
         }
     }
 

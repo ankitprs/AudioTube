@@ -2,6 +2,7 @@ package tech.apps.music.adapters
 
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -70,6 +71,7 @@ class EpisodeAdapter @Inject constructor(
         holder.binding.apply {
 
             if (currentlyPlayingSongId === song.mediaId) {
+                Log.d("EpisodeAdapter", song.mediaId+" : song.mediaId || currentlyPlayingSongId : "+currentlyPlayingSongId.toString())
                 val gradientDrawable = GradientDrawable(
                     GradientDrawable.Orientation.BL_TR,
                     intArrayOf(
@@ -81,7 +83,6 @@ class EpisodeAdapter @Inject constructor(
 
                 //Set Gradient
                 episodesListCardView.background = gradientDrawable
-                imageViewEpisodesGoTo
             }
 
             glide.load(song.thumbnailUrl).centerCrop().into(imageViewEpisodeThumbnail)

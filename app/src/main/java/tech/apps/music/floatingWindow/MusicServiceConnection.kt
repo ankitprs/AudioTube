@@ -1,13 +1,10 @@
 package tech.apps.music.floatingWindow
 
-import android.content.Context
 import kotlinx.coroutines.delay
 import tech.apps.music.model.YTAudioDataModel
 import tech.apps.music.util.getThumbnailFromId
 
-class MusicServiceConnection constructor(
-    private val context: Context,
-) {
+class MusicServiceConnection {
 
     suspend fun playFromVideoId(
         mediaId: String,

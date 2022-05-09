@@ -100,7 +100,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun addingSongIntoRecyclerView() {
-        viewModel.getLast5RecentList.observe(viewLifecycleOwner) {
+        viewModel.getLast5RecentList {
             if (!it.isNullOrEmpty()) {
                 recentAudioAdapter.songs = it.toSongModelForList()
             } else {

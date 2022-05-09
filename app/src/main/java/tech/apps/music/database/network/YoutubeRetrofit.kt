@@ -1,54 +1,52 @@
 package tech.apps.music.database.network
 
 import android.content.Context
+import com.chuckerteam.chucker.api.ChuckerCollector
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import okhttp3.OkHttpClient
-import okhttp3.ResponseBody
-import retrofit2.Call
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.http.GET
-import retrofit2.http.Query
-import tech.apps.music.NetworkConnectionInterceptor
 
 const val BASE_URL = "https://www.youtube.com"
+const val BASE_URL_SUGGESTION_API = "https://suggestqueries.google.com"
 
-interface RetrofitSearch {
-    @GET("/results")
-    fun ytSearchResult(@Query("search_query") keyword: String): Call<ResponseBody>
+class RetrofitApiClient(context: Context) {
 
-    @GET("/oembed")
-    fun ytGetVideo(@Query("url") youtubeUrl: String) : Call<ResponseBody>
-}
-class RetrofitApiClient {
-    private var retrofit: Retrofit? = null
+    private var retrofit: Retrofit = Retrofit.Builder()
+        .baseUrl(BASE_URL)
+        .client(getLoggingHttpClient(context))
+        .build()
 
-    fun getRetrofitClient(mContext: Context): Retrofit? {
-        if (retrofit == null) {
-            val oktHttpClient = OkHttpClient.Builder()
-                .addInterceptor(NetworkConnectionInterceptor(mContext))
-//            oktHttpClient.addInterceptor(logging)
-            retrofit = Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .client(oktHttpClient.build())
-                .build()
-        }
-        return retrofit
+    private var retrofitSuggestion: Retrofit = Retrofit.Builder()
+        .baseUrl(BASE_URL_SUGGESTION_API)
+        .client(getLoggingHttpClient(context))
+        .build()
+
+    val youtubeEndpointService: YoutubeEndpoint by lazy {
+        retrofit.create(YoutubeEndpoint::class.java)
     }
-}
 
-object YoutubeRetrofitInstance {
+    val youtubeEndpointSuggestion: YoutubeEndpoint by lazy {
+        retrofitSuggestion.create(YoutubeEndpoint::class.java)
+    }
 
-    val ytSearchInstant: RetrofitSearch
+    val apiClient = ApiClient(context)
 
-    init {
+    private fun getLoggingHttpClient(mContext: Context): OkHttpClient {
+        val builder = OkHttpClient.Builder()
+        builder.addInterceptor(HttpLoggingInterceptor().apply {
+            setLevel(HttpLoggingInterceptor.Level.BODY)
+        })
 
-        val okHttpClient = OkHttpClient().newBuilder()
-            .build()
+        builder.addInterceptor(
+            ChuckerInterceptor.Builder(mContext)
+                .collector(ChuckerCollector(mContext))
+                .maxContentLength(250000L)
+                .redactHeaders(emptySet())
+                .alwaysReadResponseBody(false)
+                .build()
+        )
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(okHttpClient)
-            .build()
-
-        ytSearchInstant = retrofit.create(RetrofitSearch::class.java)
+        return builder.build()
     }
 }

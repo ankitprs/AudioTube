@@ -44,7 +44,8 @@
                     android:layout_height="wrap_content"
                     app:cardBackgroundColor="@color/one_level_up"
                     app:contentPadding="15dp"
-                    android:layout_margin="15dp">
+                    android:layout_margin="15dp"
+                    style="?attr/materialCardViewFilledStyle">
 
                     <ImageView
                         android:id="@+id/imageView2"
@@ -78,7 +79,8 @@
                     android:layout_margin="0dp"
                     app:cardBackgroundColor="@color/one_level_up"
                     app:contentPadding="15dp"
-                    app:rippleColor="#FFFFFF">
+                    app:rippleColor="#FFFFFF"
+                    style="?attr/materialCardViewFilledStyle">
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -89,7 +91,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Search on AudioTube" />
+                        android:text="Search on Youtube" />
                 </com.google.android.material.card.MaterialCardView>
             </com.google.android.material.appbar.MaterialToolbar>
         </com.google.android.material.appbar.CollapsingToolbarLayout>
