@@ -43,6 +43,7 @@ class ForegroundService : Service() {
             youtubeFloatingUI.close()
             stopForeground(true)
             stopSelf()
+            android.os.Process.killProcess(android.os.Process.myPid())
             exitProcess(0)
         }
         return START_NOT_STICKY

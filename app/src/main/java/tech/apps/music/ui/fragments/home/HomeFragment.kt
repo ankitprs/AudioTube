@@ -137,8 +137,7 @@ class HomeFragment : Fragment() {
             viewModel.playOrToggleListOfSongs(
                 recommendAdapter.songs.toYtAudioDataModel(),
                 true,
-                position,
-                it.watchedPosition
+                position
             )
             findNavController().navigate(R.id.action_homeFragment2_to_songFragment2)
         }

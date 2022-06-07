@@ -78,6 +78,7 @@ class SearchFragment : Fragment() {
         songAdapter.setItemClickListener { _ , position ->
             mainViewModel.playOrToggleListOfSongs(songAdapter.songs.toYtAudioDataModel(),true,position)
             findNavController().navigate(R.id.action_homeFragment2_to_songFragment2)
+            viewModel.statusOfSearchFrag = StatusOfSearchFrag.Results
         }
 
         binding.floatingActionButtonPlayListSearchFrg.setOnClickListener {

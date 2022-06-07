@@ -17,8 +17,8 @@ android {
         applicationId "tech.apps.music"
         minSdk 23
         targetSdk 31
-        versionCode 21
-        versionName '1.2.6'
+        versionCode 22
+        versionName '1.2.7'
         multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

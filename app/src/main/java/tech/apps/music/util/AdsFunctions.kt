@@ -14,17 +14,21 @@ import tech.apps.music.ui.HomeActivity
 
 object AdsFunctions {
     var lastTimeForShowingAds: Long = 0L
-    var toShowDirect: Boolean =  false
+    var toShowDirect: Boolean = false
 
     fun loadAds(context: Activity) {
+        if (HomeActivity.interstitialAd != null) {
+            showFacebookAds()
+            return
+        }
         loadGoogleAds(context)
         loadFacebookAds(context)
     }
 
-    fun showAds(context: Activity){
-        if(HomeActivity.rewardedInterstitialAd != null){
+    fun showAds(context: Activity) {
+        if (HomeActivity.rewardedInterstitialAd != null) {
             showGoogleAds(context)
-        }else if(HomeActivity.interstitialAd != null){
+        } else if (HomeActivity.interstitialAd?.isAdLoaded == true) {
             showFacebookAds()
         }
     }
@@ -46,7 +50,7 @@ object AdsFunctions {
             }
 
             override fun onAdLoaded(ad: Ad) {
-                if(toShowDirect)
+                if (toShowDirect)
                     showFacebookAds()
             }
 
@@ -69,7 +73,7 @@ object AdsFunctions {
             AdRequest.Builder().build(), object : RewardedInterstitialAdLoadCallback() {
                 override fun onAdLoaded(ad: RewardedInterstitialAd) {
                     HomeActivity.rewardedInterstitialAd = ad
-                    if(toShowDirect){
+                    if (toShowDirect) {
                         showGoogleAds(context)
                     }
                 }
