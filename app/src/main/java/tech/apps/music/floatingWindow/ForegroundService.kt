@@ -7,6 +7,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import tech.apps.music.database.Repository
 import tech.apps.music.others.Constants
 import javax.inject.Inject
+import kotlin.system.exitProcess
 
 @AndroidEntryPoint
 class ForegroundService : Service() {
@@ -42,7 +43,7 @@ class ForegroundService : Service() {
             youtubeFloatingUI.close()
             stopForeground(true)
             stopSelf()
-            System.exit(0)
+            exitProcess(0)
         }
         return START_NOT_STICKY
     }

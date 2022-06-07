@@ -97,11 +97,7 @@ class YoutubeFloatingUI(
         currentTime.removeObserver {}
 
         // remove the view from the window
-        (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).removeView(mView)
-        // invalidate the view
-        mView.invalidate()
-        // remove all views
-//        (mView.parent as ViewGroup).removeAllViews()
+        mWindowManager.removeView(mView)
     }
 
     init {
