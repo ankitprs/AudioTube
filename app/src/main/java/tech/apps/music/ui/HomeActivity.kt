@@ -19,7 +19,9 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.bumptech.glide.RequestManager
 import com.facebook.ads.AudienceNetworkAds
+import com.facebook.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,10 +37,21 @@ import tech.apps.music.floatingWindow.ForegroundService
 import tech.apps.music.floatingWindow.YoutubeFloatingUI
 import tech.apps.music.model.YTAudioDataModel
 import tech.apps.music.ui.fragments.MainViewModel
+import tech.apps.music.util.AdsFunctions
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
+
+    companion object{
+        // Facebook Audience Network
+        const val PLACEMENT_ID = "672729120837013_692869968822928"
+        var interstitialAd: InterstitialAd? = null
+
+        // Google Admob
+        var rewardedInterstitialAd: RewardedInterstitialAd? = null
+        const val APP_ID = "ca-app-pub-8154643218867307/4993051585"
+    }
 
     private val viewModel: MainViewModel by viewModels()
 
@@ -120,14 +133,13 @@ class HomeActivity : AppCompatActivity() {
             navController.navigate(
                 R.id.action_homeFragment2_to_songFragment2
             )
+            AdsFunctions.showAds(this)
         }
 
         YoutubeFloatingUI.isPlaying.observe(this) {
             isPlayingIconToggle(it)
         }
-        binding.ivPlayPause.setOnClickListener {
-            curPlaying?.mediaId?.let { it1 -> viewModel.playPauseToggleSong(it1) }
-        }
+        AdsFunctions.loadAds(this)
     }
 
     private fun showOrHideBottomBar(boolean: Boolean, isNotSong: Boolean = true) {

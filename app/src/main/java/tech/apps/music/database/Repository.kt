@@ -72,4 +72,12 @@ class Repository
 
     suspend fun getListSearchHistory(): List<SearchHistory> =
         database.getYTVideoDao().getListSearchHistory()
+
+    suspend fun deleteSearchByQuery(searchQuery: String){
+        database.getYTVideoDao().deleteSearchByQuery(searchQuery)
+    }
+
+    suspend fun deleteAllSearchHistory(){
+        database.getYTVideoDao().deleteAllSearchHistory()
+    }
 }

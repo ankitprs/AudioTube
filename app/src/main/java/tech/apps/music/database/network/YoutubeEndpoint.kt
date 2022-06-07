@@ -18,4 +18,7 @@ interface YoutubeEndpoint {
         @Query("ds") yt: String = "yt",
         @Query("q") keyword: String
     ): Response<ResponseBody>
+
+    @GET("/feed/trending?bp=4gINGgt5dG1hX2NoYXJ0cw%3D%3D")
+    suspend fun trendingMusic(): Response<ResponseBody>
 }

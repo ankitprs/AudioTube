@@ -6,7 +6,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -47,6 +49,14 @@ class LibraryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
 
+        val window = requireActivity().window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        window.statusBarColor = ContextCompat.getColor(
+            requireActivity(),
+            R.color.dark_background
+        )
+
         setUpRecyclerView()
 
         binding.MaterialToolbarHome.inflateMenu(R.menu.home_menu)
@@ -63,8 +73,8 @@ class LibraryFragment : Fragment() {
             true
         }
 
-        recentAudioAdapter.setItemClickListener {
-            viewModel.playOrToggleListOfSongs((listOf(it)).toYtAudioDataModel(),true,0,it.watchedPosition)
+        recentAudioAdapter.setItemClickListener {it, position ->
+            viewModel.playOrToggleListOfSongs(recentAudioAdapter.songs.toYtAudioDataModel(),true,position,it.watchedPosition)
             findNavController().navigate(R.id.action_homeFragment2_to_songFragment2)
         }
 
@@ -120,7 +130,7 @@ class LibraryFragment : Fragment() {
 
         viewModel.getRecentList {
             recentAudioAdapter.songs = it.toSongModelForList()
-            if (it.isNullOrEmpty()) {
+            if (it.isEmpty()) {
                 recentAudioAdapter.songs = listOf(
                     SongModelForList()
                 )

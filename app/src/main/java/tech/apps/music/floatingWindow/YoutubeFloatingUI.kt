@@ -173,11 +173,7 @@ class YoutubeFloatingUI(
                         isPlaying.postValue(true)
                     }
                     PlayerConstants.PlayerState.ENDED -> {
-                        if (repeatMode) {
-                            youTubePlayer.play()
-                        } else {
-                            playNextSong()
-                        }
+                        playNextSong()
                     }
                     else -> {
                         isPlaying.postValue(false)
@@ -330,8 +326,12 @@ class YoutubeFloatingUI(
             currentlyPlayingSong.postValue(playlistSongs[windowId])
             youtubePlayer?.loadVideo(playlistSongs[windowId].mediaId, 0F)
         } else {
-            isPlaying.postValue(false)
-            togglePlayPause()
+            if (repeatMode) {
+                youtubePlayer?.play()
+            } else {
+                isPlaying.postValue(false)
+                togglePlayPause()
+            }
         }
     }
 }

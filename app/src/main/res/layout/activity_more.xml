@@ -16,7 +16,7 @@
         <com.google.android.material.appbar.AppBarLayout
             style="@style/themeWithActionBar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:background="@color/background">
 
             <com.google.android.material.appbar.MaterialToolbar
@@ -27,8 +27,8 @@
 
                 <ImageView
                     android:id="@+id/backButtonMoreAct"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:background="@drawable/ripple_effect_circle"
                     android:padding="10dp"
                     android:src="@drawable/ic_baseline_arrow_back_24" />
@@ -40,7 +40,7 @@
                     android:fontFamily="sans-serif-black"
                     android:text="Settings"
                     android:textColor="@color/white"
-                    android:textSize="20dp" />
+                    android:textSize="20sp" />
 
             </com.google.android.material.appbar.MaterialToolbar>
 
@@ -69,14 +69,38 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="20dp"
-                android:text="Clear All History"
+                android:text="Clear history"
                 android:textColor="@color/white" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="20dp"
-                android:text="Recently Added List will be clear"
+                android:text="Recently added list will be clear"
+                android:textColor="@color/grey" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/deleteSearchSuggest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ripple_effect_rectangle"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="20dp"
+                android:text="Clear search history"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="20dp"
+                android:text="Search history list will be clear"
                 android:textColor="@color/grey" />
 
         </LinearLayout>

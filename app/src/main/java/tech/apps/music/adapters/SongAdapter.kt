@@ -56,10 +56,10 @@ class SongAdapter @Inject constructor(
         )
     }
 
-    private var onItemClickListener: ((SongModelForList) -> Unit)? = null
+    private var onItemClickListener: ((SongModelForList, Int) -> Unit)? = null
     private var onItemMenuClickListener: ((Pair<SongModelForList,View>) -> Unit)? = null
 
-    fun setItemClickListener(listener: (SongModelForList) -> Unit) {
+    fun setItemClickListener(listener: (SongModelForList, Int) -> Unit) {
         onItemClickListener = listener
     }
     fun setItemMenuClickListener(listener: (Pair<SongModelForList,View>) -> Unit) {
@@ -120,7 +120,7 @@ class SongAdapter @Inject constructor(
 
             root.setOnClickListener {
                 onItemClickListener?.let { click ->
-                    click(song)
+                    click(song, position)
                 }
             }
         }

@@ -70,5 +70,6 @@ If you have any questions or suggestions about my Privacy Policy, do not hesitat
     <string name="facebook_app_id">1234</string>
     <string name="fb_login_protocol_scheme">fb1234</string>
     <string name="facebook_client_token">56789</string>
+    <string name="title_activity_home">HomeActivity</string>
 
 </resources>

@@ -58,4 +58,10 @@ interface YTVideoDao {
 
     @Query("DELETE FROM Search_History where queryText NOT IN (SELECT queryText from Search_History ORDER BY timing DESC LIMIT 20)")
     suspend fun deleteSearchHistoryMoreThan20()
+
+    @Query("DELETE FROM Search_History where queryText = :searchQuery")
+    suspend fun deleteSearchByQuery(searchQuery: String)
+
+    @Query("DELETE FROM Search_History")
+    suspend fun deleteAllSearchHistory()
 }

@@ -115,4 +115,9 @@ class MainViewModel @Inject constructor(
     val getCurrentlyPlayingYTAudioModel: LiveData<YTAudioDataModel?> =
         YoutubeFloatingUI.currentlyPlayingSong
 
+    fun deleteSearchByQuery(queryText: String){
+        viewModelScope.launch {
+            repository.deleteSearchByQuery(queryText)
+        }
+    }
 }

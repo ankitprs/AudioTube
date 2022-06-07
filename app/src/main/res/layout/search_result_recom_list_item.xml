@@ -15,10 +15,19 @@
 
     <TextView
         android:id="@+id/textViewSearchSuggest"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="search"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        android:layout_weight="1"/>
+
+    <ImageView
+        android:id="@+id/clearIconSearchSuggest"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:src="@drawable/ic_round_clear_24"
+        android:background="@drawable/ripple_effect_circle"/>
 
 </LinearLayout>

@@ -7,8 +7,8 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="dark_background">#181818</color>
-    <color name="background">#212121</color>
+    <color name="dark_background">#FF000000</color>
+    <color name="background">#181818</color>
     <color name="one_level_up">#3d3d3d</color>
     <color name="light_background">#aaaaaa</color>
     <color name="red_live">#FF0000</color>
@@ -26,4 +26,8 @@
     <color name="gnt_ad_green">#3A6728</color>
     <color name="gnt_gray">#808080</color>
     <color name="gnt_outline">#E0E0E0</color>
+    <color name="light_blue_400">#FF29B6F6</color>
+    <color name="light_blue_600">#FF039BE5</color>
+    <color name="gray_400">#FFBDBDBD</color>
+    <color name="gray_600">#FF757575</color>
 </resources>

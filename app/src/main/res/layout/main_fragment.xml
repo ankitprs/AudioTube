@@ -1,57 +1,192 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/dark_background"
     tools:context=".ui.fragments.home.HomeFragment">
 
-    <LinearLayout
-        android:id="@+id/home"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/dark_background"
-        android:orientation="vertical">
 
-        <com.google.android.material.appbar.AppBarLayout
-            style="@style/themeWithActionBar"
+    <ImageView
+        android:id="@+id/topBackgroundImageHomeFrg"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/focus" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:background="@drawable/gradient_background" />
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbarHomeFrg"
+        style="@style/themeWithActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/dark_background">
+            android:theme="@style/MyActionBar">
 
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/MaterialToolbarHome"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:theme="@style/MyActionBar">
+                android:orientation="vertical">
 
-                <ImageView
-                    android:layout_width="35dp"
-                    android:layout_height="35dp"
-                    android:layout_marginStart="20dp"
-                    android:src="@drawable/ic_audio_tube_logo" />
-
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="5dp"
-                    android:fontFamily="sans-serif-black"
-                    android:text="Home"
-                    android:textColor="@color/white"
-                    android:textSize="22sp" />
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal">
 
-            </com.google.android.material.appbar.MaterialToolbar>
+                    <ImageView
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:src="@drawable/ic_audio_tube_logo" />
 
-        </com.google.android.material.appbar.AppBarLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:fontFamily="sans-serif-black"
+                        android:gravity="center"
+                        android:text="Home"
+                        android:textColor="@color/white"
+                        android:textSize="22sp" />
 
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1" />
+
+                    <ImageView
+                        android:id="@+id/searchIconHomeFrg"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:padding="5dp"
+                        android:src="@drawable/ic_baseline_search_24" />
+
+                    <ImageView
+                        android:id="@+id/settingIconHomeFrg"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_gravity="end"
+                        android:layout_marginEnd="10dp"
+                        android:padding="5dp"
+                        android:src="@drawable/ic_round_settings_24" />
+
+                </LinearLayout>
+
+                <com.google.android.material.appbar.MaterialToolbar
+                    android:id="@+id/MaterialToolbarHome"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp">
+
+                        <com.google.android.material.chip.ChipGroup
+                            android:id="@+id/toggleButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:backgroundTint="@android:color/transparent"
+                            app:chipSpacingHorizontal="10dp"
+                            app:singleSelection="true">
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/songs1"
+                                style="@style/Widget.Material3.Chip.Suggestion"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:backgroundTint="@color/switch_selected_color"
+                                android:text="Songs"
+                                android:textColor="@color/white"
+                                android:textSize="16sp"
+                                app:chipBackgroundColor="@color/switch_selected_color"
+                                app:chipStrokeColor="@color/button_color" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/relax2"
+                                style="@style/Widget.Material3.Chip.Suggestion"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:backgroundTint="@color/switch_selected_color"
+                                android:text="Relax"
+                                android:textColor="@color/white"
+                                android:textSize="16sp"
+                                app:chipBackgroundColor="@color/switch_selected_color"
+                                app:chipStrokeColor="@color/button_color" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/workout3"
+                                style="@style/Widget.Material3.Chip.Suggestion"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:backgroundTint="@color/switch_selected_color"
+                                android:text="Workout"
+                                android:textColor="@color/white"
+                                android:textSize="16sp"
+                                app:chipBackgroundColor="@color/switch_selected_color"
+                                app:chipStrokeColor="@color/button_color" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/podcast4"
+                                style="@style/Widget.Material3.Chip.Suggestion"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:backgroundTint="@color/switch_selected_color"
+                                android:text="Podcast"
+                                android:textColor="@color/white"
+                                android:textSize="16sp"
+                                app:chipBackgroundColor="@color/switch_selected_color"
+                                app:chipStrokeColor="@color/button_color" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/focus5"
+                                style="@style/Widget.Material3.Chip.Suggestion"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:backgroundTint="@color/switch_selected_color"
+                                android:insetRight="10dp"
+                                android:text="Focus"
+                                android:textColor="@color/white"
+                                android:textSize="16sp"
+                                app:chipBackgroundColor="@color/switch_selected_color"
+                                app:chipStrokeColor="@color/button_color" />
+
+                        </com.google.android.material.chip.ChipGroup>
+
+                    </HorizontalScrollView>
+
+                </com.google.android.material.appbar.MaterialToolbar>
+
+            </LinearLayout>
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
+            android:id="@+id/home"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="150dp"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="0dp"
             android:orientation="vertical">
-
 
             <TextView
                 android:id="@+id/recentTextTextView"
@@ -59,9 +194,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
-                android:text="Continue Watching"
+                android:text="Recent"
                 android:textColor="@color/white"
                 android:textSize="18sp" />
+
+            <View
+                android:id="@+id/lineRecentLabel"
+                android:layout_width="40dp"
+                android:layout_height="2dp"
+                android:layout_marginStart="10dp"
+                android:background="@color/grey" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewContinueWatchMFrag"
@@ -70,30 +212,42 @@
                 android:layout_marginTop="10dp"
                 tools:listitem="@layout/song_item_horizontal" />
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="5dp"
-                android:background="@color/one_level_up" />
-
             <TextView
+                android:id="@+id/labelTrendingHomeFrg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="20dp"
-                android:text="Explore"
+                android:text="Tending Music"
                 android:textColor="@color/white"
                 android:textSize="18sp" />
 
+            <View
+                android:id="@+id/lineTrendingLabel"
+                android:layout_width="40dp"
+                android:layout_height="2dp"
+                android:layout_marginStart="10dp"
+                android:background="@color/grey" />
+
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewLatestMFrag"
+                android:id="@+id/recyclerViewRecommendMFrag"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:nestedScrollingEnabled="false"
-                tools:listitem="@layout/explore_list_item" />
+                android:layout_marginBottom="180dp"
+                tools:listitem="@layout/song_item_horizontal" />
 
         </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
+    <ProgressBar
+        android:id="@+id/progressBarHomeFrg"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/button_color"
+        android:visibility="gone" />
 
-    </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

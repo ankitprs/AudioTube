@@ -16,6 +16,12 @@ class ApiClient(
         }
     }
 
+    suspend fun trendingMusic(): SimpleResponse<ResponseBody> {
+        return safeApiCall {
+            RetrofitApiClient(context).youtubeEndpointService.trendingMusic()
+        }
+    }
+
     suspend fun getVideoData(url: String): SimpleResponse<ResponseBody> {
         return safeApiCall {
             RetrofitApiClient(context).youtubeEndpointService

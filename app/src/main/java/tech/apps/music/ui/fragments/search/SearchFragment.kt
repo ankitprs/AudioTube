@@ -7,9 +7,11 @@ import android.speech.RecognizerIntent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -35,23 +37,21 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class SearchFragment : Fragment() {
 
-    private lateinit var viewModel: SearchViewModel
 
     @Inject
-    lateinit var searchAdapter: SongAdapter
-
+    lateinit var songAdapter: SongAdapter
+    private lateinit var viewModel: SearchViewModel
     lateinit var searchSuggestionAdapter: SearchSuggestionAdapter
     private var keyboardNeeded = true
     private var _binding: SearchFragmentBinding? = null
     private val binding: SearchFragmentBinding get() = _binding!!
     private lateinit var mainViewModel: MainViewModel
-    private var suggestionList: List<String> = listOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        viewModel = ViewModelProvider(this)[SearchViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[SearchViewModel::class.java]
         _binding = SearchFragmentBinding.inflate(layoutInflater,container,false)
         return binding.root
     }
@@ -59,33 +59,55 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
+
+        val window = requireActivity().window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        window.statusBarColor = ContextCompat.getColor(
+            requireActivity(),
+            R.color.dark_background
+        )
+
+        // voiceSearch
         binding.voiceSearchViewSearch.setOnClickListener {
             startVoiceRecognitionActivity()
         }
-
+        
         settingUpRecyclerView()
 
-        searchAdapter.setItemClickListener {
-            mainViewModel.playOrToggleListOfSongs((listOf(it)).toYtAudioDataModel(),true,0)
+        songAdapter.setItemClickListener { _ , position ->
+            mainViewModel.playOrToggleListOfSongs(songAdapter.songs.toYtAudioDataModel(),true,position)
             findNavController().navigate(R.id.action_homeFragment2_to_songFragment2)
         }
 
         binding.floatingActionButtonPlayListSearchFrg.setOnClickListener {
-            if(searchAdapter.songs.isEmpty()){
+            if(songAdapter.songs.isEmpty()){
                 Snackbar.make(it,"Nothing To Play... Search Something For Play",Snackbar.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            mainViewModel
-            mainViewModel.playOrToggleListOfSongs(searchAdapter.songs.toYtAudioDataModel(),true,0)
+            mainViewModel.playOrToggleListOfSongs(songAdapter.songs.toYtAudioDataModel(),true,0)
             findNavController().navigate(R.id.action_homeFragment2_to_songFragment2)
         }
 
         searchSuggestionAdapter.setItemClickListener {
             binding.searchButtonViewSearchFragment.setQuery(it, true)
         }
+        searchSuggestionAdapter.setClearClickListener {
+            mainViewModel.deleteSearchByQuery(it)
+            searchSuggestionAdapter.songs -= it
+            viewModel.suggestionList = viewModel.suggestionList - it
+        }
 
         binding.backButtonSearchFragment.setOnClickListener {
-            findNavController().navigateUp()
+            if(binding.recyclerViewSearchResult.isVisible){
+                findNavController().navigateUp()
+            }else{
+                if(songAdapter.songs.isNotEmpty()){
+                    showSearchSuggestionList(false)
+                }else{
+                    findNavController().navigateUp()
+                }
+            }
         }
 
         binding.searchButtonViewSearchFragment.setOnQueryTextListener(
@@ -95,9 +117,10 @@ class SearchFragment : Fragment() {
                     query?.let {
                         searchQuery(it)
                         binding.searchButtonViewSearchFragment.clearFocus()
-                        hideSearchSuggestion(false)
+                        showSearchSuggestionList(false)
 
                         mainViewModel.insertSearchQuery(it)
+                        
                         val firebaseAnalytics = Firebase.analytics
                         firebaseAnalytics.logEvent("Search_Box_Event") {
                             param("Searched_Query", it)
@@ -107,14 +130,19 @@ class SearchFragment : Fragment() {
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
-                    binding.recyclerViewSearchSuggestion.visibility = View.VISIBLE
+                    if(viewModel.statusOfSearchFrag == StatusOfSearchFrag.Results){
+                        showSearchSuggestionList(false)
+                        viewModel.statusOfSearchFrag = StatusOfSearchFrag.Suggest
+                    }else{
+                        showSearchSuggestionList(true)
+                    }
+
                     newText?.let {
                         if(it.isBlank()){
-                            searchSuggestionAdapter.songs = suggestionList
+                            searchSuggestionAdapter.songs = viewModel.suggestionList
                             return@let
                         }
 
-                        hideSearchSuggestion(true)
                         viewModel.searchSuggestionText(it, requireActivity()) { list ->
                             searchSuggestionAdapter.songs = list
                         }
@@ -123,11 +151,15 @@ class SearchFragment : Fragment() {
                 }
             }
         )
-        val keyword = arguments?.getString(Constants.PASS_EXPLORE_KEYWORDS)
+        if(viewModel.statusOfSearchFrag == StatusOfSearchFrag.Suggest){
+            showSearchSuggestionList(true)
+        }else{
+            showSearchSuggestionList(false)
+        }
 
+        val keyword = arguments?.getString(Constants.PASS_EXPLORE_KEYWORDS)
         if (keyword != null) {
-            binding.searchButtonViewSearchFragment.setQuery(keyword, false)
-//            keyboardNeeded = false
+            binding.searchButtonViewSearchFragment.setQuery(keyword, true)
             arguments = null
         }
     }
@@ -141,7 +173,7 @@ class SearchFragment : Fragment() {
         }
 
         binding.recyclerViewSearchResult.apply {
-            adapter = searchAdapter
+            adapter = songAdapter
             layoutManager = LinearLayoutManager(requireContext())
         }
 
@@ -150,7 +182,7 @@ class SearchFragment : Fragment() {
                 it.forEach {
                     list.add(it.queryText)
                 }
-            suggestionList = list
+            viewModel.suggestionList = list
             searchSuggestionAdapter.songs = list
         }
     }
@@ -164,12 +196,41 @@ class SearchFragment : Fragment() {
             withContext(Dispatchers.Main){
                 view?.findViewById<TextView>(R.id.textViewNotFoundSearch)?.isVisible = it.size == 0
 
-                searchAdapter.songs = it
+                songAdapter.songs = it
+                viewModel.listOfSearchResults = it
                 view?.findViewById<ProgressBar>(R.id.progressBarSearchFragment)?.isVisible = false
             }
         }
     }
+    
 
+    override fun onResume() {
+        super.onResume()
+        if (keyboardNeeded) {
+            binding.searchButtonViewSearchFragment.isIconified = false
+            keyboardNeeded = false
+        }
+    }
+
+    private fun showSearchSuggestionList(isSearch: Boolean) {
+        viewModel.statusOfSearchFrag = if(isSearch) StatusOfSearchFrag.Suggest else StatusOfSearchFrag.Results
+        binding.recyclerViewSearchSuggestion.isVisible = isSearch
+        binding.recyclerViewSearchResult.isVisible = !isSearch
+        binding.floatingActionButtonPlayListSearchFrg.isVisible = !isSearch
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        binding.recyclerViewSearchResult.adapter = null
+        binding.recyclerViewSearchSuggestion.adapter = null
+        _binding = null
+
+    }
+
+    /**
+     * Handling voice Search
+     */
     private val REQUEST_CODE = 0
 
     private fun startVoiceRecognitionActivity() {
@@ -197,28 +258,5 @@ class SearchFragment : Fragment() {
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (keyboardNeeded) {
-            binding.searchButtonViewSearchFragment.isIconified = false
-            keyboardNeeded = false
-        }
-        hideSearchSuggestion(true)
-    }
-
-    private fun hideSearchSuggestion(isSearch: Boolean) {
-        binding.recyclerViewSearchSuggestion.isVisible = isSearch
-        binding.recyclerViewSearchResult.isVisible = !isSearch
-        binding.floatingActionButtonPlayListSearchFrg.isVisible = !isSearch
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        binding.recyclerViewSearchResult.adapter = null
-        binding.recyclerViewSearchSuggestion.adapter = null
-        _binding = null
     }
 }

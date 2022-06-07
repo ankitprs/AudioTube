@@ -16,7 +16,11 @@
         android:supportsRtl="true"
         android:theme="@style/SplashScreen"
         android:usesCleartextTraffic="true">
-
+        <activity
+            android:name=".HomeActivity"
+            android:exported="false"
+            android:label="@string/title_activity_home"
+            android:theme="@style/SplashScreen" />
         <activity
             android:name=".ui.more.MoreActivity"
             android:exported="false">
@@ -24,18 +28,20 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.HomeActivity" />
         </activity>
-
         <activity
             android:name=".ui.HomeActivity"
             android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="text/plain" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -45,6 +51,6 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-8154643218867307~1200839407" />
-
     </application>
+
 </manifest>

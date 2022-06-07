@@ -11,7 +11,7 @@ import java.util.regex.Pattern
 
 class YoutubeRepository {
 
-    private val MAX_LIST_SIZE = 20
+    private val MAX_LIST_SIZE = 25
 
     suspend fun searchWithKeywords(
         keyword: String,
@@ -31,6 +31,21 @@ class YoutubeRepository {
             }
         }
 
+    }
+
+    suspend fun trendingMusicNow(context: Context): ArrayList<SongModelForList> {
+        val response = RetrofitApiClient(context).apiClient.trendingMusic()
+
+        return if (!response.isSuccessful) {
+            ArrayList()
+        } else {
+            val resp: String = response.body.string()
+
+            run {
+                val list = trendingDataParseHtml(resp)
+                list
+            }
+        }
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -53,6 +68,63 @@ class YoutubeRepository {
             .getJSONObject(0)
             .getJSONObject("itemSectionRenderer")
             .getJSONArray("contents")
+
+        val size = videos.length()
+
+        for (i in 0 until (size - 1)) {
+            val video = videos.getJSONObject(i)
+            val res = SongModelForList()
+
+            if (video.optJSONObject("videoRenderer") != null) {
+                val video_data = video.getJSONObject("videoRenderer")
+                res.videoId = video_data.getString("videoId")
+                res.title = video_data.getJSONObject("title").getJSONArray("runs").getJSONObject(0)
+                    .getString("text")
+                res.ChannelName =
+                    video_data.getJSONObject("longBylineText").getJSONArray("runs").getJSONObject(0)
+                        .getString("text")
+
+                if (video_data.optJSONObject("lengthText") != null) {
+                    res.durationText =
+                        video_data.getJSONObject("lengthText").getString("simpleText")
+                } else {
+                    res.duration = -1L
+                }
+                res.time = 1L
+                results.add(res)
+                if (results.size >= MAX_LIST_SIZE) {
+                    return results
+                }
+            }
+        }
+        return results
+    }
+
+    private fun trendingDataParseHtml(response: String): ArrayList<SongModelForList>{
+        val results: ArrayList<SongModelForList> = ArrayList()
+
+        val start = response.indexOf("ytInitialData") + ("ytInitialData").length + 3
+        val end = response.indexOf("};", start) + 1
+
+        val jsonStr = response.substring(start, end)
+        val data = JSONObject(jsonStr)
+
+        val videos = data.getJSONObject("contents")
+            .getJSONObject("twoColumnBrowseResultsRenderer")
+            .getJSONArray("tabs")
+            .getJSONObject(1)
+            .getJSONObject("tabRenderer")
+            .getJSONObject("content")
+            .getJSONObject("sectionListRenderer")
+            .getJSONArray("contents")
+            .getJSONObject(0)
+            .getJSONObject("itemSectionRenderer")
+            .getJSONArray("contents")
+            .getJSONObject(0)
+            .getJSONObject("shelfRenderer")
+            .getJSONObject("content")
+            .getJSONObject("expandedShelfContentsRenderer")
+            .getJSONArray("items")
 
         val size = videos.length()
 

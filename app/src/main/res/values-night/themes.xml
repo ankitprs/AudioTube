@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
     <style name="Theme.PlayAudio" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Primary brand color. -->
@@ -6,7 +6,7 @@
         <item name="colorPrimaryVariant">@color/dark_background</item>
         <item name="colorOnPrimary">@color/dark_background</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">@color/dark_background</item>
+        <item name="android:statusBarColor" >@color/dark_background</item>
         <!-- Customize your theme here. -->
         <item name="android:navigationBarColor">@color/background</item>
 
@@ -20,6 +20,7 @@
         <item name="android:textColorHint">@color/grey</item>
         <item name="colorOnSecondaryContainer">@color/button_color</item>
         <item name="colorSecondaryContainer">@color/button_color</item>
+        <item name="android:textColor">@color/white</item>
     </style>
 
     <style name="SplashScreen" parent="Theme.PlayAudio">
@@ -44,7 +45,7 @@
         <item name="colorPrimaryVariant">@color/background</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">@color/background</item>
+        <item name="android:statusBarColor" >@color/background</item>
         <!-- Customize your theme here. -->
         <item name="android:navigationBarColor">@color/background</item>
 

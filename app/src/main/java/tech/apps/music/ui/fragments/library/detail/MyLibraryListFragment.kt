@@ -52,8 +52,8 @@ class MyLibraryListFragment : Fragment() {
         }
         updateList()
 
-        watchLaterAdapter.setItemClickListener {
-            mainViewModel.playOrToggleListOfSongs((listOf(it)).toYtAudioDataModel(),true,0)
+        watchLaterAdapter.setItemClickListener { _, position ->
+            mainViewModel.playOrToggleListOfSongs(watchLaterAdapter.songs.toYtAudioDataModel(),true,position)
             findNavController().navigate(R.id.action_homeFragment2_to_songFragment2)
         }
 
@@ -64,7 +64,7 @@ class MyLibraryListFragment : Fragment() {
     }
     private fun updateList(){
         mainViewModel.getWatchLaterList {
-            if (it.isNullOrEmpty()) {
+            if (it.isEmpty()) {
                 watchLaterAdapter.songs = listOf(
                     SongModelForList()
                 )

@@ -6,10 +6,10 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.PopupMenu
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
@@ -22,16 +22,6 @@ import androidx.palette.graphics.Palette
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.facebook.ads.Ad
-import com.facebook.ads.AdError
-import com.facebook.ads.InterstitialAd
-import com.facebook.ads.InterstitialAdListener
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.OnUserEarnedRewardListener
-import com.google.android.gms.ads.rewarded.RewardItem
-import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd
-import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback
 import com.google.android.material.snackbar.Snackbar
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import dagger.hilt.android.AndroidEntryPoint
@@ -42,7 +32,7 @@ import tech.apps.music.floatingWindow.YoutubeFloatingUI
 import tech.apps.music.model.YTAudioDataModel
 import tech.apps.music.others.Constants
 import tech.apps.music.ui.fragments.MainViewModel
-import tech.apps.music.util.BasicStorage
+import tech.apps.music.util.AdsFunctions
 import tech.apps.music.util.secondInFloatToTimeString
 import tech.apps.music.util.songDuration
 import javax.inject.Inject
@@ -78,7 +68,11 @@ class SongFragment : Fragment() {
         toggleShimmer(true)
 
         subscribeToObserver()
-        setUpNewAdsAndShow()
+        AdsFunctions.showAds(requireActivity())
+
+        if(AdsFunctions.lastTimeForShowingAds == 0L){
+            AdsFunctions.toShowDirect = true
+        }
 
         binding.shareButtonSongFragment.setOnClickListener {
             val intent = Intent(Intent.ACTION_SEND)
@@ -211,6 +205,15 @@ class SongFragment : Fragment() {
                         )
                         gradientDrawable.cornerRadius = 0f
                         binding.songFragmentContainerLinearLayout.background = gradientDrawable
+                        val window = requireActivity().window
+                        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+                        window.statusBarColor = (
+                                it?.mutedSwatch?.rgb ?: ContextCompat.getColor(
+                                    requireActivity(),
+                                    R.color.dark_background
+                                )
+                                )
                     }
                 }
 
@@ -358,106 +361,5 @@ class SongFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    private val PLACEMENT_ID = "672729120837013_692869968822928"
-    private lateinit var interstitialAd: InterstitialAd
-    private val TAG = "HomeActivityAds"
-
-    private fun setUpNewAdsAndShow() {
-        loadAd()
-
-        if ((BasicStorage.lastTimeForShowingAds + 300000L) > System.currentTimeMillis())
-            return
-
-        BasicStorage.lastTimeForShowingAds = System.currentTimeMillis()
-
-        interstitialAd = InterstitialAd(activity, PLACEMENT_ID)
-        val interstitialAdListener: InterstitialAdListener = object : InterstitialAdListener {
-            override fun onInterstitialDisplayed(ad: Ad) {
-                // Interstitial ad displayed callback
-                Log.e(TAG, "Interstitial ad displayed.")
-            }
-
-            override fun onInterstitialDismissed(ad: Ad) {
-                // Interstitial dismissed callback
-                Log.e(TAG, "Interstitial ad dismissed.")
-            }
-
-            override fun onError(ad: Ad?, adError: AdError) {
-                // Ad error callback
-                Log.e(TAG, "Interstitial ad failed to load: " + adError.errorMessage)
-                BasicStorage.lastTimeForShowingAds = 0L
-            }
-
-            override fun onAdLoaded(ad: Ad) {
-                // Interstitial ad is loaded and ready to be displayed
-                Log.d(TAG, "Interstitial ad is loaded and ready to be displayed!")
-                // Show the ad
-                showAdWithDelay()
-            }
-
-            override fun onAdClicked(ad: Ad) {
-                // Ad clicked callback
-                Log.d(TAG, "Interstitial ad clicked!")
-            }
-
-            override fun onLoggingImpression(ad: Ad) {
-                // Ad impression logged callback
-                Log.d(TAG, "Interstitial ad impression logged!")
-            }
-        }
-
-        interstitialAd.loadAd(
-            interstitialAd.buildLoadAdConfig()
-                .withAdListener(interstitialAdListener)
-                .build()
-        )
-    }
-
-    private fun showAdWithDelay() {
-        if (!interstitialAd.isAdLoaded) {
-            Log.d(TAG, "interstitialAd.isAdLoaded")
-            return
-        }
-        if (interstitialAd.isAdInvalidated) {
-            Log.d(TAG, "interstitialAd.isAdInvalidated")
-            return
-        }
-        Log.d(TAG, "interstitialAd.show()")
-
-        BasicStorage.lastTimeForShowingAds = System.currentTimeMillis()
-        interstitialAd.show()
-    }
-
-    private var rewardedInterstitialAd: RewardedInterstitialAd? = null
-    private val idApp = "ca-app-pub-8154643218867307/4993051585"
-    private val idAppTest = "ca-app-pub-3940256099942544/5354046379"
-    val TAG_GOOGLE = "HomeActivityAds_google"
-
-    private fun loadAd() {
-        if ((BasicStorage.lastTimeForShowingAds + 300000L) > System.currentTimeMillis())
-            return
-
-        RewardedInterstitialAd.load(requireContext(), idApp,
-            AdRequest.Builder().build(), object : RewardedInterstitialAdLoadCallback() {
-                override fun onAdLoaded(ad: RewardedInterstitialAd) {
-                    rewardedInterstitialAd = ad
-                    Log.e(TAG_GOOGLE, "onAdLoaded")
-                    rewardedInterstitialAd?.show(requireActivity(), OnUserEarnedRewardListener() {
-                        BasicStorage.lastTimeForShowingAds = System.currentTimeMillis()
-                        fun onUserEarnedReward(rewardItem: RewardItem) {
-                            Log.d(TAG_GOOGLE, "User earned the reward.")
-                        }
-                    })
-                }
-
-                override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                    Log.e(TAG_GOOGLE, "onAdFailedToLoad")
-                    Log.d(TAG_GOOGLE, loadAdError.message)
-
-                    BasicStorage.lastTimeForShowingAds = 0L
-                }
-            })
     }
 }

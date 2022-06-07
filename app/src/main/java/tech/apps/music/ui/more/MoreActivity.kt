@@ -60,11 +60,18 @@ class MoreActivity : AppCompatActivity() {
                     CoroutineScope(Dispatchers.IO).launch {
                         repository.deleteAllHistory()
                     }
-                    Snackbar.make(it, "Deleted All the History", Snackbar.LENGTH_LONG).show()
+                    Snackbar.make(it, "Deleted all the history", Snackbar.LENGTH_LONG).show()
                     dialog.cancel()
                 }
                 .show()
 
+        }
+
+        binding.deleteSearchSuggest.setOnClickListener {
+            CoroutineScope(Dispatchers.IO).launch {
+                repository.deleteAllSearchHistory()
+                Snackbar.make(it, "Deleted all search history", Snackbar.LENGTH_LONG).show()
+            }
         }
 
         binding.howToUse.setOnClickListener {

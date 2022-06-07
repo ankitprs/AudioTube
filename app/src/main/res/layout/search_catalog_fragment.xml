@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/dark_background"
     tools:context=".ui.fragments.search.SearchCatalogFragment">
 
@@ -18,7 +17,7 @@
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:contentScrim="@color/background"
+            app:contentScrim="@color/dark_background"
             app:layout_scrollFlags="scroll|snap|exitUntilCollapsed">
 
             <LinearLayout
@@ -123,7 +122,7 @@
                 android:layout_width="40dp"
                 android:layout_height="2dp"
                 android:layout_marginStart="10dp"
-                android:background="@color/light_background" />
+                android:background="@color/grey" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewExploreMainFragment"
@@ -134,9 +133,5 @@
                 tools:listitem="@layout/explore_list_item" />
 
         </LinearLayout>
-
-
     </androidx.core.widget.NestedScrollView>
-
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

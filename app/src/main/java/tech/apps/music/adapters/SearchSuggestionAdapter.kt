@@ -39,9 +39,14 @@ class SearchSuggestionAdapter :
     }
 
     private var onItemClickListener: ((String) -> Unit)? = null
+    private var onClearClickListener: ((String) -> Unit)? = null
 
     fun setItemClickListener(listener: (String) -> Unit) {
         onItemClickListener = listener
+    }
+
+    fun setClearClickListener(listener: (String) -> Unit) {
+        onClearClickListener = listener
     }
 
     override fun getItemCount(): Int {
@@ -61,6 +66,11 @@ class SearchSuggestionAdapter :
             root.setOnClickListener {
                 onItemClickListener?.let { click ->
                     click(song)
+                }
+            }
+            clearIconSearchSuggest.setOnClickListener {
+                onClearClickListener?.let{
+                    it(song)
                 }
             }
         }
