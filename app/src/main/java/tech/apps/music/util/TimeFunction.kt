@@ -45,3 +45,6 @@ fun secondInFloatToTimeString(second: Float): String {
 
     return formattedTime
 }
+fun getCacheTimeDuration(time: Long): Boolean {
+    return (time + 604800000) < System.currentTimeMillis() // 7*24*60*60000
+}

@@ -65,7 +65,7 @@
         <entry key="app/src/main/res/drawable/ic_workout_icon.xml" value="0.20592105263157895" />
         <entry key="app/src/main/res/drawable/icon_repeat_all_selected.xml" value="0.223828125" />
         <entry key="app/src/main/res/drawable/liked_null.xml" value="0.2984375" />
-        <entry key="app/src/main/res/drawable/recently_added_null.xml" value="0.2984375" />
+        <entry key="app/src/main/res/drawable/recently_added_null.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ripple_effect_circle.xml" value="0.18848684210526315" />
         <entry key="app/src/main/res/drawable/ripple_effect_rectangle.xml" value="0.18848684210526315" />
         <entry key="app/src/main/res/drawable/splash_screen_image.xml" value="0.1" />
@@ -98,6 +98,7 @@
         <entry key="app/src/main/res/layout/native_ads_medium_template_view.xml" value="0.165" />
         <entry key="app/src/main/res/layout/native_ads_small_temp_search_view.xml" value="0.25" />
         <entry key="app/src/main/res/layout/placeholder_song_fragment_shimmer.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/placeholder_song_list_shimmer.xml" value="0.20534904805077062" />
         <entry key="app/src/main/res/layout/premium_fragment.xml" value="0.20201267238166232" />
         <entry key="app/src/main/res/layout/premium_item_list.xml" value="0.21608074144555436" />
         <entry key="app/src/main/res/layout/premium_song_detail_fragment.xml" value="0.25" />

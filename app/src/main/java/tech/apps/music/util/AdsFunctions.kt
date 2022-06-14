@@ -17,6 +17,10 @@ object AdsFunctions {
     var toShowDirect: Boolean = false
 
     fun loadAds(context: Activity) {
+        if (HomeActivity.rewardedInterstitialAd != null) {
+            showGoogleAds(context)
+            return
+        }
         if (HomeActivity.interstitialAd != null) {
             showFacebookAds()
             return
@@ -30,6 +34,8 @@ object AdsFunctions {
             showGoogleAds(context)
         } else if (HomeActivity.interstitialAd?.isAdLoaded == true) {
             showFacebookAds()
+        } else {
+            loadAds(context)
         }
     }
 
@@ -46,7 +52,6 @@ object AdsFunctions {
 
             override fun onError(ad: Ad?, adError: AdError) {
                 lastTimeForShowingAds = 0L
-                loadAds(context)
             }
 
             override fun onAdLoaded(ad: Ad) {
@@ -85,7 +90,7 @@ object AdsFunctions {
     }
 
     private fun showFacebookAds() {
-        if (HomeActivity.interstitialAd?.isAdLoaded == false && HomeActivity.interstitialAd?.isAdInvalidated == true) {
+        if (HomeActivity.interstitialAd == null || HomeActivity.interstitialAd?.isAdLoaded == false || HomeActivity.interstitialAd?.isAdInvalidated == true) {
             return
         }
 

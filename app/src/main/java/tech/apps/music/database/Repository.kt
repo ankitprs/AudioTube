@@ -1,6 +1,7 @@
 package tech.apps.music.database
 
 import android.content.Context
+import androidx.lifecycle.LiveData
 import tech.apps.music.database.offline.HistorySongModel
 import tech.apps.music.database.offline.OfflineDatabase
 import tech.apps.music.database.offline.SearchHistory
@@ -30,7 +31,7 @@ class Repository
     suspend fun getAllSongsLiveData(): List<HistorySongModel> =
         database.getYTVideoDao().getListOfHistory()
 
-    suspend fun getLast5RecentList(): List<HistorySongModel> =
+    fun getLast5RecentList(): LiveData<List<HistorySongModel>> =
         database.getYTVideoDao().getLast5RecentList()
 
 
@@ -80,4 +81,7 @@ class Repository
     suspend fun deleteAllSearchHistory(){
         database.getYTVideoDao().deleteAllSearchHistory()
     }
+
+    // cache database
+
 }

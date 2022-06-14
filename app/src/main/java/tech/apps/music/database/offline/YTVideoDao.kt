@@ -1,5 +1,6 @@
 package tech.apps.music.database.offline
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -22,7 +23,7 @@ interface YTVideoDao {
     suspend fun getListOfHistory(): List<HistorySongModel>
 
     @Query("SELECT * FROM History_Song_Model ORDER BY timing DESC  LIMIT 5")
-    suspend fun getLast5RecentList(): List<HistorySongModel>
+    fun getLast5RecentList(): LiveData<List<HistorySongModel>>
 
 
     //Watch Later Table Dao

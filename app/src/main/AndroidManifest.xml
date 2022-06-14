@@ -17,11 +17,6 @@
         android:theme="@style/SplashScreen"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".HomeActivity"
-            android:exported="false"
-            android:label="@string/title_activity_home"
-            android:theme="@style/SplashScreen" />
-        <activity
             android:name=".ui.more.MoreActivity"
             android:exported="false">
             <meta-data

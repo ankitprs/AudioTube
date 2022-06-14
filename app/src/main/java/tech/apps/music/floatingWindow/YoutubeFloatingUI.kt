@@ -97,7 +97,7 @@ class YoutubeFloatingUI(
         currentTime.removeObserver {}
 
         // remove the view from the window
-        mWindowManager.removeView(mView)
+//        mWindowManager.removeView(mView)
     }
 
     init {
@@ -317,17 +317,14 @@ class YoutubeFloatingUI(
 
     private fun playNextSong() {
         val windowId = playlistSongs.indexOf(currentlyPlayingSong.value) + 1
-
-        if (playlistSongs.size - 1 > windowId) {
+        if (repeatMode) {
+            youtubePlayer?.play()
+        } else if (playlistSongs.size - 1 > windowId) {
             currentlyPlayingSong.postValue(playlistSongs[windowId])
             youtubePlayer?.loadVideo(playlistSongs[windowId].mediaId, 0F)
         } else {
-            if (repeatMode) {
-                youtubePlayer?.play()
-            } else {
-                isPlaying.postValue(false)
-                togglePlayPause()
-            }
+            isPlaying.postValue(false)
+            togglePlayPause()
         }
     }
 }

@@ -9,13 +9,12 @@ import tech.apps.music.model.SongModelForList
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-class YoutubeRepository {
+class YoutubeRepository(private val context: Context) {
 
     private val MAX_LIST_SIZE = 25
 
     suspend fun searchWithKeywords(
-        keyword: String,
-        context: Context
+        keyword: String
     ): ArrayList<SongModelForList> {
 
         val response = RetrofitApiClient(context).apiClient.searchWithKeywords(keyword)
@@ -24,16 +23,11 @@ class YoutubeRepository {
             ArrayList()
         } else {
             val resp: String = response.body.string()
-
-            run {
-                val list = parseHtml(resp)
-                list
-            }
+            parseHtml(resp, keyword)
         }
-
     }
 
-    suspend fun trendingMusicNow(context: Context): ArrayList<SongModelForList> {
+    suspend fun trendingMusicNow(): ArrayList<SongModelForList> {
         val response = RetrofitApiClient(context).apiClient.trendingMusic()
 
         return if (!response.isSuccessful) {
@@ -49,8 +43,8 @@ class YoutubeRepository {
     }
 
     @SuppressLint("SimpleDateFormat")
-    private fun parseHtml(response: String): ArrayList<SongModelForList> {
-
+    private fun parseHtml(response: String, keyword: String): ArrayList<SongModelForList> {
+        val currentTime = System.currentTimeMillis()
         val results: ArrayList<SongModelForList> = ArrayList()
 
         val start = response.indexOf("ytInitialData") + ("ytInitialData").length + 3
@@ -90,7 +84,8 @@ class YoutubeRepository {
                 } else {
                     res.duration = -1L
                 }
-                res.time = 1L
+                res.time = currentTime
+                res.query = keyword
                 results.add(res)
                 if (results.size >= MAX_LIST_SIZE) {
                     return results
@@ -100,7 +95,8 @@ class YoutubeRepository {
         return results
     }
 
-    private fun trendingDataParseHtml(response: String): ArrayList<SongModelForList>{
+    private fun trendingDataParseHtml(response: String): ArrayList<SongModelForList> {
+        val currentTime = System.currentTimeMillis()
         val results: ArrayList<SongModelForList> = ArrayList()
 
         val start = response.indexOf("ytInitialData") + ("ytInitialData").length + 3
@@ -147,7 +143,7 @@ class YoutubeRepository {
                 } else {
                     res.duration = -1L
                 }
-                res.time = 1L
+                res.time = currentTime
                 results.add(res)
                 if (results.size >= MAX_LIST_SIZE) {
                     return results
@@ -158,8 +154,7 @@ class YoutubeRepository {
     }
 
     suspend fun getVideoData(
-        url: String,
-        context: Context,
+        url: String
     ): Pair<String, String>? {
         val response = RetrofitApiClient(context).apiClient.getVideoData(url)
 
@@ -196,8 +191,7 @@ class YoutubeRepository {
     }
 
     suspend fun searchSuggestionWithKeywords(
-        keyword: String,
-        context: Context
+        keyword: String
     ): ArrayList<String> {
 
         val response = RetrofitApiClient(context).apiClient.searchSuggestionWithKeywords(keyword)

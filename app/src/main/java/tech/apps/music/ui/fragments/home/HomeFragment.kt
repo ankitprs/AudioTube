@@ -8,30 +8,30 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.chip.ChipGroup
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import tech.apps.music.R
 import tech.apps.music.adapters.HomeListAdapter
 import tech.apps.music.adapters.SongAdapter
-import tech.apps.music.database.network.YoutubeRepository
 import tech.apps.music.databinding.MainFragmentBinding
 import tech.apps.music.model.toSongModelForList
 import tech.apps.music.model.toYtAudioDataModel
 import tech.apps.music.ui.fragments.MainViewModel
 import tech.apps.music.ui.more.MoreActivity
 import tech.apps.music.util.AdsFunctions
+import tech.apps.music.util.Resource
 import javax.inject.Inject
 
 
@@ -40,6 +40,7 @@ class HomeFragment : Fragment() {
 
     @Inject
     lateinit var recommendAdapter: SongAdapter
+
     @Inject
     lateinit var homeListAdapter: HomeListAdapter
 
@@ -65,72 +66,13 @@ class HomeFragment : Fragment() {
             startActivity(Intent(activity, MoreActivity::class.java))
         }
 
-        binding.searchIconHomeFrg.setOnClickListener{
+        binding.searchIconHomeFrg.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_searchFragment)
         }
 
-        changeRecyclerViewItem()
         statusBarBackgroundColor(BitmapFactory.decodeResource(context?.resources, R.drawable.focus))
 
-        binding.toggleButton.setOnCheckedStateChangeListener { group, checkedId ->
-            if (checkedId.isEmpty()) {
-                binding.topBackgroundImageHomeFrg.setImageResource(R.drawable.song)
-                changeRecyclerViewItem()
-                hideShowRecentList(true)
-                return@setOnCheckedStateChangeListener
-            }
-            hideShowRecentList(false)
-
-            when (checkedId[0]) {
-                R.id.songs1 -> {
-                    searchQuery("song")
-                    statusBarBackgroundColor(
-                        BitmapFactory.decodeResource(
-                            context?.resources,
-                            R.drawable.song
-                        )
-                    )
-                }
-                R.id.relax2 -> {
-                    statusBarBackgroundColor(
-                        BitmapFactory.decodeResource(
-                            context?.resources,
-                            R.drawable.relax
-                        )
-                    )
-                    searchQuery("relax music")
-                }
-                R.id.workout3 -> {
-                    statusBarBackgroundColor(
-                        BitmapFactory.decodeResource(
-                            context?.resources,
-                            R.drawable.workout
-                        )
-                    )
-                    searchQuery("workout music")
-                }
-                R.id.podcast4 -> {
-                    statusBarBackgroundColor(
-                        BitmapFactory.decodeResource(
-                            context?.resources,
-                            R.drawable.podcast
-                        )
-                    )
-                    searchQuery("podcast")
-                }
-                R.id.focus5 -> {
-                    statusBarBackgroundColor(
-                        BitmapFactory.decodeResource(
-                            context?.resources,
-                            R.drawable.focus
-                        )
-                    )
-                    searchQuery("focus music")
-                }
-            }
-        }
         setUpRecyclerView()
-        addingSongIntoRecyclerView()
 
         recommendAdapter.setItemClickListener { it, position ->
             AdsFunctions.showAds(requireActivity())
@@ -145,31 +87,124 @@ class HomeFragment : Fragment() {
         homeListAdapter.setItemClickListener { it, position ->
             AdsFunctions.showAds(requireActivity())
             viewModel.playOrToggleListOfSongs(
-                recommendAdapter.songs.toYtAudioDataModel(),
+                homeListAdapter.songs.toYtAudioDataModel(),
                 true,
                 position,
                 it.watchedPosition
             )
             findNavController().navigate(R.id.action_homeFragment2_to_songFragment2)
         }
-        AdsFunctions.loadAds(requireActivity())
+
+        lifecycleScope.launch {
+            binding.toggleButton.stateFlowHandler().debounce(0).filter {
+                true
+            }.distinctUntilChanged()
+                .flowWithLifecycle(viewLifecycleOwner.lifecycle)
+                .flatMapLatest {
+                    if (it.isNullOrBlank()) {
+                        viewModel.getTrendingList()
+                    } else {
+                        viewModel.getListOfSongWithKeyword(it)
+                    }
+                }
+                .flowOn(Dispatchers.Default)
+                .collect { result ->
+                    if(_binding == null)
+                        return@collect
+                    recommendAdapter.songs = result.data ?: listOf()
+                    toggleShimmer(result is Resource.Loading && result.data.isNullOrEmpty())
+                }
+        }
+        AdsFunctions.showAds(requireActivity())
+    }
+
+    private fun ChipGroup.stateFlowHandler(): MutableStateFlow<String?> {
+        val query: MutableStateFlow<String?> = MutableStateFlow("")
+
+
+        setOnCheckedStateChangeListener { group, checkedIds ->
+            if (checkedIds.isEmpty()) {
+                query.value = ""
+                binding.topBackgroundImageHomeFrg.setImageResource(R.drawable.song)
+                hideShowRecentList(true)
+                return@setOnCheckedStateChangeListener
+            }
+            hideShowRecentList(false)
+            when (checkedIds[0]) {
+                R.id.songs1 -> {
+                    statusBarBackgroundColor(
+                        BitmapFactory.decodeResource(
+                            context?.resources,
+                            R.drawable.song
+                        )
+                    )
+                }
+                R.id.relax2 -> {
+                    statusBarBackgroundColor(
+                        BitmapFactory.decodeResource(
+                            context?.resources,
+                            R.drawable.relax
+                        )
+                    )
+                }
+                R.id.workout3 -> {
+                    statusBarBackgroundColor(
+                        BitmapFactory.decodeResource(
+                            context?.resources,
+                            R.drawable.workout
+                        )
+                    )
+                }
+                R.id.podcast4 -> {
+                    statusBarBackgroundColor(
+                        BitmapFactory.decodeResource(
+                            context?.resources,
+                            R.drawable.podcast
+                        )
+                    )
+                }
+                R.id.focus5 -> {
+                    statusBarBackgroundColor(
+                        BitmapFactory.decodeResource(
+                            context?.resources,
+                            R.drawable.focus
+                        )
+                    )
+                }
+            }
+            when (checkedIds[0]) {
+                R.id.songs1 -> {
+                    query.value = "song"
+                }
+                R.id.relax2 -> {
+                    query.value = "relax music"
+                }
+                R.id.workout3 -> {
+                    query.value = "workout music"
+                }
+                R.id.podcast4 -> {
+                    query.value = "podcast"
+                }
+                R.id.focus5 -> {
+                    query.value = "focus music"
+                }
+            }
+        }
+        return query
     }
 
     private fun setUpRecyclerView() {
-
         binding.recyclerViewContinueWatchMFrag.apply {
             adapter = homeListAdapter
-            layoutManager = LinearLayoutManager(requireContext(),LinearLayoutManager.HORIZONTAL,false)
+            layoutManager =
+                LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         }
-        
-        binding.recyclerViewRecommendMFrag.apply { 
+
+        binding.recyclerViewRecommendMFrag.apply {
             adapter = recommendAdapter
             layoutManager = LinearLayoutManager(requireActivity())
         }
-    }
-
-    private fun addingSongIntoRecyclerView() {
-        viewModel.getLast5RecentList {
+        viewModel.recentList.observe(viewLifecycleOwner) {
             if (it.isNotEmpty()) {
                 homeListAdapter.songs = it.toSongModelForList()
             } else {
@@ -182,36 +217,6 @@ class HomeFragment : Fragment() {
         super.onDestroyView()
         binding.recyclerViewContinueWatchMFrag.adapter = null
         _binding = null
-    }
-
-    private fun changeRecyclerViewItem() {
-        binding.progressBarHomeFrg.isVisible = true
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val it = YoutubeRepository().trendingMusicNow(requireActivity())
-
-            withContext(Dispatchers.Main) {
-                view?.findViewById<TextView>(R.id.textViewNotFoundSearch)?.isVisible = it.size == 0
-
-                recommendAdapter.songs = it
-                view?.findViewById<ProgressBar>(R.id.progressBarHomeFrg)?.isVisible = false
-            }
-        }
-    }
-
-    private fun searchQuery(query: String) {
-        binding.progressBarHomeFrg.isVisible = true
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val it = YoutubeRepository().searchWithKeywords(query, requireActivity())
-
-            withContext(Dispatchers.Main) {
-                view?.findViewById<TextView>(R.id.textViewNotFoundSearch)?.isVisible = it.size == 0
-
-                recommendAdapter.songs = it
-                view?.findViewById<ProgressBar>(R.id.progressBarHomeFrg)?.isVisible = false
-            }
-        }
     }
 
     private fun statusBarBackgroundColor(bitmap: Bitmap) {
@@ -235,5 +240,10 @@ class HomeFragment : Fragment() {
         binding.recentTextTextView.isVisible = isRecent
         binding.lineRecentLabel.isVisible = isRecent
         binding.lineTrendingLabel.isVisible = isRecent
+    }
+
+    private fun toggleShimmer(isShimmer: Boolean) {
+        binding.shimmerList.isVisible = isShimmer
+        binding.mainContentInNestedList.isVisible = !isShimmer
     }
 }

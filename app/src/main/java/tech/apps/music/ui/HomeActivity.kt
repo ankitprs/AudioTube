@@ -31,7 +31,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tech.apps.music.ConnectionLiveData
 import tech.apps.music.R
-import tech.apps.music.database.network.YoutubeRepository
 import tech.apps.music.databinding.HomeActivityBinding
 import tech.apps.music.floatingWindow.ForegroundService
 import tech.apps.music.floatingWindow.YoutubeFloatingUI
@@ -217,13 +216,13 @@ class HomeActivity : AppCompatActivity() {
             dialog.show()
 
             CoroutineScope(Dispatchers.IO).launch {
-                val youtubeVideoData = YoutubeRepository()
-                val pair = youtubeVideoData.getVideoData(it, this@HomeActivity)
+
+                val pair = viewModel.getVideoData(it)
                 if (pair != null) {
                     viewModel.playOrToggleListOfSongs(
                         listOf(
                             YTAudioDataModel(
-                                youtubeVideoData.getVideoIdFromUrl(it) ?: "",
+                                viewModel.getVideoIdFromUrl(it) ?: "",
                                 pair.first,
                                 pair.second
                             )

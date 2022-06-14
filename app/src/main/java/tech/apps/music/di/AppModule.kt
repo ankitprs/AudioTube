@@ -1,6 +1,8 @@
 package tech.apps.music.di
 
+import android.app.Application
 import android.content.Context
+import androidx.room.Room
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -11,6 +13,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import tech.apps.music.R
 import tech.apps.music.database.Repository
+import tech.apps.music.database.network.YoutubeRepository
+import tech.apps.music.database.offline.CacheDatabase
 import tech.apps.music.database.offline.OfflineDatabase
 import tech.apps.music.floatingWindow.MusicServiceConnection
 import javax.inject.Singleton
@@ -48,4 +52,15 @@ object AppModule {
             .diskCacheStrategy(DiskCacheStrategy.DATA)
 
     )
+
+    @Provides
+    @Singleton
+    fun providerCacheDatabase(application: Application): CacheDatabase =
+        Room.databaseBuilder(application, CacheDatabase::class.java, "cache_database")
+            .build()
+
+    @Provides
+    @Singleton
+    fun provideYoutubeRepo(application: Application): YoutubeRepository =
+        YoutubeRepository(application)
 }

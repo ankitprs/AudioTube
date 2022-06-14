@@ -4,21 +4,29 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import tech.apps.music.database.CacheRepository
 import tech.apps.music.database.Repository
 import tech.apps.music.database.offline.HistorySongModel
 import tech.apps.music.database.offline.SearchHistory
 import tech.apps.music.database.offline.WatchLaterSongModel
 import tech.apps.music.floatingWindow.MusicServiceConnection
 import tech.apps.music.floatingWindow.YoutubeFloatingUI
+import tech.apps.music.model.SongModelForList
 import tech.apps.music.model.YTAudioDataModel
+import tech.apps.music.util.Resource
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val musicServiceConnection: MusicServiceConnection,
     private val repository: Repository,
+    private val cacheRepository: CacheRepository
 ) : ViewModel() {
+
+    val recentList: LiveData<List<HistorySongModel>> by lazy { repository.getLast5RecentList() }
+    var recommendationList = cacheRepository.getListOfSongTending()
 
     fun getRecentList(callback: (list: List<HistorySongModel>) -> Unit) {
         viewModelScope.launch {
@@ -32,14 +40,19 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun getLast5RecentList(callback: (list: List<HistorySongModel>) -> Unit) {
-        viewModelScope.launch {
-            callback(repository.getLast5RecentList())
-        }
-    }
-
     val bufferingTime: LiveData<Boolean> = YoutubeFloatingUI.bufferingTime
 
+    fun getListOfSongWithKeyword(query: String): Flow<Resource<out List<SongModelForList>>> {
+        val recommendList = cacheRepository.getListOfSongWithKeyword(query)
+        recommendationList = recommendList
+        return recommendList
+    }
+
+    fun getTrendingList(): Flow<Resource<out List<SongModelForList>>> {
+        val recommendList = cacheRepository.getListOfSongTending()
+        recommendationList = recommendList
+        return recommendList
+    }
 
     fun skipToNextSong() {
         musicServiceConnection.skipToNext()
@@ -115,9 +128,17 @@ class MainViewModel @Inject constructor(
     val getCurrentlyPlayingYTAudioModel: LiveData<YTAudioDataModel?> =
         YoutubeFloatingUI.currentlyPlayingSong
 
-    fun deleteSearchByQuery(queryText: String){
+    fun deleteSearchByQuery(queryText: String) {
         viewModelScope.launch {
             repository.deleteSearchByQuery(queryText)
         }
+    }
+
+    suspend fun getVideoData(url: String): Pair<String, String>? {
+        return cacheRepository.getVideoUri(url)
+    }
+
+    fun getVideoIdFromUrl(ytUrl: String): String? {
+        return cacheRepository.getVideoIdFromUrl(ytUrl)
     }
 }
