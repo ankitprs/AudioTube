@@ -1,9 +1,11 @@
 package tech.apps.music.model
 
+import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import tech.apps.music.util.getThumbnailFromId
 
+@Keep
 @Entity(tableName = "SongListWithQuery")
 data class SongModelForList(
     @PrimaryKey var videoId: String = "",

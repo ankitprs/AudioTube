@@ -22,4 +22,5 @@
 -keep class com.pierfrancescosoffritti.androidyoutubeplayer.**{*;}
 -keep class tech.apps.music.database.offline.WatchLaterSongModel.*{*;}
 -keep class tech.apps.music.database.offline.HistorySongModel.*{*;}
+-keep class tech.apps.music.model.SongModelForList.*{*;}
 -keepnames @dagger.hilt.android.lifecycle.HiltViewModel class * extends androidx.lifecycle.ViewModel
