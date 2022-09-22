@@ -13,11 +13,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-
-const val TAG = "C-Manager"
-
 class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
 
+    private val TAG = "C-Manager_ConnectionLiveData"
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
     private val cm = context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
     private val validNetworks: MutableSet<Network> = HashSet()
@@ -64,9 +62,7 @@ class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
             validNetworks.remove(network)
             checkValidNetworks()
         }
-
     }
-
 }
 
 object DoesNetworkHaveInternet {

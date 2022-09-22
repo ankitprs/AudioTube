@@ -89,6 +89,7 @@
         <entry key="app/src/main/res/layout/fragment_my_library_list.xml" value="0.2597173144876325" />
         <entry key="app/src/main/res/layout/fragment_second.xml" value="0.12329234972677595" />
         <entry key="app/src/main/res/layout/fragment_song.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/fragment_swipe_up_songs.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_youtube_floating_window.xml" value="0.15163934426229508" />
         <entry key="app/src/main/res/layout/home_activity.xml" value="0.335" />
         <entry key="app/src/main/res/layout/library_fragment.xml" value="0.25" />
@@ -117,6 +118,7 @@
         <entry key="app/src/main/res/layout/song_item_horizontal.xml" value="0.4782257080078125" />
         <entry key="app/src/main/res/layout/song_item_vertical.xml" value="0.16530914306640632" />
         <entry key="app/src/main/res/layout/swipe_item.xml" value="0.102880658436214" />
+        <entry key="app/src/main/res/layout/swipe_up_list_item.xml" value="0.1" />
         <entry key="app/src/main/res/layout/switch_item.xml" value="0.25092592592592594" />
         <entry key="app/src/main/res/layout/text_item.xml" value="0.335" />
         <entry key="app/src/main/res/layout/youtube_floating_ui.xml" value="0.1" />

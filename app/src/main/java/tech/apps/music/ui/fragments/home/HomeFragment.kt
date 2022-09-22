@@ -23,8 +23,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import tech.apps.music.R
-import tech.apps.music.adapters.HomeListAdapter
 import tech.apps.music.adapters.SongAdapter
+import tech.apps.music.adapters.SongAdapterVertical
 import tech.apps.music.databinding.MainFragmentBinding
 import tech.apps.music.model.toSongModelForList
 import tech.apps.music.model.toYtAudioDataModel
@@ -39,11 +39,10 @@ import javax.inject.Inject
 class HomeFragment : Fragment() {
 
     @Inject
-    lateinit var recommendAdapter: SongAdapter
+    lateinit var songAdapter: SongAdapter
 
     @Inject
-    lateinit var homeListAdapter: HomeListAdapter
-
+    lateinit var songAdapterVertical: SongAdapterVertical
     private lateinit var viewModel: MainViewModel
     private var _binding: MainFragmentBinding? = null
     private val binding: MainFragmentBinding get() = _binding!!
@@ -74,20 +73,20 @@ class HomeFragment : Fragment() {
 
         setUpRecyclerView()
 
-        recommendAdapter.setItemClickListener { it, position ->
+        songAdapter.setItemClickListener { it, position ->
             AdsFunctions.showAds(requireActivity())
             viewModel.playOrToggleListOfSongs(
-                recommendAdapter.songs.toYtAudioDataModel(),
+                songAdapter.songs.toYtAudioDataModel(),
                 true,
                 position
             )
             findNavController().navigate(R.id.action_homeFragment2_to_songFragment2)
         }
 
-        homeListAdapter.setItemClickListener { it, position ->
+        songAdapterVertical.setItemClickListener { it, position ->
             AdsFunctions.showAds(requireActivity())
             viewModel.playOrToggleListOfSongs(
-                homeListAdapter.songs.toYtAudioDataModel(),
+                songAdapterVertical.songs.toYtAudioDataModel(),
                 true,
                 position,
                 it.watchedPosition
@@ -111,7 +110,7 @@ class HomeFragment : Fragment() {
                 .collect { result ->
                     if(_binding == null)
                         return@collect
-                    recommendAdapter.songs = result.data ?: listOf()
+                    songAdapter.songs = result.data ?: listOf()
                     toggleShimmer(result is Resource.Loading && result.data.isNullOrEmpty())
                 }
         }
@@ -195,18 +194,18 @@ class HomeFragment : Fragment() {
 
     private fun setUpRecyclerView() {
         binding.recyclerViewContinueWatchMFrag.apply {
-            adapter = homeListAdapter
+            adapter = songAdapterVertical
             layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         }
 
         binding.recyclerViewRecommendMFrag.apply {
-            adapter = recommendAdapter
+            adapter = songAdapter
             layoutManager = LinearLayoutManager(requireActivity())
         }
         viewModel.recentList.observe(viewLifecycleOwner) {
             if (it.isNotEmpty()) {
-                homeListAdapter.songs = it.toSongModelForList()
+                songAdapterVertical.songs = it.toSongModelForList()
             } else {
                 hideShowRecentList(false)
             }

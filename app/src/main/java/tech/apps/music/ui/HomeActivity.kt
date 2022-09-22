@@ -32,8 +32,8 @@ import kotlinx.coroutines.withContext
 import tech.apps.music.ConnectionLiveData
 import tech.apps.music.R
 import tech.apps.music.databinding.HomeActivityBinding
-import tech.apps.music.floatingWindow.ForegroundService
-import tech.apps.music.floatingWindow.YoutubeFloatingUI
+import tech.apps.music.mediaPlayerYT.MusicService
+import tech.apps.music.mediaPlayerYT.YoutubeFloatingUI
 import tech.apps.music.model.YTAudioDataModel
 import tech.apps.music.ui.fragments.MainViewModel
 import tech.apps.music.util.AdsFunctions
@@ -272,10 +272,10 @@ class HomeActivity : AppCompatActivity() {
 
     private fun startFloatingService() {
 
-        if (isMyServiceRunning(ForegroundService::class.java))
+        if (isMyServiceRunning(MusicService::class.java))
             return
 
-        val intent = Intent(this, ForegroundService::class.java)
+        val intent = Intent(this, MusicService::class.java)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             applicationContext.startForegroundService(intent)

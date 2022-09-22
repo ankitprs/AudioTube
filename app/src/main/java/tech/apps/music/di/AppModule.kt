@@ -16,7 +16,7 @@ import tech.apps.music.database.Repository
 import tech.apps.music.database.network.YoutubeRepository
 import tech.apps.music.database.offline.CacheDatabase
 import tech.apps.music.database.offline.OfflineDatabase
-import tech.apps.music.floatingWindow.MusicServiceConnection
+import tech.apps.music.mediaPlayerYT.MusicServiceConnection
 import javax.inject.Singleton
 
 
@@ -27,7 +27,8 @@ object AppModule {
     @Singleton
     @Provides
     fun provideMusicServiceConnection(
-    ) = MusicServiceConnection()
+        @ApplicationContext context: Context
+    ) = MusicServiceConnection(context)
 
     @Singleton
     @Provides

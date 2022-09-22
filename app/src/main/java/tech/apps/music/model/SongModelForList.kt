@@ -3,6 +3,8 @@ package tech.apps.music.model
 import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import tech.apps.music.database.offline.HistorySongModel
+import tech.apps.music.database.offline.WatchLaterSongModel
 import tech.apps.music.util.getThumbnailFromId
 
 @Keep
@@ -32,4 +34,38 @@ fun List<SongModelForList>.toYtAudioDataModel(): List<YTAudioDataModel> {
         )
     }
     return list
+}
+
+fun List<HistorySongModel>.toSongModelForList(): List<SongModelForList> {
+    return let { listSongs ->
+        val list: MutableList<SongModelForList> = mutableListOf()
+        listSongs.forEach {
+            list += SongModelForList(
+                it.videoId,
+                it.title,
+                it.ChannelName,
+                it.duration,
+                it.time,
+                it.watchedPosition
+            )
+        }
+        list
+    }
+}
+
+fun List<WatchLaterSongModel>.toSongForList(): List<SongModelForList> {
+    return let { listSongs ->
+        val list: MutableList<SongModelForList> = mutableListOf()
+        listSongs.forEach {
+            list += SongModelForList(
+                it.videoId,
+                it.title,
+                it.ChannelName,
+                it.duration,
+                it.time,
+                it.watchedPosition
+            )
+        }
+        list
+    }
 }

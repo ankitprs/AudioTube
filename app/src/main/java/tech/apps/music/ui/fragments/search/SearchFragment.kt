@@ -30,7 +30,7 @@ import tech.apps.music.adapters.SearchSuggestionAdapter
 import tech.apps.music.adapters.SongAdapter
 import tech.apps.music.databinding.SearchFragmentBinding
 import tech.apps.music.model.toYtAudioDataModel
-import tech.apps.music.others.Constants
+import tech.apps.music.Constants
 import tech.apps.music.ui.fragments.MainViewModel
 import tech.apps.music.util.Resource
 import javax.inject.Inject

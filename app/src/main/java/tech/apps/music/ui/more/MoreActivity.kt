@@ -19,10 +19,10 @@ import tech.apps.music.BuildConfig
 import tech.apps.music.R
 import tech.apps.music.database.Repository
 import tech.apps.music.databinding.ActivityMoreBinding
-import tech.apps.music.others.Constants.ABOUT
-import tech.apps.music.others.Constants.ABOUT_SENDING_DATA
-import tech.apps.music.others.Constants.HOW_IT_WORKS
-import tech.apps.music.others.Constants.PRIVACY_POLICY
+import tech.apps.music.Constants.ABOUT
+import tech.apps.music.Constants.ABOUT_SENDING_DATA
+import tech.apps.music.Constants.HOW_IT_WORKS
+import tech.apps.music.Constants.PRIVACY_POLICY
 import javax.inject.Inject
 
 @AndroidEntryPoint

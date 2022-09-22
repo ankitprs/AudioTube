@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.support.v4.media.session.PlaybackStateCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,12 +26,12 @@ import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.snackbar.Snackbar
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import dagger.hilt.android.AndroidEntryPoint
+import tech.apps.music.Constants
 import tech.apps.music.R
 import tech.apps.music.database.offline.WatchLaterSongModel
 import tech.apps.music.databinding.FragmentSongBinding
-import tech.apps.music.floatingWindow.YoutubeFloatingUI
+import tech.apps.music.mediaPlayerYT.YoutubeFloatingUI
 import tech.apps.music.model.YTAudioDataModel
-import tech.apps.music.others.Constants
 import tech.apps.music.ui.fragments.MainViewModel
 import tech.apps.music.util.AdsFunctions
 import tech.apps.music.util.secondInFloatToTimeString
@@ -49,8 +50,10 @@ class SongFragment : Fragment() {
     private val binding: FragmentSongBinding get() = _binding!!
 
     private var shouldUpdateSeekbar: Boolean = true
-    private var curPlayingSong: YTAudioDataModel? = null
     private var isWatchLater = false
+
+    private var curPlayingSong: YTAudioDataModel? = null
+    private var playbackState: PlaybackStateCompat? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -70,7 +73,7 @@ class SongFragment : Fragment() {
         subscribeToObserver()
         AdsFunctions.showAds(requireActivity())
 
-        if(AdsFunctions.lastTimeForShowingAds == 0L){
+        if (AdsFunctions.lastTimeForShowingAds == 0L) {
             AdsFunctions.toShowDirect = true
         }
 
@@ -128,6 +131,9 @@ class SongFragment : Fragment() {
                 shouldUpdateSeekbar = true
             }
         })
+        binding.timerIconImage.setOnClickListener {
+            handleSleepTimer(it)
+        }
 
         binding.exitButtonSongFragment.setOnClickListener {
             findNavController().navigateUp()
@@ -212,7 +218,7 @@ class SongFragment : Fragment() {
                                 it?.mutedSwatch?.rgb ?: ContextCompat.getColor(
                                     requireActivity(),
                                     R.color.dark_background
-                                )
+                                    )
                                 )
                     }
                 }
@@ -224,6 +230,10 @@ class SongFragment : Fragment() {
     }
 
     private fun subscribeToObserver() {
+        mainViewModel.playbackState.observe(viewLifecycleOwner) {
+            playbackState = it
+//            isPlayingIconToggle(playbackState?.isPlaying == true)
+        }
         YoutubeFloatingUI.isPlaying.observe(viewLifecycleOwner) {
             isPlayingIconToggle(it)
         }
@@ -322,6 +332,31 @@ class SongFragment : Fragment() {
                 else -> {
                     YoutubeFloatingUI.youtubePlayer?.setPlaybackRate(PlayerConstants.PlaybackRate.RATE_1)
                     setPlaybackSpeed(1f, "1x")
+                }
+            }
+            true
+        }
+    }
+
+    private fun handleSleepTimer(view: View) {
+        val popupMenu = PopupMenu(requireActivity(), view)
+        val inflater = popupMenu.menuInflater
+        inflater.inflate(R.menu.sleep_timer_menu, popupMenu.menu)
+        popupMenu.show()
+
+        popupMenu.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.sleepAfter10m -> {
+                    YoutubeFloatingUI.sleepTimer.postValue(10 * 60 * 1000L)
+                }
+                R.id.sleepAfter30m -> {
+                    YoutubeFloatingUI.sleepTimer.postValue(30 * 60 * 1000L)
+                }
+                R.id.sleepAfter1h -> {
+                    YoutubeFloatingUI.sleepTimer.postValue(60 * 60 * 1000L)
+                }
+                R.id.sleepAfter2h -> {
+                    YoutubeFloatingUI.sleepTimer.postValue(120 * 60 * 1000L)
                 }
             }
             true

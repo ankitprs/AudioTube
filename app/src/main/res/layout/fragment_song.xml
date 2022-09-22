@@ -98,16 +98,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
+
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/materialCardViewDisVisible"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
                 android:background="@drawable/ripple_effect_rectangle"
                 android:padding="10dp"
                 android:text="1x"
                 android:textColor="@color/grey"
                 android:textSize="18dp"
+                app:layout_constraintEnd_toStartOf="@+id/timerIconImage"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -116,23 +118,45 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:layout_marginEnd="32dp"
                 android:background="@drawable/ripple_effect_circle"
                 android:padding="10dp"
                 android:src="@drawable/ic_round_bookmark_border_24"
                 app:layout_constraintEnd_toStartOf="@+id/imageViewEpisodesListButton"
+                app:layout_constraintStart_toEndOf="@+id/imageViewRepeatButton"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/timerIconImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:src="@drawable/ic_round_timer_24"
+                app:layout_constraintEnd_toStartOf="@+id/imageViewRepeatButton"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/materialCardViewDisVisible"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <TextView
+                android:id="@+id/timerIconText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Timer"
+                android:textColor="@color/grey"
+                app:layout_constraintEnd_toEndOf="@+id/timerIconImage"
+                app:layout_constraintStart_toStartOf="@+id/timerIconImage"
+                app:layout_constraintTop_toBottomOf="@+id/timerIconImage" />
 
             <ImageView
                 android:id="@+id/imageViewRepeatButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:layout_marginEnd="32dp"
                 android:background="@drawable/ripple_effect_circle"
                 android:padding="10dp"
                 android:src="@drawable/ic_baseline_repeat_off_24"
                 app:layout_constraintEnd_toStartOf="@+id/imageViewBookMarkButton"
+                app:layout_constraintStart_toEndOf="@+id/timerIconImage"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -151,11 +175,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginEnd="16dp"
                 android:background="@drawable/ripple_effect_circle"
                 android:padding="10dp"
                 android:src="@drawable/ic_round_format_list_bulleted_24"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/imageViewBookMarkButton"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView

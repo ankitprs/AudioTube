@@ -11,8 +11,8 @@ import tech.apps.music.database.Repository
 import tech.apps.music.database.offline.HistorySongModel
 import tech.apps.music.database.offline.SearchHistory
 import tech.apps.music.database.offline.WatchLaterSongModel
-import tech.apps.music.floatingWindow.MusicServiceConnection
-import tech.apps.music.floatingWindow.YoutubeFloatingUI
+import tech.apps.music.mediaPlayerYT.MusicServiceConnection
+import tech.apps.music.mediaPlayerYT.YoutubeFloatingUI
 import tech.apps.music.model.SongModelForList
 import tech.apps.music.model.YTAudioDataModel
 import tech.apps.music.util.Resource
@@ -27,6 +27,7 @@ class MainViewModel @Inject constructor(
 
     val recentList: LiveData<List<HistorySongModel>> by lazy { repository.getLast5RecentList() }
     var recommendationList = cacheRepository.getListOfSongTending()
+    val playbackState = musicServiceConnection.playbackState
 
     fun getRecentList(callback: (list: List<HistorySongModel>) -> Unit) {
         viewModelScope.launch {
@@ -41,6 +42,7 @@ class MainViewModel @Inject constructor(
     }
 
     val bufferingTime: LiveData<Boolean> = YoutubeFloatingUI.bufferingTime
+
 
     fun getListOfSongWithKeyword(query: String): Flow<Resource<out List<SongModelForList>>> {
         val recommendList = cacheRepository.getListOfSongWithKeyword(query)

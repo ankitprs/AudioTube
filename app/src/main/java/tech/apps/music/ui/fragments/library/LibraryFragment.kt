@@ -20,7 +20,7 @@ import tech.apps.music.databinding.LibraryFragmentBinding
 import tech.apps.music.model.SongModelForList
 import tech.apps.music.model.toSongModelForList
 import tech.apps.music.model.toYtAudioDataModel
-import tech.apps.music.others.Constants
+import tech.apps.music.Constants
 import tech.apps.music.ui.fragments.MainViewModel
 import tech.apps.music.ui.more.MoreActivity
 import javax.inject.Inject

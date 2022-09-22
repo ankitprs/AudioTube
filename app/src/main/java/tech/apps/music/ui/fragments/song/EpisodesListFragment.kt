@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import tech.apps.music.adapters.EpisodeAdapter
 import tech.apps.music.databinding.FragmentEpisodesListBinding
-import tech.apps.music.floatingWindow.YoutubeFloatingUI
+import tech.apps.music.mediaPlayerYT.YoutubeFloatingUI
 import tech.apps.music.ui.fragments.MainViewModel
 import javax.inject.Inject
 

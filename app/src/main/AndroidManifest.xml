@@ -41,7 +41,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".floatingWindow.ForegroundService" />
+        <service android:name=".mediaPlayerYT.MusicService" />
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
