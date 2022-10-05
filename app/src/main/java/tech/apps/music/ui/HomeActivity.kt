@@ -11,6 +11,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.Window
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -35,6 +36,7 @@ import tech.apps.music.databinding.HomeActivityBinding
 import tech.apps.music.mediaPlayerYT.MusicService
 import tech.apps.music.mediaPlayerYT.YoutubeFloatingUI
 import tech.apps.music.model.YTAudioDataModel
+import tech.apps.music.model.toYTAudioModel
 import tech.apps.music.ui.fragments.MainViewModel
 import tech.apps.music.util.AdsFunctions
 import javax.inject.Inject
@@ -42,7 +44,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
 
-    companion object{
+    companion object {
         // Facebook Audience Network
         const val PLACEMENT_ID = "672729120837013_692869968822928"
         var interstitialAd: InterstitialAd? = null
@@ -57,6 +59,7 @@ class HomeActivity : AppCompatActivity() {
     @Inject
     lateinit var glide: RequestManager
     private var curPlaying: YTAudioDataModel? = null
+
     private val firebaseAnalytics = FirebaseAnalytics.getInstance(this)
     private var _binding: HomeActivityBinding? = null
     private val binding: HomeActivityBinding get() = _binding!!
@@ -69,18 +72,20 @@ class HomeActivity : AppCompatActivity() {
         _binding = HomeActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        AudienceNetworkAds.initialize(this)
-        MobileAds.initialize(this)
-        startFloatingService()
-
         val connection = ConnectionLiveData(this)
-
         connection.observe(this) {
             binding.noInternetConnectionView.isVisible = it != true
         }
+        AudienceNetworkAds.initialize(this)
+        MobileAds.initialize(this)
+//        startFloatingService()
 
-        viewModel.getCurrentlyPlayingYTAudioModel.observe(this) {
-            curPlaying = it
+        viewModel.isConnected.observe(this) {
+            Toast.makeText(this, it.toString(), Toast.LENGTH_LONG).show()
+        }
+
+        viewModel.currentlyPlayingSong.observe(this) {
+            curPlaying = it.toYTAudioModel()
             glide.load(curPlaying?.thumbnailUrl).into(binding.ivCurSongImage)
             binding.vpSong.text = curPlaying?.title ?: ""
         }
@@ -109,7 +114,7 @@ class HomeActivity : AppCompatActivity() {
                         showOrHideBottomBar(false, isNotSong = false)
                     }
                     else -> {
-                        if (viewModel.getCurrentlyPlayingYTAudioModel.value != null) {
+                        if (viewModel.currentlyPlayingSong.value != null) {
                             showOrHideBottomBar(true)
                         } else {
                             showOrHideBottomBar(false)
@@ -142,26 +147,24 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun showOrHideBottomBar(boolean: Boolean, isNotSong: Boolean = true) {
-        if (boolean) {
-            binding.materialCardViewHome.apply {
+        binding.materialCardViewHome.apply {
+            if (boolean) {
                 animate()
                     .alpha(1f)
                     .setDuration(400)
                     .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator?) {
-                            super.onAnimationEnd(animation)
+                        override fun onAnimationEnd(animation: Animator, isReverse: Boolean) {
+                            super.onAnimationEnd(animation, isReverse)
                             visibility = View.VISIBLE
                         }
                     })
-            }
-        } else {
-            binding.materialCardViewHome.apply {
+            } else {
                 animate()
                     .alpha(0.0f)
                     .setDuration(100)
                     .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator?) {
-                            super.onAnimationEnd(animation)
+                        override fun onAnimationEnd(animation: Animator, isReverse: Boolean) {
+                            super.onAnimationEnd(animation, isReverse)
                             visibility = View.GONE
                         }
                     })
@@ -176,8 +179,8 @@ class HomeActivity : AppCompatActivity() {
                     .alpha(1f)
                     .setDuration(400)
                     .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator?) {
-                            super.onAnimationEnd(animation)
+                        override fun onAnimationEnd(animation: Animator, isReverse: Boolean) {
+                            super.onAnimationEnd(animation, isReverse)
                             isVisible = isNotSong
                         }
                     })
@@ -190,8 +193,8 @@ class HomeActivity : AppCompatActivity() {
                     .alpha(0.0f)
                     .setDuration(400)
                     .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator?) {
-                            super.onAnimationEnd(animation)
+                        override fun onAnimationEnd(animation: Animator, isReverse: Boolean) {
+                            super.onAnimationEnd(animation, isReverse)
                             isVisible = isNotSong
                         }
                     })
@@ -219,7 +222,7 @@ class HomeActivity : AppCompatActivity() {
 
                 val pair = viewModel.getVideoData(it)
                 if (pair != null) {
-                    viewModel.playOrToggleListOfSongs(
+                    viewModel.playListOfSongs(
                         listOf(
                             YTAudioDataModel(
                                 viewModel.getVideoIdFromUrl(it) ?: "",

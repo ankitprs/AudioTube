@@ -1,11 +1,15 @@
 package tech.apps.music.ui.fragments
 
+import android.support.v4.media.MediaBrowserCompat
+import android.support.v4.media.MediaMetadataCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import tech.apps.music.Constants
 import tech.apps.music.database.CacheRepository
 import tech.apps.music.database.Repository
 import tech.apps.music.database.offline.HistorySongModel
@@ -27,7 +31,25 @@ class MainViewModel @Inject constructor(
 
     val recentList: LiveData<List<HistorySongModel>> by lazy { repository.getLast5RecentList() }
     var recommendationList = cacheRepository.getListOfSongTending()
+
+    val mediaItems: List<YTAudioDataModel> = YoutubeFloatingUI.playlistSongs
+
+    val currentlyPlayingSong: LiveData<MediaMetadataCompat?> = musicServiceConnection.curPlayingSong
     val playbackState = musicServiceConnection.playbackState
+    val isConnected = musicServiceConnection.isConnected
+
+    init {
+        musicServiceConnection.subscribe(
+            Constants.MEDIA_ROOT_ID,
+            object : MediaBrowserCompat.SubscriptionCallback() {
+                override fun onChildrenLoaded(
+                    parentId: String,
+                    children: MutableList<MediaBrowserCompat.MediaItem>
+                ) {
+                    super.onChildrenLoaded(parentId, children)
+                }
+            })
+    }
 
     fun getRecentList(callback: (list: List<HistorySongModel>) -> Unit) {
         viewModelScope.launch {
@@ -67,22 +89,21 @@ class MainViewModel @Inject constructor(
     fun playPauseToggleSong(
         mediaId: String
     ) {
-        if (YoutubeFloatingUI.youtubePlayer == null) {
+        if (!YoutubeFloatingUI.isYoutubeActiveForPlay) {
             viewModelScope.launch {
                 musicServiceConnection.playFromVideoId(mediaId)
             }
         } else {
             if (YoutubeFloatingUI.isPlaying.value == true) {
-                YoutubeFloatingUI.youtubePlayer?.pause()
+                musicServiceConnection.transportControls.pause()
             } else {
-                YoutubeFloatingUI.youtubePlayer?.play()
+                musicServiceConnection.transportControls.play()
             }
         }
     }
 
-    fun playOrToggleListOfSongs(
+    fun playListOfSongs(
         mediaItem: List<YTAudioDataModel>,
-        toggle: Boolean = false,
         position: Int = 0,
         watchedPosition: Long = 0L
     ) {
@@ -127,9 +148,6 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    val getCurrentlyPlayingYTAudioModel: LiveData<YTAudioDataModel?> =
-        YoutubeFloatingUI.currentlyPlayingSong
-
     fun deleteSearchByQuery(queryText: String) {
         viewModelScope.launch {
             repository.deleteSearchByQuery(queryText)
@@ -142,5 +160,20 @@ class MainViewModel @Inject constructor(
 
     fun getVideoIdFromUrl(ytUrl: String): String? {
         return cacheRepository.getVideoIdFromUrl(ytUrl)
+    }
+
+    fun setMusicPlaybackRate(rate025: PlayerConstants.PlaybackRate) {
+        musicServiceConnection.transportControls
+    }
+
+    fun setMusicSeekTo(toFloat: Float) {
+        musicServiceConnection.transportControls.seekTo(toFloat.toLong())
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        musicServiceConnection.unsubscribe(
+            Constants.MEDIA_ROOT_ID,
+            object : MediaBrowserCompat.SubscriptionCallback() {})
     }
 }

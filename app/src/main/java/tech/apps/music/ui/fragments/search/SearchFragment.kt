@@ -25,12 +25,12 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import tech.apps.music.Constants
 import tech.apps.music.R
 import tech.apps.music.adapters.SearchSuggestionAdapter
 import tech.apps.music.adapters.SongAdapter
 import tech.apps.music.databinding.SearchFragmentBinding
 import tech.apps.music.model.toYtAudioDataModel
-import tech.apps.music.Constants
 import tech.apps.music.ui.fragments.MainViewModel
 import tech.apps.music.util.Resource
 import javax.inject.Inject
@@ -79,9 +79,8 @@ class SearchFragment : Fragment() {
         settingUpRecyclerView()
 
         songAdapter.setItemClickListener { _, position ->
-            mainViewModel.playOrToggleListOfSongs(
+            mainViewModel.playListOfSongs(
                 songAdapter.songs.toYtAudioDataModel(),
-                true,
                 position
             )
             findNavController().navigate(R.id.action_homeFragment2_to_songFragment2)
@@ -97,7 +96,7 @@ class SearchFragment : Fragment() {
                 ).show()
                 return@setOnClickListener
             }
-            mainViewModel.playOrToggleListOfSongs(songAdapter.songs.toYtAudioDataModel(), true, 0)
+            mainViewModel.playListOfSongs(songAdapter.songs.toYtAudioDataModel(), 0)
             findNavController().navigate(R.id.action_homeFragment2_to_songFragment2)
         }
 

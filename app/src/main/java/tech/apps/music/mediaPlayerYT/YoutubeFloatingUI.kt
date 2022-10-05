@@ -1,8 +1,9 @@
 package tech.apps.music.mediaPlayerYT
 
 import android.annotation.SuppressLint
-import android.app.PendingIntent
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.media.MediaMetadata
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
@@ -13,6 +14,9 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
+import com.bumptech.glide.RequestManager
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.ktx.Firebase
@@ -25,7 +29,6 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTube
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import tech.apps.music.Constants
 import tech.apps.music.R
 import tech.apps.music.database.Repository
 import tech.apps.music.database.offline.HistorySongModel
@@ -34,25 +37,25 @@ import tech.apps.music.model.YTAudioDataModel
 
 @SuppressLint("InflateParams")
 class YoutubeFloatingUI(
-    private val context: Context,
     private val foregroundService: MusicService,
     private val repository: Repository,
-//    private val glide: RequestManager
+    private val glide: RequestManager,
+    private val mediaSession: MediaSessionCompat
 ) {
 
     private val youTubePlayerView: YouTubePlayerView
     private val mView: View
     private var mParams: WindowManager.LayoutParams? = null
     private val mWindowManager: WindowManager =
-        context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        foregroundService.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private val layoutInflater: LayoutInflater =
-        context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        foregroundService.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-    var mediaSession: MediaSessionCompat
     private var musicNotification: MusicNotification
+    var youtubePlayer: YouTubePlayer? = null
+    private val tracker = YouTubePlayerTracker()
 
     companion object {
-        var youtubePlayer: YouTubePlayer? = null
         val currentlyPlayingSong: MutableLiveData<YTAudioDataModel?> = MutableLiveData(null)
         var playlistSongs: MutableList<YTAudioDataModel> = arrayListOf()
 
@@ -62,9 +65,10 @@ class YoutubeFloatingUI(
         val isPlaying: MutableLiveData<Boolean> = MutableLiveData(false)
         val currentTime: MutableLiveData<Float> = MutableLiveData(0F)
         var repeatMode: Boolean = false
-        private val tracker = YouTubePlayerTracker()
 
         var sleepTimer: MutableLiveData<Long?> = MutableLiveData(null)
+        var isYoutubeActiveForPlay: Boolean = false
+            private set
     }
 
     init {
@@ -76,27 +80,6 @@ class YoutubeFloatingUI(
         )
 
         youTubePlayerView = mView.findViewById(R.id.youtube_player_view)
-
-        val activityIntent =
-            foregroundService.packageManager.getLaunchIntentForPackage(foregroundService.packageName)
-                ?.let {
-                    PendingIntent.getActivity(
-                        foregroundService,
-                        0,
-                        it,
-                        PendingIntent.FLAG_IMMUTABLE
-                    )
-                }
-
-        mediaSession = MediaSessionCompat(
-            foregroundService,
-            Constants.SERVICE_TAG,
-            null,
-            activityIntent
-        ).apply {
-            setSessionActivity(activityIntent)
-            isActive = true
-        }
         musicNotification = MusicNotification(foregroundService, mediaSession)
         musicNotification.startMyOwnForeground()
         initializingYoutubePlayer()
@@ -117,25 +100,11 @@ class YoutubeFloatingUI(
 
     }
 
-    private fun startTimer() {
-        removeTimer()
-        sleepTimer.observeForever {
-
-            close()
-        }
-    }
-
-    private fun removeTimer() {
-        sleepTimer.postValue(null)
-
-    }
-
     fun close() {
         youTubePlayerView.release()
 
         currentlyPlayingSong.removeObserver {}
         playlistSongs.removeAll { true }
-        bufferingTime.removeObserver {}
         isPlaying.removeObserver {}
         currentTime.removeObserver {}
 
@@ -157,7 +126,7 @@ class YoutubeFloatingUI(
             override fun onError(youTubePlayer: YouTubePlayer, error: PlayerConstants.PlayerError) {
                 super.onError(youTubePlayer, error)
                 Toast.makeText(
-                    context,
+                    foregroundService,
                     "Oops... Youtube doesn't allow us to play this video",
                     Toast.LENGTH_LONG
                 ).show()
@@ -169,6 +138,31 @@ class YoutubeFloatingUI(
                 youTubePlayerView.enableBackgroundPlayback(true)
                 youtubePlayer?.setVolume(100)
                 youtubePlayer?.addListener(tracker)
+
+                isYoutubeActiveForPlay = true
+            }
+
+            override fun onVideoId(youTubePlayer: YouTubePlayer, videoId: String) {
+                super.onVideoId(youTubePlayer, videoId)
+
+                glide.asBitmap().load(currentlyPlayingSong.value?.thumbnailUrl).into(
+                    object : CustomTarget<Bitmap>() {
+                        override fun onResourceReady(
+                            resource: Bitmap,
+                            transition: Transition<in Bitmap>?
+                        ) {
+                            val mediaMetadata = MediaMetadataCompat.Builder()
+                            mediaMetadata.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, currentlyPlayingSong.value?.title)
+                            mediaMetadata.putBitmap(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON, resource)
+                            mediaMetadata.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, "T - series")
+                            mediaSession.setMetadata(mediaMetadata.build())
+                        }
+
+                        override fun onLoadCleared(placeholder: Drawable?) {
+                            return
+                        }
+                    }
+                )
             }
 
             override fun onCurrentSecond(youTubePlayer: YouTubePlayer, second: Float) {
@@ -239,11 +233,14 @@ class YoutubeFloatingUI(
                 // Could also be a screenshot or hero image for video content
                 // The URI scheme needs to be "content", "file", or "android.resource".
                 .putString(
-                    MediaMetadata.METADATA_KEY_ALBUM_ART_URI, currentlyPlayingSong.value?.thumbnailUrl)
+                    MediaMetadata.METADATA_KEY_ALBUM_ART_URI,
+                    currentlyPlayingSong.value?.thumbnailUrl
+                )
                 .putLong(MediaMetadata.METADATA_KEY_DURATION, songDuration) // 4
                 .build()
         )
     }
+
     fun togglePlayPause() {
         if (isPlaying.value == true) {
             youtubePlayer?.pause()

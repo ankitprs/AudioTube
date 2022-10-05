@@ -14,13 +14,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
+import tech.apps.music.Constants
 import tech.apps.music.R
 import tech.apps.music.adapters.SongAdapter
 import tech.apps.music.databinding.LibraryFragmentBinding
 import tech.apps.music.model.SongModelForList
 import tech.apps.music.model.toSongModelForList
 import tech.apps.music.model.toYtAudioDataModel
-import tech.apps.music.Constants
 import tech.apps.music.ui.fragments.MainViewModel
 import tech.apps.music.ui.more.MoreActivity
 import javax.inject.Inject
@@ -29,6 +29,7 @@ import javax.inject.Inject
 class LibraryFragment : Fragment() {
 
     private lateinit var viewModel: MainViewModel
+
     @Inject
     lateinit var recentAudioAdapter: SongAdapter
 
@@ -40,7 +41,7 @@ class LibraryFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = LibraryFragmentBinding.inflate(layoutInflater,container,false)
+        _binding = LibraryFragmentBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
 
@@ -73,22 +74,26 @@ class LibraryFragment : Fragment() {
             true
         }
 
-        recentAudioAdapter.setItemClickListener {it, position ->
-            viewModel.playOrToggleListOfSongs(recentAudioAdapter.songs.toYtAudioDataModel(),true,position,it.watchedPosition)
+        recentAudioAdapter.setItemClickListener { it, position ->
+            viewModel.playListOfSongs(
+                recentAudioAdapter.songs.toYtAudioDataModel(),
+                position,
+                it.watchedPosition
+            )
             findNavController().navigate(R.id.action_homeFragment2_to_songFragment2)
         }
 
         recentAudioAdapter.setItemMenuClickListener { pair ->
-            val popupMenu = PopupMenu(requireActivity(),pair.second)
-            popupMenu.menuInflater.inflate(R.menu.song_detail_menu,popupMenu.menu)
+            val popupMenu = PopupMenu(requireActivity(), pair.second)
+            popupMenu.menuInflater.inflate(R.menu.song_detail_menu, popupMenu.menu)
             popupMenu.show()
             val songModel = pair.first
-            popupMenu.setOnMenuItemClickListener{
-                when(it.itemId){
-                    R.id.songPopupMenu_AddPlaylist ->{
+            popupMenu.setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.songPopupMenu_AddPlaylist -> {
 
                     }
-                    R.id.songPopupMenu_Share ->{}
+                    R.id.songPopupMenu_Share -> {}
                     R.id.songPopupMenu_Play -> {}
                 }
                 true
@@ -144,8 +149,7 @@ class LibraryFragment : Fragment() {
         _binding = null
     }
 
-    private fun addingPlaylist(){
-
+    private fun addingPlaylist() {
 
 
     }

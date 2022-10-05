@@ -53,7 +53,7 @@ class MyLibraryListFragment : Fragment() {
         updateList()
 
         watchLaterAdapter.setItemClickListener { _, position ->
-            mainViewModel.playOrToggleListOfSongs(watchLaterAdapter.songs.toYtAudioDataModel(),true,position)
+            mainViewModel.playListOfSongs(watchLaterAdapter.songs.toYtAudioDataModel(),position)
             findNavController().navigate(R.id.action_homeFragment2_to_songFragment2)
         }
 

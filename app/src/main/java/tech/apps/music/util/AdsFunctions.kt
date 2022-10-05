@@ -7,7 +7,6 @@ import com.facebook.ads.InterstitialAd
 import com.facebook.ads.InterstitialAdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.rewarded.RewardItem
 import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd
 import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback
 import tech.apps.music.ui.HomeActivity
@@ -102,10 +101,8 @@ object AdsFunctions {
     private fun showGoogleAds(context: Activity) {
         lastTimeForShowingAds = System.currentTimeMillis()
 
-        HomeActivity.rewardedInterstitialAd?.show(context) {
-            fun onUserEarnedReward(rewardItem: RewardItem) {
-            }
-        }
+        HomeActivity.rewardedInterstitialAd?.show(context) {}
+
         HomeActivity.rewardedInterstitialAd = null
     }
 }

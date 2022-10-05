@@ -32,6 +32,7 @@ import tech.apps.music.database.offline.WatchLaterSongModel
 import tech.apps.music.databinding.FragmentSongBinding
 import tech.apps.music.mediaPlayerYT.YoutubeFloatingUI
 import tech.apps.music.model.YTAudioDataModel
+import tech.apps.music.model.toYTAudioModel
 import tech.apps.music.ui.fragments.MainViewModel
 import tech.apps.music.util.AdsFunctions
 import tech.apps.music.util.secondInFloatToTimeString
@@ -126,7 +127,7 @@ class SongFragment : Fragment() {
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 seekBar?.let {
-                    YoutubeFloatingUI.youtubePlayer?.seekTo(it.progress.toFloat())
+                    mainViewModel.setMusicSeekTo(it.progress.toFloat())
                 }
                 shouldUpdateSeekbar = true
             }
@@ -237,11 +238,11 @@ class SongFragment : Fragment() {
         YoutubeFloatingUI.isPlaying.observe(viewLifecycleOwner) {
             isPlayingIconToggle(it)
         }
-        mainViewModel.getCurrentlyPlayingYTAudioModel.observe(viewLifecycleOwner) {
+        mainViewModel.currentlyPlayingSong.observe(viewLifecycleOwner) {
             if (it != null) {
-                updateTitleAndSongImage(it)
+                it.toYTAudioModel()?.let { it1 -> updateTitleAndSongImage(it1) }
             }
-            curPlayingSong = it
+            curPlayingSong = it.toYTAudioModel()
         }
         mainViewModel.bufferingTime.observe(viewLifecycleOwner) {
             binding.progressBarForBuffering.isVisible = it
@@ -310,27 +311,27 @@ class SongFragment : Fragment() {
         popupMenu.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.speedControlMenu025 -> {
-                    YoutubeFloatingUI.youtubePlayer?.setPlaybackRate(PlayerConstants.PlaybackRate.RATE_0_25)
+                    mainViewModel.setMusicPlaybackRate(PlayerConstants.PlaybackRate.RATE_0_25)
                     setPlaybackSpeed(0.25f, "0.25x")
                 }
                 R.id.speedControlMenu05 -> {
-                    YoutubeFloatingUI.youtubePlayer?.setPlaybackRate(PlayerConstants.PlaybackRate.RATE_0_5)
+                    mainViewModel.setMusicPlaybackRate(PlayerConstants.PlaybackRate.RATE_0_5)
                     setPlaybackSpeed(0.5f, "0.50x")
                 }
                 R.id.speedControlMenu10 -> {
-                    YoutubeFloatingUI.youtubePlayer?.setPlaybackRate(PlayerConstants.PlaybackRate.RATE_1)
+                    mainViewModel.setMusicPlaybackRate(PlayerConstants.PlaybackRate.RATE_1)
                     setPlaybackSpeed(1f, "1.00x")
                 }
                 R.id.speedControlMenu15 -> {
-                    YoutubeFloatingUI.youtubePlayer?.setPlaybackRate(PlayerConstants.PlaybackRate.RATE_1_5)
+                    mainViewModel.setMusicPlaybackRate(PlayerConstants.PlaybackRate.RATE_1_5)
                     setPlaybackSpeed(1.5f, "1.50x")
                 }
                 R.id.speedControlMenu20 -> {
-                    YoutubeFloatingUI.youtubePlayer?.setPlaybackRate(PlayerConstants.PlaybackRate.RATE_2)
+                    mainViewModel.setMusicPlaybackRate(PlayerConstants.PlaybackRate.RATE_2)
                     setPlaybackSpeed(2f, "2.00x")
                 }
                 else -> {
-                    YoutubeFloatingUI.youtubePlayer?.setPlaybackRate(PlayerConstants.PlaybackRate.RATE_1)
+                    mainViewModel.setMusicPlaybackRate(PlayerConstants.PlaybackRate.RATE_1)
                     setPlaybackSpeed(1f, "1x")
                 }
             }

@@ -75,9 +75,8 @@ class HomeFragment : Fragment() {
 
         songAdapter.setItemClickListener { it, position ->
             AdsFunctions.showAds(requireActivity())
-            viewModel.playOrToggleListOfSongs(
+            viewModel.playListOfSongs(
                 songAdapter.songs.toYtAudioDataModel(),
-                true,
                 position
             )
             findNavController().navigate(R.id.action_homeFragment2_to_songFragment2)
@@ -85,9 +84,8 @@ class HomeFragment : Fragment() {
 
         songAdapterVertical.setItemClickListener { it, position ->
             AdsFunctions.showAds(requireActivity())
-            viewModel.playOrToggleListOfSongs(
+            viewModel.playListOfSongs(
                 songAdapterVertical.songs.toYtAudioDataModel(),
-                true,
                 position,
                 it.watchedPosition
             )

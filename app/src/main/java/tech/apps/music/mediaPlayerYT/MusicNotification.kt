@@ -1,68 +1,23 @@
 package tech.apps.music.mediaPlayerYT
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.PendingIntent
-import android.app.Service
 import android.content.Intent
-import android.graphics.Bitmap
-import android.os.Build
 import android.support.v4.media.session.MediaSessionCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import androidx.core.app.NotificationCompat
-import okhttp3.internal.notify
+import androidx.media.session.MediaButtonReceiver
 import tech.apps.music.Constants
 import tech.apps.music.R
 import tech.apps.music.ui.HomeActivity
 
 class MusicNotification(
     private val musicService: MusicService,
-    private val mediaSession: MediaSessionCompat
+    private val mediaSession: MediaSessionCompat,
 ) {
 
-    private var playPendingIntent: PendingIntent
-    private var pausePendingIntent: PendingIntent? = null
-    private var nextPendingIntent: PendingIntent? = null
+    private var playPausePendingIntent: PendingIntent
     private var stopPendingIntent: PendingIntent
-    private lateinit var notification : NotificationCompat.Builder
-
-    private val manager =
-        musicService.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
-
-
-    fun updateNotification(title: String, imageBitmap: Bitmap?) {
-        notification.setContentTitle(title)
-        notification.setLargeIcon(imageBitmap)
-        notification.build().notify()
-
-        YoutubeFloatingUI.isPlaying.observeForever {
-            notification.clearActions()
-            if (it) {
-                notification.addAction(R.drawable.ic_round_pause_24, null, playPendingIntent)
-                    .addAction(R.drawable.ic_round_clear_24, null, stopPendingIntent)
-            } else {
-                notification.addAction(
-                    R.drawable.ic_round_play_arrow_24,
-                    null,
-                    playPendingIntent
-                )
-                    .addAction(R.drawable.ic_round_clear_24, null, stopPendingIntent)
-            }
-            manager.notify(Constants.NOTIFICATION_ID, notification.build())
-        }
-
-        YoutubeFloatingUI.currentlyPlayingSong.observeForever {
-            notification.setContentTitle(it?.title)
-            notification.setContentText(it?.author)
-            manager.notify(Constants.NOTIFICATION_ID, notification.build())
-//
-//                if (it != null) {
-//                    playlistSongs.remove(playlistSongs.find { list ->
-//                        list.mediaId == it.mediaId
-//                    })
-//                    playlistSongs.addAll(0, listOf(it))
-//                }
-        }
-    }
+    private lateinit var notification: NotificationCompat.Builder
 
     init {
         musicService.apply {
@@ -75,7 +30,7 @@ class MusicNotification(
                 PendingIntent.FLAG_IMMUTABLE
             )
 
-            playPendingIntent = PendingIntent
+            playPausePendingIntent = PendingIntent
                 .getService(
                     this, 2,
                     Intent(this, MusicService::class.java).apply {
@@ -86,17 +41,25 @@ class MusicNotification(
         }
     }
 
+
+//        YoutubeFloatingUI.isPlaying.observeForever {
+//            notification.clearActions()
+//            if (it) {
+//                notification.addAction(R.drawable.ic_round_pause_24, null, playPausePendingIntent)
+//                    .addAction(R.drawable.ic_round_clear_24, null, stopPendingIntent)
+//            } else {
+//                notification.addAction(
+//                    R.drawable.ic_round_play_arrow_24,
+//                    null,
+//                    playPausePendingIntent
+//                )
+//                    .addAction(R.drawable.ic_round_clear_24, null, stopPendingIntent)
+//            }
+//            manager.notify(Constants.NOTIFICATION_ID, notification.build())
+//        }
+
     fun startMyOwnForeground() {
         musicService.apply {
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val channel = NotificationChannel(
-                    Constants.NOTIFICATION_CHANNEL_ID,
-                    Constants.CHANNEL_NAME,
-                    NotificationManager.IMPORTANCE_MIN
-                )
-                manager.createNotificationChannel(channel)
-            }
 
             val pendingIntent = PendingIntent.getActivity(
                 this, 0,
@@ -107,35 +70,58 @@ class MusicNotification(
                 PendingIntent.FLAG_IMMUTABLE
             )
 
-            notification = NotificationCompat.Builder(musicService, Constants.NOTIFICATION_CHANNEL_ID)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setSmallIcon(R.drawable.ic_play_audio)
-                // Add media control buttons that invoke intents in your media service
-                .addAction(R.drawable.ic_round_play_arrow_24, "play", playPendingIntent) // #0
-                .addAction(R.drawable.ic_round_pause_24, "Pause", pausePendingIntent) // #1
-                .addAction(
-                    R.drawable.cast_ic_expanded_controller_skip_next,
-                    "Next",
-                    nextPendingIntent
-                ) // #2
-                .addAction(R.drawable.ic_round_clear_24, "Stop", stopPendingIntent)
-                .setStyle(
-                    androidx.media.app.NotificationCompat.MediaStyle()
-                        .setShowActionsInCompactView(1)
-                        .setMediaSession(mediaSession.sessionToken)
-                )
-                .setContentTitle("Wonderful music")
-                .setLargeIcon(null)
-                .setContentIntent(pendingIntent)
+            val controller = mediaSession.controller
+            val mediaMetadata = controller.metadata
+            val description = mediaMetadata.description
 
+            notification =
+                NotificationCompat.Builder(musicService, Constants.NOTIFICATION_CHANNEL_ID)
+                    .setContentTitle(description.title)
+                    .setContentText(description.subtitle)
+                    .setSubText(description.description)
+                    .setLargeIcon(description.iconBitmap)
 
-//            notification.setOngoing(true)
-//                .setColorized(true).setColor(
-//                    Color.parseColor("#181818")
-//                )
+//                    .setContentIntent(controller.sessionActivity)
+                    .setContentIntent(pendingIntent)
+
+                    .setDeleteIntent(
+                        MediaButtonReceiver.buildMediaButtonPendingIntent(
+                            musicService,
+                            PlaybackStateCompat.ACTION_STOP
+                        )
+                    )
+
+                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                    .setSmallIcon(R.drawable.ic_play_audio)
+
+                    .addAction(
+                        NotificationCompat.Action(
+                            R.drawable.ic_round_pause_24,
+                            "pause",
+                            MediaButtonReceiver.buildMediaButtonPendingIntent(
+                                musicService,
+                                PlaybackStateCompat.ACTION_PLAY_PAUSE
+                            )
+                        )
+                    )
+//                    .addAction(R.drawable.ic_round_pause_24, "pause", playPausePendingIntent)
+                    .addAction(R.drawable.ic_round_clear_24, "Stop", stopPendingIntent)
+
+                    .setStyle(
+                        androidx.media.app.NotificationCompat.MediaStyle()
+                            .setShowActionsInCompactView(0)
+                            .setMediaSession(mediaSession.sessionToken)
+                            .setShowCancelButton(true)
+                            .setCancelButtonIntent(
+                                MediaButtonReceiver.buildMediaButtonPendingIntent(
+                                    musicService,
+                                    PlaybackStateCompat.ACTION_STOP
+                                )
+                            )
+
+                    )
 
             startForeground(Constants.NOTIFICATION_ID, notification.build())
-            manager.notify(Constants.NOTIFICATION_ID, notification.build())
         }
     }
 
