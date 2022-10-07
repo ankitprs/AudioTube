@@ -9,9 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.view.View
 import android.view.Window
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -36,7 +34,6 @@ import tech.apps.music.databinding.HomeActivityBinding
 import tech.apps.music.mediaPlayerYT.MusicService
 import tech.apps.music.mediaPlayerYT.YoutubeFloatingUI
 import tech.apps.music.model.YTAudioDataModel
-import tech.apps.music.model.toYTAudioModel
 import tech.apps.music.ui.fragments.MainViewModel
 import tech.apps.music.util.AdsFunctions
 import javax.inject.Inject
@@ -54,7 +51,7 @@ class HomeActivity : AppCompatActivity() {
         const val APP_ID = "ca-app-pub-8154643218867307/4993051585"
     }
 
-    private val viewModel: MainViewModel by viewModels()
+    val viewModel: MainViewModel by viewModels()
 
     @Inject
     lateinit var glide: RequestManager
@@ -78,14 +75,10 @@ class HomeActivity : AppCompatActivity() {
         }
         AudienceNetworkAds.initialize(this)
         MobileAds.initialize(this)
-//        startFloatingService()
-
-        viewModel.isConnected.observe(this) {
-            Toast.makeText(this, it.toString(), Toast.LENGTH_LONG).show()
-        }
+        startFloatingService()
 
         viewModel.currentlyPlayingSong.observe(this) {
-            curPlaying = it.toYTAudioModel()
+            curPlaying = it
             glide.load(curPlaying?.thumbnailUrl).into(binding.ivCurSongImage)
             binding.vpSong.text = curPlaying?.title ?: ""
         }
@@ -134,6 +127,8 @@ class HomeActivity : AppCompatActivity() {
         }
 
         binding.materialCardViewHome.setOnClickListener {
+            if (!binding.materialCardViewHome.isVisible)
+                return@setOnClickListener
             navController.navigate(
                 R.id.action_homeFragment2_to_songFragment2
             )
@@ -147,25 +142,27 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun showOrHideBottomBar(boolean: Boolean, isNotSong: Boolean = true) {
-        binding.materialCardViewHome.apply {
-            if (boolean) {
+        if (boolean) {
+            binding.materialCardViewHome.apply {
                 animate()
                     .alpha(1f)
                     .setDuration(400)
                     .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator, isReverse: Boolean) {
-                            super.onAnimationEnd(animation, isReverse)
-                            visibility = View.VISIBLE
+                        override fun onAnimationEnd(animation: Animator) {
+                            super.onAnimationEnd(animation)
+                            isVisible = true
                         }
                     })
-            } else {
+            }
+        } else {
+            binding.materialCardViewHome.apply {
                 animate()
                     .alpha(0.0f)
                     .setDuration(100)
                     .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator, isReverse: Boolean) {
-                            super.onAnimationEnd(animation, isReverse)
-                            visibility = View.GONE
+                        override fun onAnimationEnd(animation: Animator) {
+                            super.onAnimationEnd(animation)
+                            isVisible = false
                         }
                     })
             }

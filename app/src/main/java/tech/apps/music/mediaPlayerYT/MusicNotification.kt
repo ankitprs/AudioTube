@@ -12,7 +12,7 @@ import tech.apps.music.ui.HomeActivity
 
 class MusicNotification(
     private val musicService: MusicService,
-    private val mediaSession: MediaSessionCompat,
+    private val mediaSession: MediaSessionCompat
 ) {
 
     private var playPausePendingIntent: PendingIntent
@@ -40,23 +40,6 @@ class MusicNotification(
                 )
         }
     }
-
-
-//        YoutubeFloatingUI.isPlaying.observeForever {
-//            notification.clearActions()
-//            if (it) {
-//                notification.addAction(R.drawable.ic_round_pause_24, null, playPausePendingIntent)
-//                    .addAction(R.drawable.ic_round_clear_24, null, stopPendingIntent)
-//            } else {
-//                notification.addAction(
-//                    R.drawable.ic_round_play_arrow_24,
-//                    null,
-//                    playPausePendingIntent
-//                )
-//                    .addAction(R.drawable.ic_round_clear_24, null, stopPendingIntent)
-//            }
-//            manager.notify(Constants.NOTIFICATION_ID, notification.build())
-//        }
 
     fun startMyOwnForeground() {
         musicService.apply {
@@ -95,17 +78,20 @@ class MusicNotification(
                     .setSmallIcon(R.drawable.ic_play_audio)
 
                     .addAction(
-                        NotificationCompat.Action(
-                            R.drawable.ic_round_pause_24,
+                        NotificationCompat.Action.Builder(
+                            R.drawable.ic_round_play_arrow_24,
                             "pause",
-                            MediaButtonReceiver.buildMediaButtonPendingIntent(
-                                musicService,
-                                PlaybackStateCompat.ACTION_PLAY_PAUSE
-                            )
-                        )
+                            playPausePendingIntent
+                        ).build()
+
                     )
-//                    .addAction(R.drawable.ic_round_pause_24, "pause", playPausePendingIntent)
-                    .addAction(R.drawable.ic_round_clear_24, "Stop", stopPendingIntent)
+//                    .addAction(R.drawable.ic_round_pause_24, "play", playPausePendingIntent)
+
+                    .addAction(
+                        R.drawable.ic_round_clear_24,
+                        "Stop",
+                        stopPendingIntent
+                    )
 
                     .setStyle(
                         androidx.media.app.NotificationCompat.MediaStyle()
@@ -123,6 +109,31 @@ class MusicNotification(
 
             startForeground(Constants.NOTIFICATION_ID, notification.build())
         }
+
     }
 
+    fun toggleNotification(isPlaying: Boolean) {
+
+        notification.clearActions()
+        if (isPlaying) {
+            notification.addAction(
+                NotificationCompat.Action.Builder(
+                    R.drawable.ic_round_pause_24,
+                    "play",
+                    playPausePendingIntent
+                ).build()
+            )
+        } else {
+            notification.addAction(
+                NotificationCompat.Action.Builder(
+                    R.drawable.ic_round_play_arrow_24,
+                    "pause",
+                    playPausePendingIntent
+                ).build()
+            )
+        }
+        notification.addAction(R.drawable.ic_round_clear_24, "Stop", stopPendingIntent)
+
+        musicService.startForeground(Constants.NOTIFICATION_ID, notification.build())
+    }
 }

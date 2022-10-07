@@ -51,11 +51,10 @@ class YoutubeFloatingUI(
     private val layoutInflater: LayoutInflater =
         foregroundService.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-    private var musicNotification: MusicNotification
-    var youtubePlayer: YouTubePlayer? = null
     private val tracker = YouTubePlayerTracker()
 
     companion object {
+        var youtubePlayer: YouTubePlayer? = null
         val currentlyPlayingSong: MutableLiveData<YTAudioDataModel?> = MutableLiveData(null)
         var playlistSongs: MutableList<YTAudioDataModel> = arrayListOf()
 
@@ -66,7 +65,6 @@ class YoutubeFloatingUI(
         val currentTime: MutableLiveData<Float> = MutableLiveData(0F)
         var repeatMode: Boolean = false
 
-        var sleepTimer: MutableLiveData<Long?> = MutableLiveData(null)
         var isYoutubeActiveForPlay: Boolean = false
             private set
     }
@@ -80,15 +78,11 @@ class YoutubeFloatingUI(
         )
 
         youTubePlayerView = mView.findViewById(R.id.youtube_player_view)
-        musicNotification = MusicNotification(foregroundService, mediaSession)
-        musicNotification.startMyOwnForeground()
         initializingYoutubePlayer()
     }
 
     fun open() {
         try {
-            // check if the view is already
-            // inflated or present in the window
             if (mView.windowToken == null) {
                 if (mView.parent == null) {
                     mWindowManager.addView(mView, mParams)
@@ -145,24 +139,17 @@ class YoutubeFloatingUI(
             override fun onVideoId(youTubePlayer: YouTubePlayer, videoId: String) {
                 super.onVideoId(youTubePlayer, videoId)
 
-                glide.asBitmap().load(currentlyPlayingSong.value?.thumbnailUrl).into(
-                    object : CustomTarget<Bitmap>() {
-                        override fun onResourceReady(
-                            resource: Bitmap,
-                            transition: Transition<in Bitmap>?
-                        ) {
-                            val mediaMetadata = MediaMetadataCompat.Builder()
-                            mediaMetadata.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, currentlyPlayingSong.value?.title)
-                            mediaMetadata.putBitmap(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON, resource)
-                            mediaMetadata.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, "T - series")
-                            mediaSession.setMetadata(mediaMetadata.build())
-                        }
-
-                        override fun onLoadCleared(placeholder: Drawable?) {
-                            return
-                        }
-                    }
+                val mediaMetadata = MediaMetadataCompat.Builder()
+                mediaMetadata.putString(
+                    MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE,
+                    currentlyPlayingSong.value?.title
                 )
+                mediaMetadata.putBitmap(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON, null)
+                mediaMetadata.putString(
+                    MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE,
+                    currentlyPlayingSong.value?.author
+                )
+                mediaSession.setMetadata(mediaMetadata.build())
             }
 
             override fun onCurrentSecond(youTubePlayer: YouTubePlayer, second: Float) {
@@ -171,15 +158,10 @@ class YoutubeFloatingUI(
                 mediaSession.setPlaybackState(
                     PlaybackStateCompat.Builder()
                         .setState(
-                            PlaybackStateCompat.STATE_PLAYING,
+                            PlaybackStateCompat.STATE_PAUSED,
                             second.toLong(),
                             1F
                         )
-                        // isSeekable.
-                        // Adding the SEEK_TO action indicates that seeking is supported
-                        // and makes the seekbar position marker draggable. If this is not
-                        // supplied seek will be disabled but progress will still be shown.
-                        .setActions(PlaybackStateCompat.ACTION_SEEK_TO)
                         .build()
                 )
             }
@@ -195,6 +177,7 @@ class YoutubeFloatingUI(
                         isPlaying.postValue(true)
                     }
                     PlayerConstants.PlayerState.PLAYING -> {
+                        mediaSession.controller.transportControls.play()
                         bufferingTime.postValue(false)
                         isPlaying.postValue(true)
                     }
@@ -220,32 +203,38 @@ class YoutubeFloatingUI(
     }
 
     private fun updateMetadata(songDuration: Long) {
-        mediaSession.setMetadata(
-            MediaMetadataCompat.Builder()
-                // Title.
-                .putString(MediaMetadata.METADATA_KEY_TITLE, currentlyPlayingSong.value?.title)
+        glide.asBitmap().centerCrop().load(currentlyPlayingSong.value?.thumbnailUrl)
+            .into(object : CustomTarget<Bitmap>() {
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
 
-                // Artist.
-                // Could also be the channel name or TV series.
-                .putString(MediaMetadata.METADATA_KEY_ARTIST, currentlyPlayingSong.value?.author)
+                    mediaSession.setMetadata(
+                        MediaMetadataCompat.Builder()
+                            .putString(
+                                MediaMetadata.METADATA_KEY_TITLE,
+                                currentlyPlayingSong.value?.title
+                            )
+                            .putString(
+                                MediaMetadata.METADATA_KEY_ARTIST,
+                                currentlyPlayingSong.value?.author
+                            )
+                            .putBitmap(
+                                MediaMetadata.METADATA_KEY_ART,
+                                resource
+                            )
+                            .putLong(MediaMetadata.METADATA_KEY_DURATION, songDuration) // 4
+                            .build()
+                    )
+                }
 
-                // Album art.
-                // Could also be a screenshot or hero image for video content
-                // The URI scheme needs to be "content", "file", or "android.resource".
-                .putString(
-                    MediaMetadata.METADATA_KEY_ALBUM_ART_URI,
-                    currentlyPlayingSong.value?.thumbnailUrl
-                )
-                .putLong(MediaMetadata.METADATA_KEY_DURATION, songDuration) // 4
-                .build()
-        )
+                override fun onLoadCleared(placeholder: Drawable?) {}
+            })
     }
 
     fun togglePlayPause() {
         if (isPlaying.value == true) {
-            youtubePlayer?.pause()
+            mediaSession.controller.transportControls.pause()
         } else {
-            youtubePlayer?.play()
+            mediaSession.controller.transportControls.play()
         }
     }
 

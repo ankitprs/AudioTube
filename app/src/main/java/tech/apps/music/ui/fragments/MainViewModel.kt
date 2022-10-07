@@ -1,11 +1,10 @@
 package tech.apps.music.ui.fragments
 
+import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
-import android.support.v4.media.MediaMetadataCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -30,13 +29,12 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
 
     val recentList: LiveData<List<HistorySongModel>> by lazy { repository.getLast5RecentList() }
-    var recommendationList = cacheRepository.getListOfSongTending()
+    private var recommendationList = cacheRepository.getListOfSongTending()
 
-    val mediaItems: List<YTAudioDataModel> = YoutubeFloatingUI.playlistSongs
+//    val mediaItems: List<YTAudioDataModel> = YoutubeFloatingUI.playlistSongs
 
-    val currentlyPlayingSong: LiveData<MediaMetadataCompat?> = musicServiceConnection.curPlayingSong
+    val currentlyPlayingSong: LiveData<YTAudioDataModel?> = YoutubeFloatingUI.currentlyPlayingSong
     val playbackState = musicServiceConnection.playbackState
-    val isConnected = musicServiceConnection.isConnected
 
     init {
         musicServiceConnection.subscribe(
@@ -102,6 +100,13 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun pauseCurrSong(){
+        musicServiceConnection.transportControls.pause()
+    }
+    fun playCurrSong(){
+        musicServiceConnection.transportControls.pause()
+    }
+
     fun playListOfSongs(
         mediaItem: List<YTAudioDataModel>,
         position: Int = 0,
@@ -162,8 +167,8 @@ class MainViewModel @Inject constructor(
         return cacheRepository.getVideoIdFromUrl(ytUrl)
     }
 
-    fun setMusicPlaybackRate(rate025: PlayerConstants.PlaybackRate) {
-        musicServiceConnection.transportControls
+    fun setMusicPlaybackRate(rateOfPlayback: Float) {
+        musicServiceConnection.transportControls.setPlaybackSpeed(rateOfPlayback)
     }
 
     fun setMusicSeekTo(toFloat: Float) {
@@ -175,5 +180,11 @@ class MainViewModel @Inject constructor(
         musicServiceConnection.unsubscribe(
             Constants.MEDIA_ROOT_ID,
             object : MediaBrowserCompat.SubscriptionCallback() {})
+    }
+
+    fun sleepAfterTimer(timeInLong: Long) {
+        val bundle = Bundle()
+        bundle.putLong(Constants.TIMER_IN_LONG, timeInLong)
+        musicServiceConnection.transportControls.sendCustomAction(Constants.ACTION_TIMER_SONG, bundle)
     }
 }

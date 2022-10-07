@@ -9,6 +9,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd
 import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback
+import tech.apps.music.mediaPlayerYT.YoutubeFloatingUI
 import tech.apps.music.ui.HomeActivity
 
 object AdsFunctions {
@@ -46,8 +47,12 @@ object AdsFunctions {
 
         HomeActivity.interstitialAd = InterstitialAd(context, HomeActivity.PLACEMENT_ID)
         val interstitialAdListener: InterstitialAdListener = object : InterstitialAdListener {
-            override fun onInterstitialDisplayed(ad: Ad) {}
-            override fun onInterstitialDismissed(ad: Ad) {}
+            override fun onInterstitialDisplayed(ad: Ad) {
+                YoutubeFloatingUI.youtubePlayer?.pause()
+            }
+            override fun onInterstitialDismissed(ad: Ad) {
+                YoutubeFloatingUI.youtubePlayer?.play()
+            }
 
             override fun onError(ad: Ad?, adError: AdError) {
                 lastTimeForShowingAds = 0L
@@ -81,7 +86,6 @@ object AdsFunctions {
                         showGoogleAds(context)
                     }
                 }
-
                 override fun onAdFailedToLoad(loadAdError: LoadAdError) {
                     lastTimeForShowingAds = 0L
                 }
@@ -101,7 +105,7 @@ object AdsFunctions {
     private fun showGoogleAds(context: Activity) {
         lastTimeForShowingAds = System.currentTimeMillis()
 
-        HomeActivity.rewardedInterstitialAd?.show(context) {}
+        HomeActivity.rewardedInterstitialAd?.show(context){}
 
         HomeActivity.rewardedInterstitialAd = null
     }

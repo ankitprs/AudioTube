@@ -3,7 +3,6 @@ package tech.apps.music.mediaPlayerYT
 import android.app.PendingIntent
 import android.content.Intent
 import android.os.Bundle
-import android.os.IBinder
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
@@ -12,6 +11,7 @@ import androidx.media.MediaBrowserServiceCompat
 import com.bumptech.glide.RequestManager
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.*
 import tech.apps.music.Constants
 import tech.apps.music.Constants.MEDIA_ROOT_ID
 import tech.apps.music.database.Repository
@@ -28,10 +28,8 @@ class MusicService : MediaBrowserServiceCompat() {
     lateinit var glide: RequestManager
     private lateinit var youtubeFloatingUI: YoutubeFloatingUI
     private lateinit var mediaSession: MediaSessionCompat
-
-    override fun onBind(intent: Intent): IBinder? {
-        return null
-    }
+    private lateinit var musicNotification: MusicNotification
+    private var job: Job = Job()
 
     override fun onGetRoot(
         clientPackageName: String,
@@ -60,7 +58,7 @@ class MusicService : MediaBrowserServiceCompat() {
             )
         }
 
-        val stateBuilder: PlaybackStateCompat.Builder? = PlaybackStateCompat.Builder()
+        val stateBuilder: PlaybackStateCompat.Builder = PlaybackStateCompat.Builder()
             .setActions(PlaybackStateCompat.ACTION_PLAY)
             .setActions(PlaybackStateCompat.ACTION_PAUSE)
             .setActions(PlaybackStateCompat.ACTION_STOP)
@@ -76,52 +74,96 @@ class MusicService : MediaBrowserServiceCompat() {
         mediaSession = MediaSessionCompat(this, Constants.SERVICE_TAG, null, activityIntent).apply {
             setSessionActivity(activityIntent)
             isActive = true
-            setPlaybackState(stateBuilder?.build())
+
+            setPlaybackState(stateBuilder.build())
+
+            setCallback(object : MediaSessionCompat.Callback() {
+                override fun onPlay() {
+                    super.onPlay()
+                    YoutubeFloatingUI.youtubePlayer?.play()
+                    musicNotification.toggleNotification(true)
+                }
+
+                override fun onPause() {
+                    super.onPause()
+                    YoutubeFloatingUI.youtubePlayer?.pause()
+                    musicNotification.toggleNotification(false)
+                }
+
+                override fun onSeekTo(pos: Long) {
+                    super.onSeekTo(pos)
+                    YoutubeFloatingUI.youtubePlayer?.seekTo(pos.toFloat())
+                }
+
+                override fun onSetPlaybackSpeed(speed: Float) {
+                    super.onSetPlaybackSpeed(speed)
+                    when (speed) {
+                        0.25F ->
+                            YoutubeFloatingUI.youtubePlayer?.setPlaybackRate(PlayerConstants.PlaybackRate.RATE_0_25)
+                        0.5F ->
+                            YoutubeFloatingUI.youtubePlayer?.setPlaybackRate(PlayerConstants.PlaybackRate.RATE_0_5)
+                        1F ->
+                            YoutubeFloatingUI.youtubePlayer?.setPlaybackRate(PlayerConstants.PlaybackRate.RATE_1)
+                        1.5F ->
+                            YoutubeFloatingUI.youtubePlayer?.setPlaybackRate(PlayerConstants.PlaybackRate.RATE_1_5)
+                        2F ->
+                            YoutubeFloatingUI.youtubePlayer?.setPlaybackRate(PlayerConstants.PlaybackRate.RATE_2)
+
+                        else ->
+                            YoutubeFloatingUI.youtubePlayer?.setPlaybackRate(PlayerConstants.PlaybackRate.RATE_1)
+                    }
+                }
+
+                override fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
+                    super.onPlayFromMediaId(mediaId, extras)
+                    extras?.getFloat(Constants.PASSING_SONG_LAST_WATCHED_POS)
+                    YoutubeFloatingUI.youtubePlayer?.loadVideo(
+                        mediaId ?: "",
+                        extras?.getFloat(Constants.PASSING_SONG_LAST_WATCHED_POS) ?: 0F
+                    )
+                }
+
+                override fun onCustomAction(action: String?, extras: Bundle?) {
+                    super.onCustomAction(action, extras)
+                    if (action == Constants.ACTION_TIMER_SONG) {
+                        extras?.getLong(Constants.TIMER_IN_LONG)?.let {
+                            stopServiceAfterTimer(it)
+                        }
+                    }
+                }
+            })
+            setSessionToken(sessionToken)
         }
 
         val mediaMetadata = MediaMetadataCompat.Builder()
-        mediaMetadata.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, "Fitoor Song | Shamshera")
+        mediaMetadata.putString(
+            MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE,
+            "title"
+        )
         mediaMetadata.putBitmap(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON, null)
-        mediaMetadata.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, "T - series")
+        mediaMetadata.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE, "channel")
         mediaSession.setMetadata(mediaMetadata.build())
+
+        musicNotification = MusicNotification(this, mediaSession)
+        musicNotification.startMyOwnForeground()
 
         youtubeFloatingUI = YoutubeFloatingUI(this, repository, glide, mediaSession)
         youtubeFloatingUI.open()
+    }
 
-        mediaSession.setCallback(object : MediaSessionCompat.Callback() {
-            override fun onPlay() {
-                super.onPlay()
-                youtubeFloatingUI.youtubePlayer?.play()
-            }
-
-            override fun onPause() {
-                super.onPause()
-                youtubeFloatingUI.youtubePlayer?.pause()
-            }
-
-            override fun onSeekTo(pos: Long) {
-                super.onSeekTo(pos)
-                youtubeFloatingUI.youtubePlayer?.seekTo(pos.toFloat())
-            }
-
-            override fun onSetPlaybackSpeed(speed: Float) {
-                super.onSetPlaybackSpeed(speed)
-                youtubeFloatingUI.youtubePlayer?.setPlaybackRate(PlayerConstants.PlaybackRate.RATE_1)
-            }
-
-            override fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
-                super.onPlayFromMediaId(mediaId, extras)
-                extras?.getFloat(Constants.PASSING_SONG_LAST_WATCHED_POS)
-                youtubeFloatingUI.youtubePlayer?.loadVideo(
-                    mediaId ?: "",
-                    extras?.getFloat(Constants.PASSING_SONG_LAST_WATCHED_POS) ?: 0F
-                )
-            }
-        })
+    private fun stopServiceAfterTimer(timerInLong: Long) {
+        job.cancel()
+        job = CoroutineScope(Dispatchers.IO).launch {
+            delay(timerInLong)
+            stopForeground(true)
+            stopSelf()
+            exitProcess(0)
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
+//        MediaButtonReceiver.handleIntent(mediaSession, intent)
         if (intent?.action != null && intent.action.equals(
                 Constants.ACTION_PLAY_PAUSE_TOGGLE, true
             )
@@ -132,7 +174,7 @@ class MusicService : MediaBrowserServiceCompat() {
             )
         ) {
             youtubeFloatingUI.close()
-            stopService(null)
+            stopForeground(true)
             stopSelf()
             exitProcess(0)
         }
@@ -141,7 +183,7 @@ class MusicService : MediaBrowserServiceCompat() {
 
     override fun onDestroy() {
         super.onDestroy()
-        stopService(null)
+        stopForeground(true)
         stopSelf()
     }
 }

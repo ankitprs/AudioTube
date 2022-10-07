@@ -25,7 +25,7 @@ object Constants {
     const val SERVICE_TAG = "MusicService"
     const val CHANNEL_NAME  = "Media_Background_Service"
 
-        const val MEDIA_ROOT_ID = "root_id"
+        const val MEDIA_ROOT_ID = "media_root_id"
     const val NETWORK_ERROR = "NETWORK_ERROR"
 //    const val UPDATE_PLAYER_POSITION_INTERVAL = 100L
 
@@ -35,6 +35,9 @@ object Constants {
     const val PASSING_SONG_LAST_WATCHED_POS = "passingSongLastWatchedPos"
 
     //    const val SEARCH_FRAGMENT_VIDEO_ID = "searchFragmentVideoID"
+
+    const val ACTION_TIMER_SONG = "ACTION_TIMER_SONG"
+    const val TIMER_IN_LONG = "TIMER_IN_LONG"
 
 //    //last song data
 //    const val LAST_SONG_DATA = "lastSongData"

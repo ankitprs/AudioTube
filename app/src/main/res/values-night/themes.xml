@@ -12,7 +12,7 @@
 
         <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
 
-        <item name="popupMenuBackground">@color/dark_background</item>
+        <item name="android:popupMenuStyle">@style/PopupMenu</item>
 
         <item name="actionBarStyle">@style/MyActionBar</item>
 
@@ -20,6 +20,11 @@
         <item name="android:textColorHint">@color/grey</item>
         <item name="colorOnSecondaryContainer">@color/button_color</item>
         <item name="colorSecondaryContainer">@color/button_color</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="PopupMenu" parent="@android:style/Widget.PopupMenu">
+        <item name="android:popupBackground">@color/background</item>
         <item name="android:textColor">@color/white</item>
     </style>
 

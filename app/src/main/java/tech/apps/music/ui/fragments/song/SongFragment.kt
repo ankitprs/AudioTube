@@ -24,7 +24,6 @@ import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.snackbar.Snackbar
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import dagger.hilt.android.AndroidEntryPoint
 import tech.apps.music.Constants
 import tech.apps.music.R
@@ -32,7 +31,6 @@ import tech.apps.music.database.offline.WatchLaterSongModel
 import tech.apps.music.databinding.FragmentSongBinding
 import tech.apps.music.mediaPlayerYT.YoutubeFloatingUI
 import tech.apps.music.model.YTAudioDataModel
-import tech.apps.music.model.toYTAudioModel
 import tech.apps.music.ui.fragments.MainViewModel
 import tech.apps.music.util.AdsFunctions
 import tech.apps.music.util.secondInFloatToTimeString
@@ -239,10 +237,8 @@ class SongFragment : Fragment() {
             isPlayingIconToggle(it)
         }
         mainViewModel.currentlyPlayingSong.observe(viewLifecycleOwner) {
-            if (it != null) {
-                it.toYTAudioModel()?.let { it1 -> updateTitleAndSongImage(it1) }
-            }
-            curPlayingSong = it.toYTAudioModel()
+            it?.let { it1 -> updateTitleAndSongImage(it1) }
+            curPlayingSong = it
         }
         mainViewModel.bufferingTime.observe(viewLifecycleOwner) {
             binding.progressBarForBuffering.isVisible = it
@@ -311,27 +307,27 @@ class SongFragment : Fragment() {
         popupMenu.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.speedControlMenu025 -> {
-                    mainViewModel.setMusicPlaybackRate(PlayerConstants.PlaybackRate.RATE_0_25)
+                    mainViewModel.setMusicPlaybackRate(0.25F)
                     setPlaybackSpeed(0.25f, "0.25x")
                 }
                 R.id.speedControlMenu05 -> {
-                    mainViewModel.setMusicPlaybackRate(PlayerConstants.PlaybackRate.RATE_0_5)
+                    mainViewModel.setMusicPlaybackRate(0.5F)
                     setPlaybackSpeed(0.5f, "0.50x")
                 }
                 R.id.speedControlMenu10 -> {
-                    mainViewModel.setMusicPlaybackRate(PlayerConstants.PlaybackRate.RATE_1)
+                    mainViewModel.setMusicPlaybackRate(1F)
                     setPlaybackSpeed(1f, "1.00x")
                 }
                 R.id.speedControlMenu15 -> {
-                    mainViewModel.setMusicPlaybackRate(PlayerConstants.PlaybackRate.RATE_1_5)
+                    mainViewModel.setMusicPlaybackRate(1.5F)
                     setPlaybackSpeed(1.5f, "1.50x")
                 }
                 R.id.speedControlMenu20 -> {
-                    mainViewModel.setMusicPlaybackRate(PlayerConstants.PlaybackRate.RATE_2)
+                    mainViewModel.setMusicPlaybackRate(2F)
                     setPlaybackSpeed(2f, "2.00x")
                 }
                 else -> {
-                    mainViewModel.setMusicPlaybackRate(PlayerConstants.PlaybackRate.RATE_1)
+                    mainViewModel.setMusicPlaybackRate(1F)
                     setPlaybackSpeed(1f, "1x")
                 }
             }
@@ -348,16 +344,19 @@ class SongFragment : Fragment() {
         popupMenu.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.sleepAfter10m -> {
-                    YoutubeFloatingUI.sleepTimer.postValue(10 * 60 * 1000L)
+                    mainViewModel.sleepAfterTimer(10 * 60 * 1000L)
+                }
+                R.id.sleepAfter15m -> {
+                    mainViewModel.sleepAfterTimer(15 * 60 * 1000L)
                 }
                 R.id.sleepAfter30m -> {
-                    YoutubeFloatingUI.sleepTimer.postValue(30 * 60 * 1000L)
+                    mainViewModel.sleepAfterTimer(30 * 60 * 1000L)
+                }
+                R.id.sleepAfter45m -> {
+                    mainViewModel.sleepAfterTimer(45 * 60 * 1000L)
                 }
                 R.id.sleepAfter1h -> {
-                    YoutubeFloatingUI.sleepTimer.postValue(60 * 60 * 1000L)
-                }
-                R.id.sleepAfter2h -> {
-                    YoutubeFloatingUI.sleepTimer.postValue(120 * 60 * 1000L)
+                    mainViewModel.sleepAfterTimer(60 * 60 * 1000L)
                 }
             }
             true
