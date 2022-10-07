@@ -99,13 +99,13 @@ class MainViewModel @Inject constructor(
             }
         }
     }
-
-    fun pauseCurrSong(){
-        musicServiceConnection.transportControls.pause()
-    }
-    fun playCurrSong(){
-        musicServiceConnection.transportControls.pause()
-    }
+//
+//    fun pauseCurrSong(){
+//        musicServiceConnection.transportControls.pause()
+//    }
+//    fun playCurrSong(){
+//        musicServiceConnection.transportControls.pause()
+//    }
 
     fun playListOfSongs(
         mediaItem: List<YTAudioDataModel>,

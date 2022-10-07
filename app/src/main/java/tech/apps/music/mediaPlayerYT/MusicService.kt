@@ -163,7 +163,6 @@ class MusicService : MediaBrowserServiceCompat() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
-//        MediaButtonReceiver.handleIntent(mediaSession, intent)
         if (intent?.action != null && intent.action.equals(
                 Constants.ACTION_PLAY_PAUSE_TOGGLE, true
             )
