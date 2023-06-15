@@ -1,7 +1,11 @@
 package tech.apps.music.mediaPlayerYT
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.Service
 import android.content.Intent
+import android.os.Build
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.core.app.NotificationCompat
@@ -18,6 +22,9 @@ class MusicNotification(
     private var playPausePendingIntent: PendingIntent
     private var stopPendingIntent: PendingIntent
     private lateinit var notification: NotificationCompat.Builder
+
+    private val manager =
+        musicService.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
 
     init {
         musicService.apply {
@@ -43,6 +50,15 @@ class MusicNotification(
 
     fun startMyOwnForeground() {
         musicService.apply {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val channel = NotificationChannel(
+                    Constants.NOTIFICATION_CHANNEL_ID,
+                    Constants.CHANNEL_NAME,
+                    NotificationManager.IMPORTANCE_MIN
+                )
+                manager.createNotificationChannel(channel)
+            }
 
             val pendingIntent = PendingIntent.getActivity(
                 this, 0,
@@ -108,6 +124,7 @@ class MusicNotification(
                     )
 
             startForeground(Constants.NOTIFICATION_ID, notification.build())
+            manager.notify(Constants.NOTIFICATION_ID, notification.build())
         }
 
     }
