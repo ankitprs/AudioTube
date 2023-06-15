@@ -15,4 +15,3 @@ dependencyResolutionManagement {
 }
 rootProject.name = "PlayAudio"
 include ':app'
-include ':benchmark'
